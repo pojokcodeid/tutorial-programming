@@ -1,0 +1,29 @@
+/* ============================================================
+   Kuis Docker – 20 Soal Pilihan Ganda
+   ============================================================ */
+'use strict';
+
+window.DOCKER_QUIZ_POOL = window.DOCKER_QUIZ_POOL || [];
+
+window.DOCKER_QUIZ_POOL.push(
+  { q: 'Apa perbedaan utama Container vs Virtual Machine (VM)?', a: 2, choices: ['VM lebih ringan dari Container', 'Container berbagi kernel Host OS, VM punya Guest OS penuh', 'Keduanya wajib punya hypervisor', 'Container selalu butuh Guest OS'], expl: 'Container memanfaatkan kernel host via runtime (Docker), VM menjalankan OS lengkap.' },
+  { q: 'Manakah yang BERSIFAT read-only?', a: 0, choices: ['Docker Image', 'Docker Container (saat running)', 'Writable layer', 'Volume mount saat write'], expl: 'Image bersifat immutable (read-only). Container punya writable layer saat runtime.' },
+  { q: 'Apa kepanjangan dari CLI client Docker?', a: 1, choices: ['dockerd', 'docker', 'containerd', 'runc'], expl: 'Client CLI bernama `docker`, daemon bernama `dockerd`.' },
+  { q: 'Perintah mana untuk menjalankan container di background & publish port 8080->80?', a: 1, choices: ['docker run nginx:alpine', 'docker run -d -p 8080:80 nginx:alpine', 'docker start nginx', 'docker exec -it nginx sh'], expl: 'Gunakan -d (detached) dan -p (publish).' },
+  { q: 'Kapan sebaiknya pakai `--rm` saat `docker run`?', a: 1, choices: ['Untuk database produksi', 'Untuk eksplorasi/one-off command', 'Untuk container yang wajib dipertahankan', 'Tidak pernah disarankan'], expl: '--rm otomatis menghapus container setelah selesai.' },
+  { q: 'Perbedaan `docker run` vs `docker exec`?', a: 2, choices: ['Sama persis', 'exec buat image baru', 'run = buat container baru; exec = jalankan perintah di container yang sudah running', 'run hanya untuk image lokal'], expl: 'Jelas: run membuat instance baru, exec masuk ke instance existing.' },
+  { q: 'Apa fungsi `.dockerignore`?', a: 0, choices: ['Mengecualikan file/folder dari build context', 'Menghapus image lama', 'Menonaktifkan cache', 'Mengatur port default'], expl: 'Mirip .gitignore, memperkecil context & menghindari file nggak perlu.' },
+  { q: 'Manakah strategi terbaik biar build Node.js lebih cepat (cache optimal)?', a: 2, choices: ['COPY semua file dulu baru RUN npm ci', 'RUN npm ci lalu COPY .', 'COPY package.json (dan lock) dulu → RUN npm ci → COPY .', 'Tidak ada pengaruh'], expl: 'Agar layer npm ci bisa di-cache kalau package.json/lock nggak berubah.' },
+  { q: 'Tujuan utama Multi-stage Build?', a: 1, choices: ['Biar bisa run banyak container', 'Mengecilkan ukuran Image final (hanya artefak yg dibutuhkan)', 'Menambah security scan', 'Ganti base image tiap stage'], expl: 'Pisahkan build-time deps vs runtime-only → image lebih minimal.' },
+  { q: 'Pada user-defined bridge network, container bisa saling komunikasi pakai apa?', a: 1, choices: ['Hanya IP address', 'Nama service/container sebagai hostname', 'UUID container', 'MAC address saja'], expl: 'Docker DNS internal resolve nama container ke IP.' },
+  { q: 'Kapan data di writable layer HILANG?', a: 0, choices: ['Saat container dihapus (`docker rm`)', 'Saat container dihentikan (`docker stop`)', 'Saat container di-restart', 'Saat `docker ps`'], expl: 'Writable layer bersifat temporary, hilang saat container di-remove.' },
+  { q: 'Manakah pilihan TERBAIK untuk menyimpan data database secara persisten?', a: 1, choices: ['Anonymous volume', 'Named volume', 'Bind mount ke /tmp', 'Tulis langsung ke image layer'], expl: 'Named volume dikelola Docker, portabel & aman untuk data.' },
+  { q: 'Perintah untuk melihat semua container (termasuk exited)?', a: 2, choices: ['docker ps', 'docker container ls', 'docker container ls -a', 'docker images -a'], expl: '`-a`/`--all` menampilkan semua container.' },
+  { q: 'Apa fungsi `docker build -t app:1.0.0 .`?', a: 1, choices: ['Jalankan container app:1.0.0', 'Bangun image dengan nama app:1.0.0 dari Dockerfile di build context saat ini', 'Pull image app:1.0.0', 'Hapus image app:1.0.0'], expl: '`-t` memberi tag, `.` = build context.' },
+  { q: 'Di Docker Compose, kenapa kita bisa pakai `host: "db"` di kode app?', a: 2, choices: ['Karena sama hostname', 'Karena port sama', 'Karena Compose network otomatis & DNS by service name', 'Kebetulan saja'], expl: 'Semua service dalam project Compose terhubung ke network default & bisa di-resolve by name.' },
+  { q: 'Perbedaan `docker compose up` vs `docker compose down`?', a: 1, choices: ['up hapus, down jalankan', 'up buat+jalankan stack; down hentikan+hapus container/network (volumes opsional)', 'Sama', 'down hanya stop'], expl: 'up = start stack, down = teardown (resource cleanup).' },
+  { q: 'Kapan pakai `bind mount` (vs named volume)?', a: 0, choices: ['Saat development (sync kode host<->container)', 'Untuk menyimpan DB production', 'Untuk backup otomatis', 'Hindari selalu'], expl: 'Bind mount cocok dev (real-time sync). Production umumnya named volume.' },
+  { q: 'Apa arti `EXPOSE 3000` di Dockerfile?', a: 2, choices: ['Langsung publish port 3000', 'Wajib diisi', 'Hanya dokumentasi, tidak otomatis membuka port ke host', 'Mengganti CMD'], expl: 'EXPOSE tidak mem-publish ke host, cuma info. Butuh `-p` saat run.' },
+  { q: 'Mana yang BENAR soal layer Image?', a: 1, choices: ['Layer bisa diubah', 'Setiap instruksi Dockerfile umumnya buat layer read-only baru', 'Container & image share writable layer', 'Layer hilang saat build'], expl: 'Dockerfile instruction → read-only layer. Cache berbasis layer.' },
+  { q: 'Tujuan `WORKDIR /app` di Dockerfile?', a: 0, choices: ['Set working directory default untuk RUN/CMD/COPY', 'Hapus file di /app', 'Buat volume', 'Expose port'], expl: 'Menyederhanakan path & konsisten untuk instruksi selanjutnya.' }
+);

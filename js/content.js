@@ -167,6 +167,24 @@ const CONTENT = (() => {
         { label: 'Dokumentasi Resmi net/http', url: 'https://pkg.go.dev/net/http' },
         { label: 'Dokumentasi html/template', url: 'https://pkg.go.dev/html/template' }
       ]
+    },
+
+    docker: {
+      id: 'docker',
+      title: 'Docker',
+      tagline: 'Containerisasi Aplikasi',
+      icon: 'assets/logos/docker.svg',
+      color: '#2496ED',
+      desc: 'Belajar Docker dari nol: konsep container, image, Dockerfile, volume, network, Docker Compose, hingga praktik multi-container.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.DOCKER_LESSONS || []).slice(),
+      quizPool: (window.DOCKER_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'The Docker Handbook – freeCodeCamp', url: 'https://www.freecodecamp.org/news/the-docker-handbook/' },
+        { label: 'Docker Docs – Get Started', url: 'https://docs.docker.com/get-started/' },
+        { label: 'Docker Docs – Reference', url: 'https://docs.docker.com/reference/' }
+      ]
     }
   };
 
@@ -176,5 +194,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, docker: t.docker, all, get, readyList };
 })();
