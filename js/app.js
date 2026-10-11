@@ -1228,6 +1228,7 @@ const App = (() => {
           .then(async (ok) => {
             if (!ok) return;
             await DB.resetAll();
+            await Progress.resetAll();   // sekaligus bersihkan progres tamu (sessionStorage)
             Auth.logout();
             await Progress.refresh();
             Util.toast('Database direset. Mulai dari awal! 🌱', 'ok');

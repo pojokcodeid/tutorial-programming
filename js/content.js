@@ -155,7 +155,7 @@ const CONTENT = (() => {
       id: 'goweb',
       title: 'Go Web Examples',
       tagline: 'Web Go dari Contoh Nyata',
-      icon: 'assets/logos/goweb.svg',
+      icon: 'assets/logos/go.svg',
       color: '#00A6C0',
       desc: 'Belajar pengembangan web di Go lewat contoh: HTTP server, routing gorilla/mux, template, form, middleware, sesi, MySQL, JSON, WebSocket, dan hashing password.',
       status: 'ready',

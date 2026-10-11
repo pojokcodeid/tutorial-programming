@@ -173,6 +173,11 @@ const DB = (() => {
     db = new SQL.Database();
     db.exec(SCHEMA);
     ready = true;
+    // Wajib: tandai "dirty" agar persistNow() benar-benar menulis
+    // database kosong ini ke IndexedDB. Tanpa ini, data lama akan
+    // termuat kembali saat halaman di-reload.
+    dirty = true;
+    persistFailed = false;
     await persistNow();
     return true;
   }
