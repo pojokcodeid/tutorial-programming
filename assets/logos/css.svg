@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CSS3">
+  <!-- Logo resmi CSS3 (versi sederhana) — biru #1572B6 -->
+  <path fill="#1572B6" d="M32 2 L57 7.5 V28.5 C57 44.5 45.5 55.5 32 62 C18.5 55.5 7 44.5 7 28.5 V7.5 Z"/>
+  <text x="32" y="34" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">CSS</text>
+  <text x="32" y="52" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+</svg>

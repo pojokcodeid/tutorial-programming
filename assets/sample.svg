@@ -1,0 +1,12 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#4f46e5'/>
+      <stop offset='100%' stop-color='#9333ea'/>
+    </linearGradient>
+  </defs>
+  <rect width='400' height='225' fill='url(#g)' rx='14'/>
+  <text x='200' y='105' font-size='64' text-anchor='middle'>&#128218;</text>
+  <text x='200' y='158' font-size='22' font-family='Arial, sans-serif' font-weight='bold' fill='white' text-anchor='middle'>Contoh Gambar</text>
+  <text x='200' y='186' font-size='14' font-family='Arial, sans-serif' fill='#e0e7ff' text-anchor='middle'>assets/sample.svg - belajar HTML</text>
+</svg>

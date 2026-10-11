@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SQL">
+  <!-- Simbol SQL: silinder database — biru #4479A1 -->
+  <path d="M14 16 V44 C14 48.4 22 52 32 52 C42 52 50 48.4 50 44 V16" fill="#4479A1"/>
+  <ellipse cx="32" cy="16" rx="18" ry="6" fill="#6fa3c8"/>
+  <path d="M14 27 C14 31.4 22 35 32 35 C42 35 50 31.4 50 27" stroke="#35618a" stroke-width="2.5" fill="none"/>
+  <path d="M14 37 C14 41.4 22 45 32 45 C42 45 50 41.4 50 37" stroke="#35618a" stroke-width="2.5" fill="none"/>
+</svg>

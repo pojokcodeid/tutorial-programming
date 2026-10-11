@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Go (Golang)">
+  <!-- Logo Go: gopher sederhana — biru muda #00ADD8 di latar terang -->
+  <rect width="64" height="64" rx="10" fill="#E6F4F8"/>
+  <circle cx="18" cy="21" r="6" fill="#00ADD8"/>
+  <circle cx="46" cy="21" r="6" fill="#00ADD8"/>
+  <circle cx="18" cy="21" r="2.6" fill="#B7E6F2"/>
+  <circle cx="46" cy="21" r="2.6" fill="#B7E6F2"/>
+  <ellipse cx="32" cy="36" rx="20" ry="17" fill="#00ADD8"/>
+  <ellipse cx="32" cy="43" rx="13" ry="9.5" fill="#EAF9FD"/>
+  <circle cx="25" cy="32" r="4.4" fill="#FFFFFF"/>
+  <circle cx="39" cy="32" r="4.4" fill="#FFFFFF"/>
+  <circle cx="25.6" cy="32.6" r="2.1" fill="#0B3A45"/>
+  <circle cx="39.6" cy="32.6" r="2.1" fill="#0B3A45"/>
+  <circle cx="31" cy="40" r="2.6" fill="#0B3A45"/>
+  <path d="M27 47 Q32 50 37 47" stroke="#0B3A45" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+</svg>

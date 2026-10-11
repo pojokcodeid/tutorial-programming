@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Belajar Koding — aplikasi tutorial pemrograman interaktif berbahasa Indonesia. 100% offline & portabel.">
+  <title>Belajar Koding — Tutorial Interaktif (Offline)</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <!-- Tema syntax highlighting (highlight.js) — diganti lewat JS -->
+  <link rel="stylesheet" href="css/highlight-github.css" id="hl-theme-light">
+  <link rel="stylesheet" href="css/highlight-dark.css" id="hl-theme-dark" disabled>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="backdrop"></div>
+
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="logo">📖</div>
+      <div>
+        <div class="logo-txt">Belajar Koding</div>
+        <div class="logo-sub">Tutorial interaktif &amp; offline</div>
+      </div>
+    </div>
+    <nav class="side-nav" id="side-nav"></nav>
+    <div class="sidebar-foot">
+      <div class="theme-row">
+        <span>🌙 Mode gelap</span>
+        <label class="switch"><input type="checkbox" id="theme-switch"><span class="slider"></span></label>
+      </div>
+      <div id="side-user"></div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="topbar">
+      <button id="hamburger" aria-label="Buka menu">☰</button>
+      <div class="crumb" id="crumb"></div>
+      <div class="spacer"></div>
+      <span class="off-badge"><span>●</span> Offline-ready</span>
+      <button class="acc-btn" id="acc-btn">🔑 Masuk</button>
+    </header>
+
+    <div id="view"></div>
+
+    <footer id="app-footer">
+      Belajar Koding · tutorial interaktif — berjalan 100% offline dari folder ini ·
+      <a href="#/profil">Tentang &amp; Data</a>
+    </footer>
+  </main>
+
+  <div id="modal-root"></div>
+
+  <!-- Library lokal (offline) -->
+  <script src="lib/sql-wasm.js"></script>
+  <script src="lib/sql-wasm.base64.js"></script>
+  <script src="lib/highlight.min.js"></script>
+
+  <!-- Utilitas -->
+  <script src="js/util.js"></script>
+  <script src="js/assets.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/quiz.js"></script>
+
+  <!-- Konten: kumpulan soal kuis lalu pelajaran (urutan = urutan materi) -->
+  <script src="content/html/quiz-questions.js"></script>
+  <script src="content/html/basics.js"></script>
+  <script src="content/html/text-content.js"></script>
+  <script src="content/html/tables-forms.js"></script>
+  <script src="content/html/semantics-media.js"></script>
+
+  <!-- Konten CSS (urutan = urutan materi) -->
+  <script src="content/css/quiz-questions.js"></script>
+  <script src="content/css/basics.js"></script>
+  <script src="content/css/selectors-properties.js"></script>
+  <script src="content/css/box-position.js"></script>
+  <script src="content/css/flex-grid-responsive.js"></script>
+  <script src="content/css/effects-variables.js"></script>
+  <script src="content/css/practices.js"></script>
+
+  <!-- Konten JavaScript (urutan = urutan materi) -->
+  <script src="content/js/quiz-questions.js"></script>
+  <script src="content/js/basics.js"></script>
+  <script src="content/js/variables.js"></script>
+  <script src="content/js/operators.js"></script>
+  <script src="content/js/control-flow.js"></script>
+  <script src="content/js/data-structures.js"></script>
+  <script src="content/js/functions.js"></script>
+  <script src="content/js/dom-events.js"></script>
+  <script src="content/js/dom-bom.js"></script>
+  <script src="content/js/advanced.js"></script>
+  <script src="content/js/oop.js"></script>
+
+  <!-- Konten TypeScript (urutan = urutan materi) -->
+  <script src="content/typescript/quiz-questions.js"></script>
+  <script src="content/typescript/basics.js"></script>
+  <script src="content/typescript/types.js"></script>
+  <script src="content/typescript/composite.js"></script>
+  <script src="content/typescript/advanced-types.js"></script>
+  <script src="content/typescript/flow.js"></script>
+  <script src="content/typescript/data-structures.js"></script>
+  <script src="content/typescript/functions.js"></script>
+  <script src="content/typescript/interfaces.js"></script>
+  <script src="content/typescript/oop.js"></script>
+  <script src="content/typescript/generics.js"></script>
+  <script src="content/typescript/modules.js"></script>
+  <script src="content/typescript/decorators.js"></script>
+
+  <!-- Konten Git & GitHub (urutan = urutan materi) -->
+  <script src="content/git/quiz-questions.js"></script>
+  <script src="content/git/pengenalan.js"></script>
+  <script src="content/git/instalasi.js"></script>
+  <script src="content/git/workflow-dasar.js"></script>
+  <script src="content/git/riwayat-revisi.js"></script>
+  <script src="content/git/cabang.js"></script>
+  <script src="content/git/remote.js"></script>
+  <script src="content/git/lanjutan.js"></script>
+
+  <!-- Konten SQL (urutan = urutan materi) -->
+  <script src="content/sql/quiz-questions.js"></script>
+  <script src="content/sql/pengenalan.js"></script>
+  <script src="content/sql/query-dasar.js"></script>
+  <script src="content/sql/dml-ddl.js"></script>
+  <script src="content/sql/group-join.js"></script>
+  <script src="content/sql/query-lanjutan.js"></script>
+  <script src="content/sql/performa.js"></script>
+  <script src="content/sql/transaksi.js"></script>
+
+  <!-- Konten React JS (urutan = urutan materi) -->
+  <script src="content/react/quiz-questions.js"></script>
+  <script src="content/react/pengenalan-setup.js"></script>
+  <script src="content/react/jsx-components.js"></script>
+  <script src="content/react/state-rendering.js"></script>
+  <script src="content/react/hooks.js"></script>
+  <script src="content/react/forms-routing.js"></script>
+  <script src="content/react/state-management.js"></script>
+  <script src="content/react/advanced.js"></script>
+  <script src="content/react/ecosystem.js"></script>
+
+  <!-- Konten Go / Golang (urutan = urutan materi) -->
+  <script src="content/go/quiz-questions.js"></script>
+  <script src="content/go/pengenalan-setup.js"></script>
+  <script src="content/go/dasar.js"></script>
+  <script src="content/go/kontrol.js"></script>
+  <script src="content/go/koleksi.js"></script>
+  <script src="content/go/fungsi.js"></script>
+  <script src="content/go/pointer-struct.js"></script>
+  <script src="content/go/interface.js"></script>
+  <script src="content/go/error.js"></script>
+  <script src="content/go/package.js"></script>
+  <script src="content/go/concurrency.js"></script>
+  <script src="content/go/testing.js"></script>
+  <script src="content/go/io.js"></script>
+  <script src="content/go/web.js"></script>
+  <script src="content/go/arsitektur.js"></script>
+  <script src="content/go/microservices.js"></script>
+  <script src="content/go/advanced.js"></script>
+  <script src="content/go/devops.js"></script>
+
+  <!-- Konten Go Web Examples (materi dari gowebexamples.com) -->
+  <script src="content/goweb/quiz-questions.js"></script>
+  <script src="content/goweb/dasar-web.js"></script>
+  <script src="content/goweb/routing-form.js"></script>
+  <script src="content/goweb/template-aset.js"></script>
+  <script src="content/goweb/middleware-sesi.js"></script>
+  <script src="content/goweb/database-json.js"></script>
+  <script src="content/goweb/realtime-keamanan.js"></script>
+
+  <!-- Registry konten & aplikasi -->
+  <script src="js/content.js"></script>
+  <script src="js/hints.js"></script>
+  <script src="js/autoclose.js"></script>
+  <script src="js/autoindent.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
