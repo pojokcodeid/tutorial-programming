@@ -310,3 +310,30 @@
     - Containerization menggunakan Docker (Multi-stage build untuk binary yang kecil)
     - CI/CD Pipeline untuk project Go
     - Security best practices (mencegah SQL Injection, sanitasi input, CORS, JWT Auth)
+
+## Topik UML
+
+- Rujukan
+  - https://en.wikipedia.org/wiki/Unified_Modeling_Language
+  - https://www.startertutorials.com/uml/introduction-to-uml.html
+  - https://www.freecodecamp.org/news/uml-diagrams-full-course/
+  - https://www.tutorialspoint.com/uml/index.htm
+- Topik yang harus ada
+  - Pengenalan UML
+  - Analisis dan Design
+  - Object Oriented Analisis dan Design
+  - Overview of the main Diagrams in UML 2.0
+  - Class Diagram
+  - Component Diagram
+  - Deployment Diagram
+  - Object Diagram
+  - Package Diagram
+  - Composite Structure Diagram
+  - Profile Diagram
+  - Use Case Diagram
+  - Activity Diagram
+  - State Machine Diagram
+  - Sequence Diagram
+  - Communications Diagram
+  - Interaction Overview Diagram
+  - Timing Diagram

@@ -185,6 +185,25 @@ const CONTENT = (() => {
         { label: 'Docker Docs – Get Started', url: 'https://docs.docker.com/get-started/' },
         { label: 'Docker Docs – Reference', url: 'https://docs.docker.com/reference/' }
       ]
+    },
+
+    uml: {
+      id: 'uml',
+      title: 'UML',
+      tagline: 'Merancang Sistem dengan Diagram',
+      icon: 'assets/logos/uml.svg',
+      color: '#7C3AED',
+      desc: 'Belajar Unified Modeling Language dari nol hingga lanjutan: analisis & desain OO, 14 diagram UML 2.0 (struktural & perilaku), lengkap dengan contoh dan studi kasus nyata.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.UML_LESSONS || []).slice(),
+      quizPool: (window.UML_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Introduction to UML — Starter Tutorials', url: 'https://www.startertutorials.com/uml/introduction-to-uml.html' },
+        { label: 'Wikipedia — Unified Modeling Language', url: 'https://en.wikipedia.org/wiki/Unified_Modeling_Language' },
+        { label: 'freeCodeCamp — UML Diagrams Full Course', url: 'https://www.freecodecamp.org/news/uml-diagrams-full-course/' },
+        { label: 'TutorialsPoint — UML', url: 'https://www.tutorialspoint.com/uml/index.htm' }
+      ]
     }
   };
 
@@ -194,5 +213,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, docker: t.docker, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, docker: t.docker, uml: t.uml, all, get, readyList };
 })();
