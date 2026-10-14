@@ -31,6 +31,35 @@ window.DOCKER_LESSONS.push({
     },
     {
       type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 320" width="760" role="img" aria-label="Perbandingan named volume dengan bind mount">
+        <text x="40" y="26" class="u-sub">① Named Volume — lokasi di-host dikelola Docker</text>
+        <rect x="40" y="40" width="250" height="95" rx="8" class="u-box"/>
+        <text x="165" y="66" class="u-title">Host</text>
+        <rect x="65" y="76" width="200" height="44" rx="6" class="u-hd"/>
+        <text x="165" y="103" class="u-title">volume: mydb_data</text>
+        <rect x="470" y="40" width="250" height="95" rx="8" class="u-box"/>
+        <text x="595" y="66" class="u-title">Container mysql</text>
+        <rect x="495" y="76" width="200" height="44" rx="6" class="u-hd"/>
+        <text x="595" y="103" class="u-title">/var/lib/mysql</text>
+        <line x1="294" y1="98" x2="466" y2="98" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="380" y="86" class="u-lbl" text-anchor="middle">-v mydb_data:/var/lib/mysql</text>
+        <text x="380" y="118" class="u-lbl" text-anchor="middle">aman saat container dihapus</text>
+        <text x="40" y="180" class="u-sub">② Bind Mount — path host ditentukan sendiri</text>
+        <rect x="40" y="194" width="250" height="95" rx="8" class="u-box"/>
+        <text x="165" y="220" class="u-title">Host: /Users/kamu/app</text>
+        <rect x="65" y="230" width="200" height="44" rx="6" class="u-hd"/>
+        <text x="165" y="257" class="u-title">folder source code</text>
+        <rect x="470" y="194" width="250" height="95" rx="8" class="u-box"/>
+        <text x="595" y="220" class="u-title">Container</text>
+        <rect x="495" y="230" width="200" height="44" rx="6" class="u-hd"/>
+        <text x="595" y="257" class="u-title">/app</text>
+        <line x1="294" y1="252" x2="466" y2="252" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="380" y="240" class="u-lbl" text-anchor="middle">-v $(pwd):/app</text>
+        <text x="380" y="272" class="u-lbl" text-anchor="middle">kode host langsung terlihat</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 10.1</b> — Named volume untuk data penting; bind mount untuk sinkronisasi kode saat development</figcaption></figure>`
+    },
+    {
+      type: 'text',
       html: '<h3>Melihat Volume yang Ada</h3>'
     },
     {

@@ -72,6 +72,30 @@ volumes:
       html: '<h3>Contoh Praktis: Node.js + MySQL</h3><p>Kita buat project simpel: API Node.js (Express) yang connect ke MySQL. Kedua dijalankan bareng pakai Compose.</p><p>Struktur folder:</p><pre><code>compose-demo/\n├── docker-compose.yml\n├── app/\n│   ├── Dockerfile\n│   ├── package.json\n│   └── index.js</code></pre>'
     },
     {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 330" width="760" role="img" aria-label="Satu file docker-compose.yml menjalankan dua service dalam satu stack">
+        <rect x="240" y="20" width="280" height="66" rx="8" class="u-hd"/>
+        <text x="380" y="46" class="u-title">docker-compose.yml</text>
+        <text x="380" y="68" class="u-lbl" text-anchor="middle">services • networks • volumes</text>
+        <line x1="380" y1="90" x2="380" y2="116" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="392" y="108" class="u-lbl">docker compose up -d</text>
+        <rect x="40" y="124" width="680" height="186" rx="10" class="u-hd"/>
+        <text x="380" y="152" class="u-title">network: &lt;project&gt;_default (otomatis)</text>
+        <rect x="80" y="176" width="250" height="106" rx="8" class="u-box"/>
+        <text x="205" y="204" class="u-title">app (build: ./app)</text>
+        <text x="205" y="228" class="u-lbl" text-anchor="middle">Node.js API</text>
+        <text x="205" y="250" class="u-lbl" text-anchor="middle">ports: 8086 → 3000</text>
+        <text x="205" y="272" class="u-lbl" text-anchor="middle">depends_on: db</text>
+        <rect x="430" y="176" width="250" height="106" rx="8" class="u-box"/>
+        <text x="555" y="204" class="u-title">db (mysql:8.0)</text>
+        <text x="555" y="228" class="u-lbl" text-anchor="middle">volumes: db-data</text>
+        <text x="555" y="250" class="u-lbl" text-anchor="middle">healthcheck: mysqladmin ping</text>
+        <text x="555" y="272" class="u-lbl" text-anchor="middle">env: MYSQL_DATABASE</text>
+        <line x1="334" y1="229" x2="426" y2="229" class="u-line" marker-start="url(#u-arrow)" marker-end="url(#u-arrow)"/>
+        <text x="380" y="214" class="u-lbl" text-anchor="middle">DB_HOST: db</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 11.1</b> — 1 file → 1 stack: service saling terhubung lewat nama service di network otomatis</figcaption></figure>`
+    },
+    {
       type: 'example',
       title: 'app/package.json',
       lang: 'json',

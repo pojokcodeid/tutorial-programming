@@ -76,6 +76,25 @@ docker container exec -it web sh
     },
     {
       type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 260" width="760" role="img" aria-label="Perbedaan docker run dan docker exec di dalam container">
+        <rect x="200" y="40" width="440" height="170" rx="10" class="u-box"/>
+        <text x="420" y="70" class="u-title">Container web (Running)</text>
+        <rect x="230" y="90" width="180" height="60" rx="8" class="u-hd"/>
+        <text x="320" y="116" class="u-title">nginx (PID 1)</text>
+        <text x="320" y="138" class="u-lbl" text-anchor="middle">dari CMD / ENTRYPOINT</text>
+        <rect x="440" y="90" width="180" height="60" rx="8" class="u-hd" stroke-dasharray="4 3"/>
+        <text x="530" y="116" class="u-title">sh (docker exec)</text>
+        <text x="530" y="138" class="u-lbl" text-anchor="middle">proses tambahan</text>
+        <line x1="60" y1="120" x2="196" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="128" y="110" class="u-lbl" text-anchor="middle">docker run</text>
+        <line x1="712" y1="120" x2="644" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="680" y="110" class="u-lbl" text-anchor="middle">docker exec</text>
+        <text x="190" y="240" class="u-lbl" text-anchor="middle">run = membuat container BARU dari image</text>
+        <text x="560" y="240" class="u-lbl" text-anchor="middle">exec = menambah proses di container yang sedang berjalan</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 5.1</b> — <code>exec</code> menumpuk proses baru tanpa membuat container baru</figcaption></figure>`
+    },
+    {
+      type: 'text',
       html: '<h3>Membuat Tanpa Menjalankan (create) lalu start</h3><p>Kadang kamu pengen siapkan container dulu (konfigurasi port/name/env) tanpa langsung menjalankannya. Gunakan <code>create</code> + <code>start</code>.</p>'
     },
     {

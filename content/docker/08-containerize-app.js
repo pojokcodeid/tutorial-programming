@@ -78,6 +78,31 @@ coverage`,
       html: '<h3>Multi-stage Build</h3><p>Masalah klasik: Image jadi besar karena ada dev-deps, build tools, source mentah. <b>Multi-stage build</b> membagi build jadi beberapa <b>stage</b>. Hanya artefak yang dibutuhkan dari stage akhir yang masuk ke final Image.</p><p>Hasilnya: Image jauh lebih kecil, lebih aman (minimal attack surface).</p>'
     },
     {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 300" width="760" role="img" aria-label="Multi-stage build dengan stage builder dan stage runner">
+        <rect x="30" y="50" width="330" height="200" rx="10" class="u-dash"/>
+        <text x="195" y="80" class="u-title">Stage 1: builder</text>
+        <rect x="50" y="100" width="290" height="36" rx="5" class="u-box"/>
+        <text x="195" y="123" class="u-lbl" text-anchor="middle">FROM node:20-alpine AS builder</text>
+        <rect x="50" y="144" width="290" height="36" rx="5" class="u-box"/>
+        <text x="195" y="167" class="u-lbl" text-anchor="middle">RUN npm ci (semua dependensi)</text>
+        <rect x="50" y="188" width="290" height="36" rx="5" class="u-box"/>
+        <text x="195" y="211" class="u-lbl" text-anchor="middle">RUN npm run build → dist/</text>
+        <rect x="400" y="50" width="330" height="200" rx="10" class="u-box"/>
+        <text x="565" y="80" class="u-title">Stage 2: runner (image final)</text>
+        <rect x="420" y="100" width="290" height="36" rx="5" class="u-hd"/>
+        <text x="565" y="123" class="u-lbl" text-anchor="middle">FROM node:20-alpine (stage baru)</text>
+        <rect x="420" y="144" width="290" height="36" rx="5" class="u-hd"/>
+        <text x="565" y="167" class="u-lbl" text-anchor="middle">RUN npm ci --omit=dev</text>
+        <rect x="420" y="188" width="290" height="36" rx="5" class="u-hd"/>
+        <text x="565" y="211" class="u-lbl" text-anchor="middle">COPY --from=builder /app/dist</text>
+        <line x1="364" y1="150" x2="396" y2="150" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="195" y="274" class="u-lbl" text-anchor="middle">stage ini dibuang setelah build</text>
+        <text x="380" y="274" class="u-lbl" text-anchor="middle">COPY --from</text>
+        <text x="565" y="274" class="u-lbl" text-anchor="middle">yang masuk image hanya stage terakhir</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 8.1</b> — Hanya artefak hasil build yang dipindahkan ke image final</figcaption></figure>`
+    },
+    {
       type: 'example',
       title: 'Konsep Multi-stage',
       lang: 'dockerfile',

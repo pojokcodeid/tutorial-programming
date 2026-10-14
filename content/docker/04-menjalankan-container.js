@@ -41,6 +41,24 @@ window.DOCKER_LESSONS.push({
       html: '<h3>Publish Port (-p / --publish)</h3><p>Agar aplikasi di dalam container bisa diakses dari browser/host, publish port: <code>HOST_PORT:CONTAINER_PORT</code>.</p>'
     },
     {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 230" width="760" role="img" aria-label="Mapping port host ke port container">
+        <rect x="40" y="50" width="300" height="140" rx="10" class="u-box"/>
+        <text x="190" y="80" class="u-title">Host (laptop kamu)</text>
+        <rect x="70" y="100" width="240" height="40" rx="6" class="u-hd"/>
+        <text x="190" y="125" class="u-title">browser → localhost:8080</text>
+        <text x="190" y="166" class="u-lbl" text-anchor="middle">port 8080 terbuka di host</text>
+        <rect x="420" y="50" width="300" height="140" rx="10" class="u-box"/>
+        <text x="570" y="80" class="u-title">Container nginx</text>
+        <rect x="450" y="100" width="240" height="40" rx="6" class="u-hd"/>
+        <text x="570" y="125" class="u-title">proses nginx listen :80</text>
+        <text x="570" y="166" class="u-lbl" text-anchor="middle">terisolasi tanpa -p</text>
+        <line x1="340" y1="120" x2="416" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="378" y="110" class="u-lbl" text-anchor="middle">-p 8080:80</text>
+        <text x="380" y="216" class="u-lbl" text-anchor="middle">docker container run --publish 8080:80 nginx:alpine</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 4.1</b> — Port host (kiri) diteruskan ke port container (kanan)</figcaption></figure>`
+    },
+    {
       type: 'example',
       title: 'Jalankan web server & publish port',
       lang: 'bash',
@@ -93,6 +111,36 @@ docker ps -a`,
     {
       type: 'text',
       html: '<h3>Stop, Start, Restart, Rename, Remove</h3>'
+    },
+    {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 260" width="760" role="img" aria-label="Siklus hidup container dari created sampai removed">
+        <rect x="220" y="30" width="140" height="60" rx="8" class="u-hd"/>
+        <text x="290" y="58" class="u-title">Paused</text>
+        <text x="290" y="80" class="u-lbl" text-anchor="middle">docker pause</text>
+        <line x1="290" y1="94" x2="290" y2="114" class="u-line" marker-start="url(#u-arrow)" marker-end="url(#u-arrow)"/>
+        <text x="278" y="109" class="u-lbl" text-anchor="end">pause / unpause</text>
+        <rect x="20" y="120" width="140" height="64" rx="8" class="u-box"/>
+        <text x="90" y="148" class="u-title">Created</text>
+        <text x="90" y="170" class="u-lbl" text-anchor="middle">docker create</text>
+        <rect x="220" y="120" width="140" height="64" rx="8" class="u-hd"/>
+        <text x="290" y="148" class="u-title">Running</text>
+        <text x="290" y="170" class="u-lbl" text-anchor="middle">run / start</text>
+        <rect x="420" y="120" width="140" height="64" rx="8" class="u-box"/>
+        <text x="490" y="148" class="u-title">Exited</text>
+        <text x="490" y="170" class="u-lbl" text-anchor="middle">stop / selesai</text>
+        <rect x="620" y="120" width="140" height="64" rx="8" class="u-box"/>
+        <text x="690" y="148" class="u-title">Removed</text>
+        <text x="690" y="170" class="u-lbl" text-anchor="middle">docker rm</text>
+        <line x1="164" y1="152" x2="216" y2="152" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="190" y="142" class="u-lbl" text-anchor="middle">start</text>
+        <line x1="364" y1="152" x2="416" y2="152" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="390" y="142" class="u-lbl" text-anchor="middle">stop</text>
+        <line x1="564" y1="152" x2="616" y2="152" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="590" y="142" class="u-lbl" text-anchor="middle">rm</text>
+        <path d="M490,188 L490,216 L290,216 L290,192" class="u-dash" marker-end="url(#u-arrow)"/>
+        <text x="390" y="236" class="u-lbl" text-anchor="middle">start lagi — container Exited bisa dihidupkan kembali</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 4.2</b> — Siklus hidup container: Created → Running → Exited → Removed</figcaption></figure>`
     },
     {
       type: 'example',

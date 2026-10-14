@@ -71,6 +71,28 @@ docker network inspect myapp-net`,
       html: '<h3>Menjalankan Container di Network Custom</h3><p>Kita coba 2 container: <code>web</code> (nginx) dan <code>tester</code> (alpine). Kedua masuk ke <code>myapp-net</code>. Lalu test ping/curl via <b>nama container</b>.</p>'
     },
     {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 330" width="760" role="img" aria-label="Dua container dalam user-defined bridge network dengan akses dari host">
+        <rect x="40" y="130" width="680" height="180" rx="10" class="u-hd"/>
+        <text x="380" y="160" class="u-title">myapp-net (user-defined bridge)</text>
+        <rect x="60" y="30" width="240" height="60" rx="8" class="u-box"/>
+        <text x="180" y="58" class="u-title">Browser di host</text>
+        <text x="180" y="80" class="u-lbl" text-anchor="middle">localhost:8080</text>
+        <line x1="180" y1="94" x2="180" y2="191" class="u-dash" marker-end="url(#u-arrow)"/>
+        <text x="172" y="116" class="u-lbl" text-anchor="end">publish -p 8080:80</text>
+        <rect x="90" y="195" width="230" height="90" rx="8" class="u-box"/>
+        <text x="205" y="225" class="u-title">web</text>
+        <text x="205" y="250" class="u-lbl" text-anchor="middle">nginx:alpine</text>
+        <text x="205" y="272" class="u-lbl" text-anchor="middle">nama container = hostname</text>
+        <rect x="440" y="195" width="230" height="90" rx="8" class="u-box"/>
+        <text x="555" y="225" class="u-title">tester</text>
+        <text x="555" y="250" class="u-lbl" text-anchor="middle">alpine (shell -it)</text>
+        <text x="555" y="272" class="u-lbl" text-anchor="middle">ping web / wget http://web</text>
+        <line x1="324" y1="240" x2="436" y2="240" class="u-line" marker-start="url(#u-arrow)" marker-end="url(#u-arrow)"/>
+        <text x="380" y="226" class="u-lbl" text-anchor="middle">DNS nama → IP</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 9.1</b> — Satu network berisi banyak container; host masuk lewat port yang dipublish</figcaption></figure>`
+    },
+    {
       type: 'example',
       title: 'Jalankan container & attach ke network',
       lang: 'bash',

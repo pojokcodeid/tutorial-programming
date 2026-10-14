@@ -88,6 +88,30 @@ docker image ls`,
     },
     {
       type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 240" width="760" role="img" aria-label="Banyak tag menunjuk ke satu image id yang sama">
+        <rect x="40" y="40" width="220" height="44" rx="6" class="u-hd"/>
+        <text x="150" y="68" class="u-title">nginx:latest</text>
+        <rect x="40" y="100" width="220" height="44" rx="6" class="u-hd"/>
+        <text x="150" y="128" class="u-title">nginx:1.27-alpine</text>
+        <rect x="40" y="160" width="220" height="44" rx="6" class="u-hd"/>
+        <text x="150" y="188" class="u-title">asep/nginx:1.0</text>
+        <line x1="264" y1="62" x2="336" y2="102" class="u-line" marker-end="url(#u-arrow)"/>
+        <line x1="264" y1="122" x2="336" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <line x1="264" y1="182" x2="336" y2="140" class="u-line" marker-end="url(#u-arrow)"/>
+        <rect x="340" y="70" width="210" height="100" rx="8" class="u-box"/>
+        <text x="445" y="100" class="u-title">IMAGE ID</text>
+        <text x="445" y="124" class="u-lbl" text-anchor="middle">a1b2c3d4e5f6</text>
+        <text x="445" y="148" class="u-lbl" text-anchor="middle">satu image, banyak nama</text>
+        <line x1="554" y1="120" x2="596" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <rect x="600" y="70" width="120" height="100" rx="8" class="u-hd"/>
+        <text x="660" y="100" class="u-title">Layer</text>
+        <text x="660" y="124" class="u-lbl" text-anchor="middle">read-only</text>
+        <text x="660" y="144" class="u-lbl" text-anchor="middle">dibagikan</text>
+        <text x="445" y="220" class="u-lbl" text-anchor="middle">Menghapus satu tag tidak menghapus image selama masih ada tag lain</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 6.1</b> — Tag hanya label referensi; isi image tetap yang sama</figcaption></figure>`
+    },
+    {
+      type: 'text',
       html: '<h3>Menghapus Image (<code>rmi</code>)</h3><p>Hapus image dari lokal. Image tidak bisa dihapus kalau masih ada container (running/stopped) yang dibuat darinya.</p>'
     },
     {

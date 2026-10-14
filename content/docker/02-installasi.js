@@ -26,6 +26,28 @@ window.DOCKER_LESSONS.push({
     },
     {
       type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 270" width="760" role="img" aria-label="Isi Docker Desktop di macOS Windows dibanding Docker Engine di Linux">
+        <rect x="40" y="50" width="300" height="180" rx="10" class="u-box"/>
+        <text x="190" y="80" class="u-title">macOS / Windows</text>
+        <rect x="65" y="95" width="250" height="40" rx="6" class="u-hd"/>
+        <text x="190" y="120" class="u-title">Docker Desktop</text>
+        <rect x="65" y="145" width="250" height="32" rx="6" class="u-box"/>
+        <text x="190" y="166" class="u-lbl" text-anchor="middle">Docker Engine (di VM Linux)</text>
+        <rect x="65" y="183" width="250" height="32" rx="6" class="u-box"/>
+        <text x="190" y="204" class="u-lbl" text-anchor="middle">Compose + GUI + Kubernetes</text>
+        <rect x="420" y="50" width="300" height="180" rx="10" class="u-box"/>
+        <text x="570" y="80" class="u-title">Linux</text>
+        <rect x="445" y="95" width="250" height="40" rx="6" class="u-hd"/>
+        <text x="570" y="120" class="u-title">Docker Engine</text>
+        <rect x="445" y="145" width="250" height="32" rx="6" class="u-box"/>
+        <text x="570" y="166" class="u-lbl" text-anchor="middle">docker CLI + dockerd</text>
+        <rect x="445" y="183" width="250" height="32" rx="6" class="u-box"/>
+        <text x="570" y="204" class="u-lbl" text-anchor="middle">docker compose (plugin)</text>
+        <text x="380" y="256" class="u-lbl" text-anchor="middle">Linux memasang engine + CLI secara mandiri; macOS/Windows memakai bundle Docker Desktop</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 2.1</b> — Docker Desktop = bundle lengkap; Linux = engine + CLI + plugin</figcaption></figure>`
+    },
+    {
+      type: 'text',
       html: '<h3>1) Instalasi di macOS</h3><ol><li>Kunjungi <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">docker.com/products/docker-desktop</a></li><li>Download <b>Docker Desktop for Mac</b> (stable)</li><li>Buka file <code>.dmg</code>, drag <b>Docker.app</b> ke folder <b>Applications</b></li><li>Jalankan Docker.app (ikon akan muncul di menu bar)</li></ol>'
     },
     {

@@ -826,11 +826,13 @@ img { max-width: 100%; }
 body.pg-noscroll { overflow: hidden; }
 
 /* ============================================================
-   Diagram UML — wadah & elemen SVG inline.
+   Ilustrasi/diagram inline — wadah & elemen SVG.
    Diagram ditulis sebagai SVG inline di section 'text', memakai
    kelas-kelas di bawah agar ikut tema gelap/terang otomatis.
+   Dipakai materi UML (.uml-fig) & materi Docker (.fig) — keduanya
+   memakai elemen dasar .u-* yang sama.
    ============================================================ */
-.uml-fig {
+.uml-fig, .fig {
   margin: 20px 0;
   padding: 18px 16px 12px;
   background: var(--card);
@@ -838,25 +840,26 @@ body.pg-noscroll { overflow: hidden; }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.uml-scroll { overflow-x: auto; overflow-y: hidden; }
-.uml-fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
-.uml-cap {
+.uml-scroll, .fig-scroll { overflow-x: auto; overflow-y: hidden; }
+.uml-fig svg, .fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.uml-cap, .fig-cap {
   margin: 12px auto 2px;
   text-align: center;
   font-size: 12.5px;
   color: var(--muted);
   font-style: italic;
 }
-.uml-cap b { color: var(--text-2); font-style: normal; }
+.uml-cap b, .fig-cap b { color: var(--text-2); font-style: normal; }
 
 /* Elemen dasar diagram (dipakai lewat atribut class di SVG) */
-.uml-fig .u-box   { fill: var(--card); stroke: var(--text-2); stroke-width: 1.3; }
-.uml-fig .u-hd    { fill: var(--accent-soft); stroke: var(--text-2); stroke-width: 1.3; }
-.uml-fig .u-title { fill: var(--text); font: 700 13px var(--font); text-anchor: middle; }
-.uml-fig .u-text  { fill: var(--text-2); font: 12px var(--mono); }
-.uml-fig .u-lbl   { fill: var(--muted); font: 11px var(--font); }
-.uml-fig .u-line  { stroke: var(--text-2); stroke-width: 1.4; fill: none; }
-.uml-fig .u-dash  { stroke: var(--text-2); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+.uml-fig .u-box,   .fig .u-box   { fill: var(--card); stroke: var(--text-2); stroke-width: 1.3; }
+.uml-fig .u-hd,    .fig .u-hd    { fill: var(--accent-soft); stroke: var(--text-2); stroke-width: 1.3; }
+.uml-fig .u-title, .fig .u-title { fill: var(--text); font: 700 13px var(--font); text-anchor: middle; }
+.uml-fig .u-text,  .fig .u-text  { fill: var(--text-2); font: 12px var(--mono); }
+.uml-fig .u-lbl,   .fig .u-lbl   { fill: var(--muted); font: 11px var(--font); }
+.uml-fig .u-sub,   .fig .u-sub   { fill: var(--text); font: 700 12px var(--font); }
+.uml-fig .u-line,  .fig .u-line  { stroke: var(--text-2); stroke-width: 1.4; fill: none; }
+.uml-fig .u-dash,  .fig .u-dash  { stroke: var(--text-2); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
 
 /* Marker global diagram UML — didefinisikan di <defs> index.html */
 .u-arw-fill   { fill: var(--text-2); }

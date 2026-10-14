@@ -70,6 +70,39 @@ EXPOSE 80
       html: '<h3>Membangun Image (<code>docker build</code>)</h3><p>Perintah build:</p><pre><code>docker build [OPTIONS] PATH | URL | -</code></pre>'
     },
     {
+      type: 'text',
+      html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 240" width="760" role="img" aria-label="Alur build image dari build context ke container">
+        <rect x="20" y="60" width="180" height="120" rx="8" class="u-box"/>
+        <text x="110" y="88" class="u-title">Build context</text>
+        <text x="110" y="114" class="u-lbl" text-anchor="middle">folder <tspan font-family="monospace">(.)</tspan></text>
+        <text x="110" y="134" class="u-lbl" text-anchor="middle">Dockerfile</text>
+        <text x="110" y="154" class="u-lbl" text-anchor="middle">index.html</text>
+        <text x="110" y="172" class="u-lbl" text-anchor="middle">.dockerignore</text>
+        <rect x="240" y="60" width="170" height="120" rx="8" class="u-hd"/>
+        <text x="325" y="90" class="u-title">docker build</text>
+        <text x="325" y="118" class="u-lbl" text-anchor="middle">-t web:1.0 .</text>
+        <text x="325" y="142" class="u-lbl" text-anchor="middle">baca Dockerfile</text>
+        <text x="325" y="164" class="u-lbl" text-anchor="middle">1 baris = 1 layer</text>
+        <rect x="450" y="60" width="140" height="120" rx="8" class="u-box"/>
+        <text x="520" y="90" class="u-title">Image</text>
+        <text x="520" y="118" class="u-lbl" text-anchor="middle">layer 1..n</text>
+        <text x="520" y="142" class="u-lbl" text-anchor="middle">read-only</text>
+        <text x="520" y="164" class="u-lbl" text-anchor="middle">+ build cache</text>
+        <rect x="620" y="60" width="120" height="120" rx="8" class="u-hd"/>
+        <text x="680" y="90" class="u-title">Container</text>
+        <text x="680" y="118" class="u-lbl" text-anchor="middle">docker run</text>
+        <text x="680" y="142" class="u-lbl" text-anchor="middle">-p 8080:80</text>
+        <text x="680" y="164" class="u-lbl" text-anchor="middle">container up</text>
+        <line x1="204" y1="120" x2="236" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <line x1="414" y1="120" x2="446" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <line x1="594" y1="120" x2="616" y2="120" class="u-line" marker-end="url(#u-arrow)"/>
+        <text x="110" y="212" class="u-lbl" text-anchor="middle">1. kirim file</text>
+        <text x="325" y="212" class="u-lbl" text-anchor="middle">2. eksekusi instruksi</text>
+        <text x="520" y="212" class="u-lbl" text-anchor="middle">3. hasil build</text>
+        <text x="680" y="212" class="u-lbl" text-anchor="middle">4. dijalankan</text>
+      </svg></div><figcaption class="fig-cap"><b>Gambar 7.1</b> — Dari folder proyek ke container yang berjalan</figcaption></figure>`
+    },
+    {
       type: 'example',
       title: 'Build image',
       lang: 'bash',
@@ -86,6 +119,48 @@ docker run -d -p 8083:80 --name web-static web-static:1.0.0
         '<code>-t</code> / <code>--tag</code> memberi nama:tag pada image hasil build.',
         '<code>.</code> adalah <b>build context</b> (semua file di folder itu bisa diakses COPY).',
         'Docker akan membaca <code>Dockerfile</code> di direktori tersebut.'
+      ]
+    },
+    {
+      type: 'example',
+      title: 'Contoh output docker build (BuildKit)',
+      lang: 'text',
+      output: false,
+      code: `$ docker build -t web-static:1.0.0 .
+[+] Building 3.6s (10/10) FINISHED                            docker:default
+ => [internal] load build definition from Dockerfile                0.0s
+ => [internal] load .dockerignore                                   0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpine     1.1s
+ => [1/3] FROM docker.io/library/nginx:alpine@sha256:54a4...        0.5s
+ => => resolve docker.io/library/nginx:alpine@sha256:54a4...        0.0s
+ => CACHED [2/3] COPY index.html /usr/share/nginx/html/index.html   0.0s
+ => exporting to image                                              0.1s
+ => => naming to docker.io/library/web-static:1.0.0                 0.0s
+ => => writing image sha256:9f3c2ab71de4...                         0.0s`,
+      explain: [
+        '<b>Baris [internal]</b> = pekerjaan internal BuildKit: membaca <code>Dockerfile</code>, <code>.dockerignore</code>, dan metadata base image (muncul sekali saja).',
+        '<b>[1/3], [2/3], …</b> = urutan instruksi Dockerfile yang dieksekusi (setiap instruksi = 1 layer).',
+        '<b>CACHED</b> = layer diambil dari build cache karena instruksi &amp; file-nya tidak berubah — ini yang bikin build ulang hanya butuh hitungan detik.',
+        '<b>naming to docker.io/library/web-static:1.0.0</b> = hasil build sudah diberi tag, siap dipakai <code>docker run</code>.'
+      ]
+    },
+    {
+      type: 'example',
+      title: 'Membaca & mengontrol proses build',
+      lang: 'bash',
+      output: false,
+      code: `# Lihat langkah eksak tanpa animasi (mudah di-debug)
+docker build --progress=plain -t web-static:1.0.0 .
+
+# Paksa build dari nol (abaikan cache) — berguna saat cache "rusak"
+docker build --no-cache -t web-static:1.0.0 .
+
+# Tunjukkan semua opsi build
+docker build --help`,
+      explain: [
+        'Jika ada error (mis. file tidak ditemukan), <code>--progress=plain</code> menunjukkan persis langkah &amp; perintah mana yang gagal.',
+        'Urutan Dockerfile menentukan cache: ubah <code>COPY index.html</code> saja → hanya langkah setelahnya yang di-build ulang.',
+        'Build kedua pada proyek yang sama biasanya berakhir hampir seluruh <code>CACHED</code>.'
       ]
     },
     {

@@ -1,5 +1,5 @@
 /* ============================================================
-   Kuis Docker – 20 Soal Pilihan Ganda
+   Kuis Docker – 23 Soal Pilihan Ganda
    ============================================================ */
 'use strict';
 
@@ -25,5 +25,8 @@ window.DOCKER_QUIZ_POOL.push(
   { q: 'Kapan pakai `bind mount` (vs named volume)?', a: 0, choices: ['Saat development (sync kode host<->container)', 'Untuk menyimpan DB production', 'Untuk backup otomatis', 'Hindari selalu'], expl: 'Bind mount cocok dev (real-time sync). Production umumnya named volume.' },
   { q: 'Apa arti `EXPOSE 3000` di Dockerfile?', a: 2, choices: ['Langsung publish port 3000', 'Wajib diisi', 'Hanya dokumentasi, tidak otomatis membuka port ke host', 'Mengganti CMD'], expl: 'EXPOSE tidak mem-publish ke host, cuma info. Butuh `-p` saat run.' },
   { q: 'Mana yang BENAR soal layer Image?', a: 1, choices: ['Layer bisa diubah', 'Setiap instruksi Dockerfile umumnya buat layer read-only baru', 'Container & image share writable layer', 'Layer hilang saat build'], expl: 'Dockerfile instruction → read-only layer. Cache berbasis layer.' },
-  { q: 'Tujuan `WORKDIR /app` di Dockerfile?', a: 0, choices: ['Set working directory default untuk RUN/CMD/COPY', 'Hapus file di /app', 'Buat volume', 'Expose port'], expl: 'Menyederhanakan path & konsisten untuk instruksi selanjutnya.' }
+  { q: 'Tujuan `WORKDIR /app` di Dockerfile?', a: 0, choices: ['Set working directory default untuk RUN/CMD/COPY', 'Hapus file di /app', 'Buat volume', 'Expose port'], expl: 'Menyederhanakan path & konsisten untuk instruksi selanjutnya.' },
+  { q: 'Apa arti tulisan `CACHED` pada output `docker build`?', a: 0, choices: ['Layer diambil dari build cache, tidak di-build ulang', 'Build sedang gagal', 'Image sedang di-pull dari registry', 'Container sedang berjalan'], expl: 'Build cache memakai ulang layer lama selama instruksi & file yang terlibat tidak berubah.' },
+  { q: 'Kamu hanya mengubah `src/server.js` lalu menjalankan `docker build` lagi. Apa yang terjadi?', a: 1, choices: ['Semua langkah di-build ulang dari nol', 'Hanya langkah setelah `COPY . .` yang berubah; `RUN npm ci` tetap cache', 'Build gagal karena file berubah', 'Docker menolak build dengan tag yang sama'], expl: 'Karena `package*.json` tidak berubah, instalasi dependensi tetap memakai cache — build ulang jauh lebih cepat.' },
+  { q: 'Build gagal dengan pesan `npm ci can only install with an existing package-lock.json`. Solusinya?', a: 1, choices: ['Ganti base image', 'Jalankan `npm install` di lokal dulu agar lock file terbentuk', 'Tambahkan `-p 3000:3000`', 'Hapus folder `src/`'], expl: '`npm ci` membutuhkan `package-lock.json`; lock file dibuat oleh `npm install`.' }
 );
