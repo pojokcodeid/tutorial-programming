@@ -171,24 +171,26 @@ not            !         menyangkal kondisi`,
       output: false,
       code: `<cfscript>
 // for klasik: awal, kondisi, penambahan
-for (var i = 1; i <= 5; i++) {
+// (di top-level skrip tidak ada var — hanya di dalam fungsi)
+for (i = 1; i <= 5; i++) {
     writeOutput("Baris ke-" & i & "<br>");
 }
 // while: berhenti begitu kondisi tidak terpenuhi
-var sisaCicilan = 175000;
+sisaCicilan = 175000;
 while (sisaCicilan > 0) {
     sisaCicilan = sisaCicilan - 50000;
 }
 // for...in: array memberi nilai, struct memberi kuncinya
-var produk = ["Kopi", "Teh", "Susu"];
-for (var p in produk) { writeOutput(p & "<br>"); }
-var ongkir = { "Jakarta": 5000, "Bandung": 8000 };
-for (var kota in ongkir) { writeOutput(kota & ": " & ongkir[kota] & "<br>"); }
+produk = ["Kopi", "Teh", "Susu"];
+for (p in produk) { writeOutput(p & "<br>"); }
+ongkir = { "Jakarta": 5000, "Bandung": 8000 };
+for (kota in ongkir) { writeOutput(kota & ": " & ongkir[kota] & "<br>"); }
 </cfscript>`,
       explain: [
-        '<code>for (var i = 1; i &lt;= 5; i++)</code> menghasilkan 1 sampai 5, sama dengan cfloop di contoh sebelumnya.',
+        '<code>for (i = 1; i &lt;= 5; i++)</code> menghasilkan 1 sampai 5, sama dengan cfloop di contoh sebelumnya.',
         'Di dalam while, pastikan <code>sisaCicilan</code> benar-benar berkurang tiap iterasi.',
-        '<code>for...in</code> di atas array memberi <b>nilai</b> tiap elemen; di atas struct memberi <b>kuncinya</b>.'
+        '<code>for...in</code> di atas array memberi <b>nilai</b> tiap elemen; di atas struct memberi <b>kuncinya</b>.',
+        'Variabel di top-level cfscript ditulis tanpa <code>var</code>; kata kunci itu hanya sah di dalam fungsi.'
       ]
     },
     {

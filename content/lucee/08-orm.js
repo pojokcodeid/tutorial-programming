@@ -104,12 +104,12 @@ window.LUCEE_LESSONS.push({
 <cfset ormFlush()>
 
 <!--- Baca satu entitas berdasarkan primary key --->
-<cfset produk = entityLoad("Produk", 101)>
+<cfset produk = entityLoadByPK("Produk", 101)>
 <cfoutput>#produk.nama# - Rp #produk.harga#</cfoutput>`,
         explain: [
           "<code>entityNew(\"Produk\")</code> membuat instance kosong dari entity bernama <code>Produk</code>.",
           "<code>entitySave</code> menandai objek untuk disimpan, <code>ormFlush</code> memastikan perubahan ditulis ke database.",
-          "<code>entityLoad(\"Produk\", 101)</code> mengambil satu entitas dengan primary key 101.",
+          "<code>entityLoadByPK(\"Produk\", 101)</code> mengambil satu entitas dari primary key 101; <code>entityLoad(\"Produk\", 101)</code> tanpa argumen unik justru mengembalikan array berisi satu entitas.",
           "Setelah flush, properti <code>id</code> terisi nilai kunci yang dihasilkan database."
         ]
       },
@@ -144,8 +144,8 @@ window.LUCEE_LESSONS.push({
         title: "HQL: Query Objek dengan Sintaks SQL",
         lang: "cfml",
         output: false,
-        code: `<!--- HQL memakai NAMA ENTITY dan ATRIBUT, bukan tabel dan kolom --->
-<cfquery name="laris" dbtype="hql">
+        code: `<!--- returntype="query" membuat hasil berupa objek query, bukan array entity --->
+<cfquery name="laris" dbtype="hql" returntype="query">
     SELECT p
     FROM Produk p
     WHERE p.stok > 0
@@ -156,7 +156,7 @@ window.LUCEE_LESSONS.push({
         explain: [
           "<code>dbtype=\"hql\"</code> memberi tahu Lucee bahwa ini Hibernate Query Language, bukan SQL mentah.",
           "FROM memakai nama entity (<code>Produk</code>) dan atributnya (<code>p.stok</code>), bukan tabel dan kolom.",
-          "Hasilnya tetap objek query sehingga bisa dipakai <code>cfoutput query</code> seperti biasa.",
+          "Hasil HQL berupa array entity; dengan <code>returntype=\"query\"</code> hasilnya diubah menjadi objek query sehingga bisa dipakai <code>cfoutput query</code> seperti biasa.",
           "HQL berguna saat filter kompleks lebih nyaman ditulis sebagai query daripada struct kriteria."
         ]
       },
@@ -169,9 +169,13 @@ window.LUCEE_LESSONS.push({
         title: "Relasi One-to-Many dan Many-to-Many",
         lang: "cfml",
         output: false,
-        code: `<!--- Satu kategori, banyak produk (one-to-many) --->
+        code: `<!--- Di entity Kategori: satu kategori, banyak produk --->
 <cfproperty name="produkList" fieldtype="one-to-many"
             cfc="Produk" fkcolumn="kategori_id" type="array" />
+
+<!--- Di entity Produk: sisi balik relasinya, memakai kolom kategori_id --->
+<cfproperty name="kategori" fieldtype="many-to-one"
+            cfc="Kategori" column="kategori_id" fkcolumn="id" />
 
 <!--- Banyak ke banyak lewat tabel penghubung --->
 <cfproperty name="tags" fieldtype="many-to-many"
@@ -179,7 +183,8 @@ window.LUCEE_LESSONS.push({
             fkcolumn="produk_id" inversejoincolumn="tag_id" />`,
         explain: [
           "<code>fieldtype=\"one-to-many\"</code> menghubungkan satu induk ke banyak anak melalui <code>fkcolumn</code>.",
-          "<code>type=\"array\"</code> membuat relasi direpresentasikan sebagai array objek anak.",
+          "<code>type=\"array\"</code> membuat relasi berupa array objek anak; sisi baliknya memakai <code>many-to-one</code> pada kolom yang sama.",
+          "Relasi ini memakai kolom <code>kategori_id</code>, jadi tabel produk perlu kolom itu — property <code>kategori</code> bertipe varchar di pelajaran sebelumnya diganti bila sudah berelasi.",
           "<code>many-to-many</code> membutuhkan <code>linktable</code> serta dua kolom: <code>fkcolumn</code> dan <code>inversejoincolumn</code>.",
           "Setelah relasi didefinisikan, akses seperti <code>kategori.produkList</code> tanpa menulis JOIN manual."
         ]

@@ -125,7 +125,7 @@ box cfconfig set templateCacheSize=500 to=toko
 
 # Nilai tertentu bisa ditimpa lewat environment variable saat runtime
 export cfconfig_adminPassword="ganti-dengan-secret"
-box server start name=toko cfengine=lucee@6.2.x port=8080`,
+box server start name=toko cfengine=lucee@7.0.5 port=8080`,
       explain: [
         '<code>to=toko</code> menunjuk nama server CommandBox yang pengaturannya mau diubah.',
         'Override env var memakai pola <code>cfconfig_&lt;namaPengaturan&gt;</code> — nilainya menimpa isi berkas JSON.',
@@ -146,8 +146,8 @@ box server start name=toko cfengine=lucee@6.2.x port=8080`,
       lang: 'cfml',
       output: false,
       code: `// 1) Cache aplikasi: hasil layanan disimpan 10 menit di cache engine aktif
-var cacheKey = "kategori:populer";
-var data = cacheGet( cacheKey );
+cacheKey = "kategori:populer";
+data = cacheGet( cacheKey );
 if ( !isStruct( data ) ) {                 // miss → hitung ulang lalu simpan
   data = kategoriService.ambilSemua();
   cachePut( cacheKey, data, createTimeSpan( 0, 0, 10, 0 ) );

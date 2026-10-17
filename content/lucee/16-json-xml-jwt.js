@@ -33,18 +33,18 @@ window.LUCEE_LESSONS.push({
       lang: 'cfml',
       output: false,
       code: `// Struct toko online → JSON (siap dikirim ke klien)
-var produk = { id: 1024, nama: "Kopi Gayo", harga: 95000, stok: 12 };
-var json   = serializeJson( produk );
+produk = { id: 1024, nama: "Kopi Gayo", harga: 95000, stok: 12 };
+json   = serializeJson( produk );
 // {"id":1024,"nama":"Kopi Gayo","harga":95000,"stok":12}
 // Balasan API → CFML, tapi validasi dulu sebelum diparse
-var mentah = '{"id":1024,"nama":"Kopi Gayo"}';
+mentah = '{"id":1024,"nama":"Kopi Gayo"}';
 if ( isJSON( mentah ) ) {
-  var data = deserializeJson( mentah );
+  data = deserializeJson( mentah );
   writeOutput( data.nama );   // Kopi Gayo
 }
 // Query pun bisa diserialkan untuk endpoint daftar produk
-var daftar = queryExecute( "SELECT id, nama, harga FROM produk", {}, { datasource: "appDB" } );
-var semua = serializeJson( daftar );`,
+daftar = queryExecute( "SELECT id, nama, harga FROM produk", {}, { datasource: "appDB" } );
+semua = serializeJson( daftar );`,
       explain: [
         'Struct CFML menjadi objek JSON, array CFML menjadi array JSON.',
         '<code>isJSON()</code> mengembalikan true hanya untuk teks yang benar-benar JSON valid — pakai sebagai gerbang sebelum parse.',
@@ -61,16 +61,16 @@ var semua = serializeJson( daftar );`,
       lang: 'cfml',
       output: false,
       code: `// Jebakan 1: array berlubang bisa keluar sebagai objek
-var belanja = [];
+belanja = [];
 belanja[ 1 ] = "kopi";
 belanja[ 5 ] = "gula";            // indeks 2 sampai 4 kosong
 writeOutput( serializeJson( belanja ) );
 // sering berakhir sebagai objek {"1":"kopi","5":"gula"}
 // Jebakan 2: objek berkunci angka dibaca kembali sebagai struct
-var dariApi = deserializeJson( '{"1024":"Kopi Gayo","1025":"Teh Melati"}' );
+dariApi = deserializeJson( '{"1024":"Kopi Gayo","1025":"Teh Melati"}' );
 writeOutput( isArray( dariApi ) );   // false — ini struct
 // Cara aman: bangun array rapat & berurutan, lalu periksa hasil parse
-var aman = [];
+aman = [];
 arrayAppend( aman, "kopi" );
 arrayAppend( aman, "gula" );
 writeOutput( isArray( aman ) );      // true`,
@@ -95,12 +95,12 @@ writeOutput( isArray( aman ) );      // true`,
       lang: 'cfml',
       output: false,
       code: `// Ulasan berisi payload XSS yang dicoba menanam gambar berbahaya
-var ulasan = "<img src=x onerror=alert(document.cookie)>";
+ulasan = "<img src=x onerror=alert(document.cookie)>";
 // 1. Sebagai isi elemen HTML
 writeOutput( "<p class=\\"ulasan\\">" & encodeForHTML( ulasan ) & "</p>" );
 // seluruh tag di-escape menjadi teks — browser tidak mengeksekusinya
 // 2. Sebagai nilai atribut HTML
-var judul = '" onmouseover="alert(1)';
+judul = '" onmouseover="alert(1)';
 writeOutput( '<img src="/img/kopi.jpg" alt="' & encodeForHTMLAttribute( judul ) & '">' );
 // tanda kutip di-escape, atribut tidak bisa "ditutup" oleh penyerang`,
       explain: [
@@ -134,7 +134,7 @@ writeOutput( '<img src="/img/kopi.jpg" alt="' & encodeForHTMLAttribute( judul ) 
       title: 'Mengubah XML jadi HTML dengan XSLT',
       lang: 'cfml',
       output: false,
-      code: `var xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+      code: `xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match="/">
     <ul>
       <xsl:for-each select="//item">
@@ -143,7 +143,7 @@ writeOutput( '<img src="/img/kopi.jpg" alt="' & encodeForHTMLAttribute( judul ) 
     </ul>
   </xsl:template>
 </xsl:stylesheet>';
-var doc = xmlParse( resp.fileContent );
+doc = xmlParse( resp.fileContent );
 writeOutput( xmlTransform( doc, xsl ) );   // menghasilkan teks HTML`,
       explain: [
         '<code>xmlTransform( xml, xsl )</code> mengembalikan string hasil transformasi, siap dicetak.',
@@ -192,7 +192,7 @@ writeOutput( xmlTransform( doc, xsl ) );   // menghasilkan teks HTML`,
     },
     {
       type: 'text',
-      html: `<h3>Autentikasi Berbasis Token (JWT)</h3><p><b>JWT</b> (JSON Web Token) adalah string tiga bagian yang dipisahkan titik: <code>header.payload.signature</code>. Bagian payload berisi <b>klaim</b> (data) seperti pemilik token, peran, dan waktu kedaluwarsa; bagian terakhir adalah tanda tangan kriptografis yang membuat payload tidak bisa diubah pihak lain. Di Lucee kamu bisa memakai module CFML JWT (misalnya <b>cfjwt</b>) atau pustaka Java populer <b>JJWT</b> (io.jsonwebtoken) lewat <code>createObject("java", …)</code>.</p><figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 170" width="760" role="img" aria-label="Struktur JWT: header, payload, dan signature">
+      html: `<h3>Autentikasi Berbasis Token (JWT)</h3><p><b>JWT</b> (JSON Web Token) adalah string tiga bagian yang dipisahkan titik: <code>header.payload.signature</code>. Bagian payload berisi <b>klaim</b> (data) seperti pemilik token, peran, dan waktu kedaluwarsa; bagian terakhir adalah tanda tangan kriptografis yang membuat payload tidak bisa diubah pihak lain. Di Lucee kamu bisa memakai pustaka CFML JWT (misalnya <b>jwt-cfml</b> dari ForgeBox) atau pustaka Java populer <b>JJWT</b> (io.jsonwebtoken) lewat <code>createObject("java", …)</code>.</p><figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 170" width="760" role="img" aria-label="Struktur JWT: header, payload, dan signature">
         <rect x="40" y="40" width="200" height="60" rx="8" class="u-box"/>
         <text x="140" y="65" class="u-title" text-anchor="middle">Header</text>
         <text x="140" y="86" class="u-lbl" text-anchor="middle">alg: HS256 · typ: JWT</text>
@@ -213,17 +213,17 @@ writeOutput( xmlTransform( doc, xsl ) );   // menghasilkan teks HTML`,
       lang: 'cfml',
       output: false,
       code: `// Secret diambil dari environment variable — TIDAK ditulis di kode
-var secret = createObject( "java", "java.lang.System" ).getenv( "JWT_SECRET" );
+secret = createObject( "java", "java.lang.System" ).getenv( "JWT_SECRET" );
 if ( len( secret ) < 32 ) {
   throw( message = "JWT_SECRET belum di-set atau terlalu pendek" );
 }
 // Kunci HMAC dari secret (pustaka Java: io.jsonwebtoken / JJWT)
-var kunci = createObject( "java", "io.jsonwebtoken.security.Keys" )
+kunci = createObject( "java", "io.jsonwebtoken.security.Keys" )
   .hmacShaKeyFor( secret.getBytes( "UTF-8" ) );
-var sekarang    = createObject( "java", "java.util.Date" ).init();
-var kedaluwarsa = createObject( "java", "java.util.Date" )
+sekarang    = createObject( "java", "java.util.Date" ).init();
+kedaluwarsa = createObject( "java", "java.util.Date" )
   .init( javaCast( "long", sekarang.getTime() + 15 * 60 * 1000 ) );   // +15 menit
-var token = createObject( "java", "io.jsonwebtoken.Jwts" )
+token = createObject( "java", "io.jsonwebtoken.Jwts" )
   .builder()
   .subject( toString( user.id ) )
   .claim( "role", user.role )
@@ -235,7 +235,7 @@ var token = createObject( "java", "io.jsonwebtoken.Jwts" )
         'Secret dibaca dari environment variable <code>JWT_SECRET</code> — kode tetap bisa dibuka publik tanpa membocorkan kunci.',
         '<code>Keys.hmacShaKeyFor()</code> mengubah secret mentah menjadi kunci HMAC siap pakai.',
         '<code>exp</code> dibuat pendek (15 menit) agar jendela penyalahgunaan token sempit.',
-        'Contoh memakai JJWT 0.12; alternatifnya gunakan module cfjwt yang API-nya murni CFML.'
+        'Contoh memakai JJWT 0.12; alternatifnya gunakan pustaka jwt-cfml (box install jwt-cfml) yang API-nya murni CFML.'
       ]
     },
     {
@@ -282,19 +282,22 @@ var token = createObject( "java", "io.jsonwebtoken.Jwts" )
       title: 'Hash password dengan bcrypt (jangan pernah plaintext)',
       lang: 'cfml',
       output: false,
-      code: `// Pustaka jBCrypt (org.mindrot) dipakai lewat createObject Java
-var bcrypt = createObject( "java", "org.mindrot.jbcrypt.BCrypt" );
+      code: `// Pustaka jBCrypt (org.mindrot) dipakai lewat createObject Java.
+// Syarat: JAR jBCrypt sudah dimuat lewat this.javaSettings di Application.cfc,
+// misalnya: this.javaSettings = { loadPaths: [ expandPath( '/lib/jbcrypt-0.4.jar' ) ] };
+bcrypt = createObject( "java", "org.mindrot.jbcrypt.BCrypt" );
 // Saat registrasi: simpan HASH-nya saja, bukan password mentah
-var hash = bcrypt.hashpw( form.password, bcrypt.gensalt() );   // gensalt = garam acak
+hash = bcrypt.hashpw( form.password, bcrypt.gensalt() );   // gensalt = garam acak
 queryExecute( "INSERT INTO pengguna ( email, password_hash ) VALUES ( ?, ? )",
   [ form.email, hash ], { datasource: "appDB" } );
 // Saat login: bandingkan password mentah dengan hash tersimpan
-var user = penggunaService.cariByEmail( form.email );
+user = penggunaService.cariByEmail( form.email );
 if ( isStruct( user ) && bcrypt.checkpw( form.password, user.password_hash ) ) {
-  var token = terbitkanToken( user );      // lanjut ke alur JWT di atas
+  token = terbitkanToken( user );           // lanjut ke alur JWT di atas
 }`,
       explain: [
         '<code>gensalt()</code> menambahkan garam acak, sehingga dua password sama menghasilkan hash berbeda.',
+        'Kelas Java yang dipakai harus sudah ada di classpath; muat JAR-nya lewat <code>this.javaSettings</code> (atau ekstensi) sebelum <code>createObject("java", …)</code>.',
         '<code>checkpw()</code> menghitung ulang hash dari password masuk lalu membandingkannya.',
         'Password mentah tidak pernah disimpan, tidak pernah di-log, dan tidak pernah dikirim balik ke klien.'
       ]

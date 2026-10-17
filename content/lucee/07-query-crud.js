@@ -70,7 +70,7 @@ for (row in qProduk) {
         <line x1="385" y1="56" x2="401" y2="56" class="u-line" marker-end="url(#mk-l07-1)"/>
         <rect x="405" y="28" width="190" height="56" rx="8" class="u-box"/>
         <text x="500" y="50" class="u-title" text-anchor="middle">SQL yang dieksekusi</text>
-        <text x="500" y="70" class="u-lbl" text-anchor="middle">WHERE nama = ' OR '1'='1</text>
+        <text x="500" y="70" class="u-lbl" text-anchor="middle">WHERE nama = 'Kopi' OR '1'='1'</text>
         <line x1="595" y1="56" x2="606" y2="56" class="u-line" marker-end="url(#mk-l07-1)"/>
         <rect x="610" y="28" width="135" height="56" rx="8" class="u-hd"/>
         <text x="677" y="50" class="u-title" text-anchor="middle">Hasil</text>
@@ -115,7 +115,7 @@ q = queryExecute(
 //      WHERE nama = <cfqueryparam value="#form.nama#" cfsqltype="cf_sql_varchar">
 // </cfquery>`,
       explain: [
-        'Versi pertama menghasilkan SQL menjadi <code>WHERE nama = \' OR \'1\'=\'1</code> — syarat tidak berlaku dan semua baris terbaca.',
+        'Versi pertama menghasilkan SQL menjadi <code>WHERE nama = \'Kopi\' OR \'1\'=\'1\'</code> — syarat tidak berlaku dan semua baris terbaca.',
         'Kunci parameter berisi <code>value</code> (nilai) dan <code>cfsqltype</code> (tipe SQL) sehingga database menyiapkan tipe kolom yang tepat.',
         'Gaya tag memakai <code>&lt;cfqueryparam&gt;</code> pada posisi nilai; hasil dan keamanannya identik.',
         'Selain keamanan, parameter juga membuat database bisa memakai prepared statement yang query plan-nya dipakai ulang.'

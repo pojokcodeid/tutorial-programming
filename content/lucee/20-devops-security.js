@@ -25,7 +25,7 @@ window.LUCEE_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Deployment Docker dengan CommandBox</h3><p>CommandBox menyediakan <b>image resmi</b> di Docker Hub: <code>ortussolutions/commandbox</code>. Kamu tidak perlu memasang Java atau CFML apa pun di server — cukup menentukan engine lewat environment variable <code>CFENGINE</code> (misalnya <code>lucee@6.2.1.1</code>), menyalin kode ke webroot container, dan menjalankannya. Hasilnya: lingkungan produksi yang identik dengan pengembangan, dibangun ulang kapan saja lewat skrip.</p>'
+      html: '<h3>Deployment Docker dengan CommandBox</h3><p>CommandBox menyediakan <b>image resmi</b> di Docker Hub: <code>ortussolutions/commandbox</code>. Kamu tidak perlu memasang Java atau CFML apa pun di server — cukup menentukan engine lewat environment variable <code>CFENGINE</code> (misalnya <code>lucee@7.0.5</code>), menyalin kode ke webroot container, dan menjalankannya. Hasilnya: lingkungan produksi yang identik dengan pengembangan, dibangun ulang kapan saja lewat skrip.</p>'
     },
     {
       type: 'text',
@@ -57,7 +57,7 @@ window.LUCEE_LESSONS.push({
         <line x1="230" y1="175" x2="276" y2="175" class="u-line" marker-end="url(#mk-l20-1)"/>
         <rect x="280" y="145" width="230" height="60" rx="8" class="u-hd"/>
         <text x="395" y="170" class="u-title" text-anchor="middle">Container CommandBox</text>
-        <text x="395" y="190" class="u-lbl" text-anchor="middle">CFENGINE=lucee@6.x</text>
+        <text x="395" y="190" class="u-lbl" text-anchor="middle">CFENGINE=lucee@7.x</text>
         <line x1="510" y1="175" x2="556" y2="175" class="u-line" marker-end="url(#mk-l20-1)"/>
         <rect x="560" y="145" width="160" height="60" rx="8" class="u-box"/>
         <text x="640" y="170" class="u-title" text-anchor="middle">MariaDB</text>
@@ -75,22 +75,21 @@ window.LUCEE_LESSONS.push({
 FROM ortussolutions/commandbox:latest
 
 # Engine CFML & port ditentukan lewat environment
-ENV CFENGINE=lucee@6.2.1.1
+ENV CFENGINE=lucee@7.0.5
 ENV PORT=8080
 
-# Salin aplikasi ke webroot container
-COPY ./src /www
+# Salin aplikasi ke webroot container (APP_DIR resmi image: /srv/app)
+COPY ./src /srv/app
 
 EXPOSE 8080
 
 # Container dianggap sehat bila endpoint ini menjawab 200
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -sf http://localhost:8080/healthcheck.cfm || exit 1
-
-CMD ["run"]`,
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -sf http://localhost:8080/healthcheck.cfm || exit 1`,
       explain: [
         '<code>ortussolutions/commandbox</code> adalah image resmi; kamu hanya menambah kode aplikasi di atasnya.',
-        '<code>CFENGINE</code> memilih mesin CFML beserta versinya — ganti nilai ini untuk menguji Lucee 7 tanpa membangun ulang Dockerfile.',
+        '<code>CFENGINE</code> memilih mesin CFML beserta versinya — ganti ke <code>lucee@6.2.x</code> bila perlu menguji aplikasi lama di Lucee 6 tanpa membangun ulang Dockerfile.',
         '<code>HEALTHCHECK</code> memberi tahu Docker/Docker Compose kapan container layak menerima trafik.',
+        'Biarkan <code>CMD</code> bawaan image — skrip startup CommandBox yang menyalakan server; menggantinya membuat container gagal berjalan.',
         'Tidak ada satu pun kredensial di berkas ini — password database masuk sebagai environment variable saat runtime.'
       ]
     },
@@ -105,11 +104,11 @@ CMD ["run"]`,
     ports:
       - "8080:8080"
     environment:
-      - CFENGINE=lucee@6.2.1.1
+      - CFENGINE=lucee@7.0.5
       - DB_PASSWORD          # nilai diambil dari berkas .env / environment mesin
     volumes:
-      - ./src:/www
-      - box-home:/root/.CommandBox
+      - ./src:/srv/app
+      - box-home:/opt/commandbox
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8080/healthcheck.cfm"]
       interval: 30s
@@ -126,8 +125,8 @@ volumes:
   db-data:`,
       explain: [
         'Entri environment tanpa tanda "=" mewarisi nilai dari mesin/host — pola standar untuk rahasia di Docker Compose.',
-        'Volume <code>box-home</code> menyimpan konfigurasi CommandBox agar tetap hidup saat container diganti; <code>db-data</code> menjaga data database.',
-        'Bind mount <code>./src:/www</code> memudahkan pengembangan; di produksi, lebih baik kode ikut ter-bake di image.',
+        'Volume <code>box-home</code> dipetakan ke <code>COMMANDBOX_HOME</code> (/opt/commandbox) agar konfigurasi CommandBox tetap hidup saat container diganti; <code>db-data</code> menjaga data database.',
+        'Bind mount <code>./src:/srv/app</code> memudahkan pengembangan; di produksi, lebih baik kode ikut ter-bake di image.',
         'Database sengaja dipisah sebagai service sendiri sehingga bisa diskalakan atau diganti terpisah.'
       ]
     },
@@ -138,7 +137,7 @@ volumes:
     },
     {
       type: 'text',
-      html: '<h3>Integrasi Web Server: Nginx, IIS &amp; Apache</h3><p>Memisahkan web server dari app server bukan gaya — ada manfaat nyata: Nginx melayani file statis (gambar produk, CSS) jauh lebih hemat, menangani TLS, membatasi laju request, dan menyerap lonjakan trafik lewat buffering sementara Lucee fokus memproses CFML. Untuk server <b>Windows/IIS</b> atau <b>Apache</b>, koneksi ke Lucee memakai <b>BonCode AJP Connector</b> (protokol ringan khusus aplikasi Java) — di Apache, pasang juga <b>mod_cfml</b> supaya request ber-ekstensi .cfm/.cfc dikenali dan diteruskan otomatis.</p>'
+      html: '<h3>Integrasi Web Server: Nginx, IIS &amp; Apache</h3><p>Memisahkan web server dari app server bukan gaya — ada manfaat nyata: Nginx melayani file statis (gambar produk, CSS) jauh lebih hemat, menangani TLS, membatasi laju request, dan menyerap lonjakan trafik lewat buffering sementara Lucee fokus memproses CFML. Untuk server <b>Windows/IIS</b> atau <b>Apache</b>, koneksi ke Lucee memakai <b>BonCode AJP Connector</b> (protokol ringan khusus aplikasi Java) — di Apache, pasang juga <b>mod_cfml</b> supaya tiap folder baru otomatis mendapat mapping virtual directory di sisi Lucee, tanpa perlu dibuat manual satu per satu.</p>'
     },
     {
       type: 'example',
@@ -255,10 +254,10 @@ box server restart name=toko`,
     {
       type: 'vocab',
       items: [
-        ['CFENGINE', 'Environment variable CommandBox yang menentukan mesin CFML &amp; versinya (mis. lucee@6.2.1.1).'],
+        ['CFENGINE', 'Environment variable CommandBox yang menentukan mesin CFML &amp; versinya (mis. lucee@7.0.5).'],
         ['Reverse proxy', 'Server (Nginx) yang meneruskan request ke aplikasi di belakangnya; tempat TLS &amp; rate limit.'],
         ['AJP', 'Apache JServ Protocol — protokol ringan antara web server (IIS/Apache) dan aplikasi JVM.'],
-        ['BonCode AJP', 'Connector yang menghubungkan IIS/Apache ke Lucee/Tomcat lewat AJP; di Apache didampingi mod_cfml.'],
+        ['BonCode AJP', 'Connector yang menghubungkan IIS/Apache ke Lucee/Tomcat lewat AJP; di Apache didampingi mod_cfml yang membuat mapping folder otomatis di sisi CFML server.'],
         ['CSP', 'Content Security Policy — header yang membatasi sumber skrip/gaya yang boleh dimuat halaman.'],
         ['Heap dump', 'Snapshot isi memori JVM saat kehabisan memori; bahan utama analisis memory leak.'],
         ['G1GC', 'Garbage collector Java yang menyeimbangkan throughput dan jeda; direkomendasikan untuk server.']

@@ -97,13 +97,14 @@ window.LUCEE_LESSONS.push({
       lang: 'bash',
       output: false,
       code: `# Sekali di awal proyek: pasang TestBox + CLI tools-nya
-box install testbox
+box install testbox testbox-cli
 
 # Jalankan seluruh suite dari terminal (exit code 1 bila ada test gagal)
 box testbox run
 
 # Saring hanya folder tertentu, misalnya saat mengembangkan satu fitur
-box testbox run directory=tests/specs/unit
+# (pakai dot notation, bukan garis miring)
+box testbox run directory=tests.specs.unit
 
 # Di browser: buka runner bawaan TestBox, misalnya
 # http://localhost:8080/tests/runner.cfm`,

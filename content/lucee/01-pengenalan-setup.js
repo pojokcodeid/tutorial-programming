@@ -75,7 +75,7 @@ box server stop                     # matikan server
 
 # opsi yang sering dipakai
 box server start port=8080          # ganti port
-box server start cfengine=lucee@6.2.x   # kunci versi Lucee
+box server start cfengine=lucee@7.0.5   # kunci versi Lucee
 box install commandbox-dotenv       # baca konfigurasi dari file .env`,
       explain: [
         'CommandBox membaca <code>.box.json</code> di folder kerja untuk tahu engine CFML yang dipakai.',

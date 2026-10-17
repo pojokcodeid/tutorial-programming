@@ -36,7 +36,7 @@ window.LUCEE_LESSONS.push({
       code: `<cffunction name="formatRupiah" access="public" returntype="string">
     <cfargument name="nilai" type="numeric" required="true">
 
-    <cfset var hasil = "Rp " & numberFormat(arguments.nilai, ",,.")>
+    <cfset var hasil = "Rp " & lsNumberFormat(arguments.nilai, ",", "id_ID")>
     <cfreturn hasil>
 </cffunction>
 
@@ -45,6 +45,7 @@ window.LUCEE_LESSONS.push({
         "<code>cffunction</code> mendefinisikan fungsi bernama <code>formatRupiah</code> dengan akses publik.",
         "<code>cfargument</code> mendeklarasikan parameter <code>nilai</code> bertipe numeric dan wajib diisi (required).",
         "<code>var hasil</code> membuat variabel lokal yang hanya hidup selama fungsi berjalan.",
+        "<code>lsNumberFormat(nilai, \",\", \"id_ID\")</code> memakai pemisah ribuan koma dan desimal titik sesuai locale Indonesia.",
         "<code>cfreturn</code> mengirimkan nilai kembali ke pemanggil; tanpanya fungsi mengembalikan void."
       ]
     },
@@ -54,7 +55,7 @@ window.LUCEE_LESSONS.push({
       lang: "cfml",
       output: false,
       code: `function formatRupiah(numeric nilai) {
-    return "Rp " & numberFormat(nilai, ",,.");
+    return "Rp " & lsNumberFormat(nilai, ",", "id_ID");
 }
 
 function hitungOngkir(numeric berat, string kota) {
@@ -70,7 +71,7 @@ writeOutput(formatRupiah(250000));`,
         "Sintaks script menulis tipe data langsung di depan nama parameter: <code>numeric nilai</code>.",
         "<code>var tarif</code> mendeklarasikan variabel lokal; tanpa <code>var</code>, variabel menjadi bagian dari <code>variables</code> scope.",
         "Nilai kembalian ditulis dengan kata kunci <code>return</code>, ekuivalen dengan <code>cfreturn</code>.",
-        "Fungsi bisa dipanggil tanpa tanda kurung argumen bila semua parameter punya nilai default atau bersifat opsional."
+        "Fungsi selalu dipanggil dengan tanda kurung — fungsi tanpa argumen pun ditulis <code>h()</code>, bukan sekadar <code>h</code>."
       ]
     },
     {
@@ -102,7 +103,7 @@ writeOutput(tambahPajak(100000, 0.05)); // 105000, pajak ditimpa`,
         <defs><marker id="mk-l09-1" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/></marker></defs>
         <rect class="u-box" x="20" y="56" width="170" height="70" rx="8"/><text class="u-hd" x="105" y="42" text-anchor="middle">Pemanggil</text><text class="u-title" x="105" y="84" text-anchor="middle">formatRupiah(</text><text class="u-sub" x="105" y="106" text-anchor="middle">250000)</text>
         <rect class="u-box" x="220" y="56" width="180" height="70" rx="8"/><text class="u-hd" x="310" y="42" text-anchor="middle">Argumen</text><text class="u-title" x="310" y="84" text-anchor="middle">nilai = 250000</text><text class="u-sub" x="310" y="106" text-anchor="middle">tipe numeric, required</text>
-        <rect class="u-box" x="430" y="56" width="150" height="70" rx="8"/><text class="u-hd" x="505" y="42" text-anchor="middle">Isi Fungsi</text><text class="u-title" x="505" y="84" text-anchor="middle">numberFormat()</text><text class="u-sub" x="505" y="106" text-anchor="middle">var hasil = ...</text>
+        <rect class="u-box" x="430" y="56" width="150" height="70" rx="8"/><text class="u-hd" x="505" y="42" text-anchor="middle">Isi Fungsi</text><text class="u-title" x="505" y="84" text-anchor="middle">lsNumberFormat()</text><text class="u-sub" x="505" y="106" text-anchor="middle">var hasil = ...</text>
         <rect class="u-box" x="610" y="56" width="130" height="70" rx="8"/><text class="u-hd" x="675" y="42" text-anchor="middle">cfreturn</text><text class="u-title" x="675" y="84" text-anchor="middle">Rp 250.000</text><text class="u-sub" x="675" y="106" text-anchor="middle">returntype string</text>
         <line class="u-line" x1="190" y1="91" x2="214" y2="91" marker-end="url(#mk-l09-1)"/>
         <line class="u-line" x1="400" y1="91" x2="424" y2="91" marker-end="url(#mk-l09-1)"/>
@@ -138,7 +139,7 @@ writeOutput(tambahPajak(100000, 0.05)); // 105000, pajak ditimpa`,
     };
 }
 
-var hasil = ringkasanProduk(produkList);
+hasil = ringkasanProduk(produkList);
 writeDump(hasil);`,
       explain: [
         "<code>returntype=\"struct\"</code> (atau <code>any</code> bila isinya campuran) memungkinkan fungsi mengirim banyak nilai sekaligus.",
@@ -171,27 +172,30 @@ writeDump(hasil);`,
       lang: "cfml",
       output: false,
       code: `// Fungsi anonim langsung disimpan dalam variabel
-var formatLabel = function(numeric h) {
-    return "Rp " & numberFormat(h, ",,.");
+// (di top-level skrip tidak ada kata kunci var — variabel otomatis variables scope)
+formatLabel = function(numeric h) {
+    return "Rp " & lsNumberFormat(h, ",", "id_ID");
 };
 
-writeOutput(formatLabel(99000));
+writeOutput(formatLabel(99000));        // Rp 99.000
 
-// Closure: membawa variabel luar yang ikut terpakai
-var diskonMember = function(numeric h) {
-    return h - (h * local.persen);
+// Closure: menangkap variabel biasa dari lingkup sekitarnya
+persen = 0.1;
+diskonMember = function(numeric h) {
+    return h - (h * persen);            // persen ditangkap dari luar
 };
-local.persen = 0.1;
+
+writeOutput(diskonMember(100000));      // 90000
 
 // Fungsi tingkat tinggi: memproses tiap elemen array
-var hargaSetelahDiskon = daftar.map(function(item) {
+hargaSetelahDiskon = daftar.map(function(item) {
     return item.harga * 0.9;
 });`,
       explain: [
         "Fungsi anonim ditulis tanpa nama dan dapat disimpan dalam variabel lalu dipanggil seperti fungsi biasa.",
-        "Closure menangkap variabel dari lingkup sekitarnya sehingga tetap tersedia saat fungsi dipanggil nanti.",
-        "Method array seperti <code>map</code> menerima fungsi sebagai argumen untuk memproses tiap elemen.",
-        "Pendekatan ini menghindari pembuatan banyak fungsi bernama hanya untuk satu kali pakai."
+        "Di top-level skrip, deklarasi memakai nama biasa (misal <code>persen = 0.1</code>); kata kunci <code>var</code> hanya sah di dalam fungsi.",
+        "Closure menangkap variabel biasa dari lingkup sekitarnya; <code>local.persen</code> tidak bisa dipakai karena <code>local</code> selalu menunjuk scope fungsi yang sedang berjalan.",
+        "Method array seperti <code>map</code> menerima fungsi sebagai argumen untuk memproses tiap elemen."
       ]
     },
     {
@@ -202,7 +206,7 @@ var hargaSetelahDiskon = daftar.map(function(item) {
       code: `<!--- UDF di Application.cfc: utilitas global --->
 <cffunction name="formatRupiah" access="public" returntype="string">
     <cfargument name="nilai" type="numeric" required="true">
-    <cfreturn "Rp " & numberFormat(arguments.nilai, ",,.")>
+    <cfreturn "Rp " & lsNumberFormat(arguments.nilai, ",", "id_ID")>
 </cffunction>
 
 <!--- Method di CFC service: logika bisnis terikat objek --->

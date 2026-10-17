@@ -45,7 +45,7 @@ window.LUCEE_LESSONS.push({
         <text x="150" y="240" class="u-lbl" text-anchor="middle">JAR: POI, PDFBox, JJWT …</text>
         <rect x="270" y="198" width="220" height="58" rx="8" class="u-box"/>
         <text x="380" y="220" class="u-title" text-anchor="middle">Thread &amp; Scheduler</text>
-        <text x="380" y="240" class="u-lbl" text-anchor="middle">cfthread · cfschedule (Quartz)</text>
+        <text x="380" y="240" class="u-lbl" text-anchor="middle">cfthread · cfschedule (Scheduler)</text>
         <rect x="500" y="198" width="220" height="58" rx="8" class="u-box"/>
         <text x="610" y="220" class="u-title" text-anchor="middle">Sistem eksternal</text>
         <text x="610" y="240" class="u-lbl" text-anchor="middle">cfhttp · Event Gateway · file</text>
@@ -58,22 +58,27 @@ window.LUCEE_LESSONS.push({
       lang: 'cfml',
       output: false,
       code: `// Objek Java dipakai persis seperti dari bahasa Java
-var daftar = createObject( "java", "java.util.ArrayList" ).init();
+daftar = createObject( "java", "java.util.ArrayList" ).init();
 daftar.add( "Kopi Gayo" );
 daftar.add( "Teh Melati" );
-daftar.sort( true );                        // method bawaan Java
+
+// Menyortir: ArrayList tidak punya sort() sendiri — pakai java.util.Collections
+collections = createObject( "java", "java.util.Collections" );
+collections.sort( daftar );                 // urutan alami (A → Z)
 
 // javaCast menjamin tipe yang diterima method Java yang ketat
-var jumlah  = javaCast( "int",    form.jumlah );
-var aktif   = javaCast( "boolean", form.aktif );
-var berat   = javaCast( "double",  form.berat );
-var tanggal = javaCast( "date",    now() );
+jumlah  = javaCast( "int",    form.jumlah );
+aktif   = javaCast( "boolean", form.aktif );
+berat   = javaCast( "double",  form.berat );
+tanggal = javaCast( "date",    now() );
 
-// Java → CFML: konversi manual agar aman dipakai fungsi array CFML
-var hasil = listToArray( daftar.toString() );
-writeOutput( arrayLen( hasil ) );`,
+// Java → CFML: Lucee mengkoersi List Java menjadi array CFML
+hasil = daftar;
+writeOutput( arrayLen( hasil ) );           // 2
+writeOutput( arrayToList( hasil, ", " ) );  // Konversi manual bila perlu string`,
       explain: [
-        '<code>.init()</code> memanggil konstruktor Java; tanpa itu kamu hanya punya "kelas kosong".',
+        '<code>.init()</code> memanggil konstruktor Java dengan argumennya; <code>createObject("java", …)</code> sendiri sudah menghasilkan objek jadi, jadi <code>.init()</code> hanya perlu bila kamu butuh argumen konstruktor atau memanggil ulang konstruktor.',
+        'Method Java yang menerima <code>Comparator</code> tidak bisa dipanggil dengan argumen boolean; untuk mengurutkan daftar Java, delegasikan ke <code>java.util.Collections.sort()</code>. Setelah itu Lucee mengkoersi List Java menjadi array CFML, sehingga hasilnya langsung bisa dipakai fungsi array seperti <code>arrayLen()</code> dan <code>arrayToList()</code>.',
         '<code>javaCast()</code> mencegah kegagalan method overload yang menerima tipe spesifik (int, double, boolean, String, Date).',
         'Nilai Date CFML dan java.util.Date kompatibel, tapi angka CFML bisa terbaca BigDecimal di Java — perlakukan bila perlu.',
         'Objek Java yang kompleks lebih baik dibungkus CFC daripada disebar ke seluruh aplikasi.'
@@ -132,7 +137,7 @@ writeOutput( arrayLen( hasil ) );`,
 </cfthread>
 
 <!--- Lanjut melayani pengguna — response tidak menunggu email --->
-<cfoutput>Pesanan ##form.pesananId## diterima.</cfoutput>
+<cfoutput>Pesanan #form.pesananId# diterima.</cfoutput>
 
 <!--- Bila ada bagian yang WAJIB selesai sebelum keluar (mis. tulis log), join: --->
 <cfthread action="join" name="thNotifikasi" timeout="5" />
@@ -145,7 +150,7 @@ writeOutput( arrayLen( hasil ) );`,
         '<code>action="run"</code> memulai thread dan langsung melanjutkan halaman; <code>action="join"</code> menunggu sampai selesai (atau timeout) dengan satuan detik.',
         'Data yang dikirim lewat atribut <code>data</code> dibaca di dalam thread lewat scope <code>attributes</code>.',
         'Status dan pesan error thread dibaca dari scope <code>cfthread</code> — nama thread menjadi kuncinya.',
-        'Scope <code>application</code>, <code>session</code>, dan <code>request</code> tidak tersedia di dalam thread; jangan mengandalkannya.'
+        'Scope global seperti <code>application</code>, <code>session</code>, dan <code>request</code> tetap terbaca di dalam thread, tapi jangan menulisnya tanpa <code>&lt;cflock&gt;</code>; yang tidak ikut tersedia adalah <code>variables</code> milik komponen dan <code>this</code>.'
       ]
     },
     {
@@ -155,7 +160,7 @@ writeOutput( arrayLen( hasil ) );`,
     },
     {
       type: 'text',
-      html: '<h3>Penjadwalan Tugas &amp; Event Gateway</h3><p>Untuk pekerjaan berulang — laporan penjualan jam 2 pagi, pembersihan token kedaluwarsa — pakai <code>&lt;cfschedule&gt;</code>. Di Lucee 7 penjadwalan pindah ke <b>ekstensi Scheduler</b> berbasis Quartz, jadi pasang dulu ekstensinya sebelum memakai tag ini. Untuk kejadian yang datang dari luar secara terus-menerus (pesanan dari message broker), Lucee menyediakan <b>Event Gateway</b>: AMQP, MQTT, dan WebSocket bisa memicu kode CFML begitu pesan tiba, tanpa polling.</p>'
+      html: '<h3>Penjadwalan Tugas &amp; Event Gateway</h3><p>Untuk pekerjaan berulang — laporan penjualan jam 2 pagi, pembersihan token kedaluwarsa — pakai <code>&lt;cfschedule&gt;</code>. Di Lucee 7 penjadwalan ditangani <b>ekstensi Scheduler Classic</b> yang terpasang pada distribusi penuh (pada image <code>-light</code> pasang sendiri), dengan ekstensi Quartz sebagai alternatif bila perlu fitur klaster. Untuk kejadian yang datang dari luar secara terus-menerus (pesanan dari message broker), Lucee menyediakan <b>Event Gateway</b>: AMQP, MQTT, dan WebSocket bisa memicu kode CFML begitu pesan tiba, tanpa polling.</p>'
     },
     {
       type: 'example',
@@ -182,7 +187,7 @@ writeOutput( arrayLen( hasil ) );`,
       explain: [
         '<code>action="update"</code> membuat/memperbarui tugas; <code>action="run"</code> langsung mengeksekusinya sekali (berguna untuk pengujian).',
         '<code>operation="HTTPRequest"</code> berarti Lucee akan memanggil URL-nya seperti browser — file itu yang berisi pekerjaan sebenarnya.',
-        'Di Lucee 7, pastikan ekstensi Scheduler (Quartz) sudah terpasang sebelum memakai cfschedule.',
+        'Di Lucee 7, penjadwalan ditangani ekstensi Scheduler Classic (terpasang pada distribusi penuh); pasang ekstensi itu — atau ekstensi Quartz untuk fitur klaster — sebelum memakai cfschedule.',
         'Hasil query dipakai cachedwithin agar laporan tidak membebani database pada jam sibuk.'
       ]
     },
@@ -228,8 +233,7 @@ writeOutput( arrayLen( hasil ) );`,
         destination="#expandPath('../uploads')#"
         nameconflict="makeunique"
         result="up"
-        acceptedfileextensions=".jpg,.png,.webp"
-        mimetype="image/jpeg,image/png,image/webp">
+        accept="image/jpeg,image/png,image/webp">
 
 <!--- Validasi kedua: ukuran wajar (maks 2 MB) --->
 <cfif up.fileSize gt 2 * 1024 * 1024>
@@ -238,7 +242,7 @@ writeOutput( arrayLen( hasil ) );`,
 </cfif>`,
       explain: [
         'Tujuan upload berada di <b>luar webroot</b> sehingga berkas tidak bisa diunduh langsung lewat URL.',
-        '<code>mimetype</code> dan <code>acceptedfileextensions</code> menyaring tipe berkas — periksa juga hasilnya, jangan percaya satu filter saja.',
+        '<code>accept</code> menyaring berkas berdasarkan MIME type (dan boleh dicampur ekstensi seperti <code>.jpg</code>); periksa juga hasilnya, jangan percaya satu filter saja.',
         '<code>nameconflict="makeunique"</code> memberi nama unik sehingga file pengguna lain tidak tertimpa.',
         'Validasi ukuran dilakukan terpisah agar berkas besar tidak sempat memakan disk.'
       ]
@@ -275,7 +279,7 @@ writeOutput( arrayLen( hasil ) );`,
         ['javaCast', 'Memaksa tipe data CFML menjadi tipe Java tertentu (int, double, boolean, String).'],
         ['javaSettings', 'Pengaturan Application.cfc untuk memuat JAR pustaka Java (loadPaths).'],
         ['cfthread', 'Tag untuk menjalankan kode di thread terpisah (asinkron).'],
-        ['cfschedule', 'Penjadwal tugas berkala; di Lucee 7 berbasis ekstensi Scheduler/Quartz.'],
+        ['cfschedule', 'Penjadwal tugas berkala; di Lucee 7 ditangani ekstensi Scheduler Classic (alternatif: ekstensi Quartz).'],
         ['Event Gateway', 'Pintu masuk pesan eksternal (AMQP/MQTT/WebSocket) yang memicu kode CFML.']
       ]
     }
@@ -284,7 +288,7 @@ writeOutput( arrayLen( hasil ) );`,
     'Berada di JVM membuat Lucee bisa memanggil class Java apa pun lewat createObject("java", …).',
     'javaCast menjamin tipe yang diterima method Java yang ketat; muat JAR pihak ketiga lewat this.javaSettings.',
     'cfthread menjalankan pekerjaan asinkron; action="join" + scope cfthread dipakai untuk menunggu dan memeriksa hasilnya.',
-    'cfschedule menjadwalkan tugas berkala (ekstensi Scheduler di Lucee 7); Event Gateway memproses pesan AMQP/MQTT/WebSocket.',
+    'cfschedule menjadwalkan tugas berkala (ekstensi Scheduler Classic di Lucee 7); Event Gateway memproses pesan AMQP/MQTT/WebSocket.',
     'cfdocument menghasilkan PDF, cfspreadsheet menghasilkan Excel, dan cffile menangani upload — simpan upload di luar webroot.',
     'cfhttp memanggil API luar; selalu set timeout dan siapkan penanganan bila layanan itu gagal.'
   ]

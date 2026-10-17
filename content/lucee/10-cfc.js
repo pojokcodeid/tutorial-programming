@@ -33,8 +33,8 @@ window.LUCEE_LESSONS.push({
       html: `<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 205" width="760" role="img" aria-label="Diagram bab 10">
         <defs><marker id="mk-l10-1" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/></marker></defs>
         <rect class="u-box" x="40" y="50" width="680" height="110" rx="8"/><text class="u-hd" x="380" y="38" text-anchor="middle">Keranjang.cfc</text>
-        <rect class="u-box" x="70" y="78" width="290" height="64" rx="6"/><text class="u-title" x="215" y="102" text-anchor="middle">scope this (publik)</text><text class="u-sub" x="215" y="124" text-anchor="middle">this.itemDipilih, total()</text>
-        <rect class="u-box" x="400" y="78" width="290" height="64" rx="6"/><text class="u-title" x="545" y="102" text-anchor="middle">scope variables (internal)</text><text class="u-sub" x="545" y="124" text-anchor="middle">variables.items, init()</text>
+        <rect class="u-box" x="70" y="78" width="290" height="64" rx="6"/><text class="u-title" x="215" y="102" text-anchor="middle">scope this (publik)</text><text class="u-sub" x="215" y="124" text-anchor="middle">this.tambahItem, getSubtotal()</text>
+        <rect class="u-box" x="400" y="78" width="290" height="64" rx="6"/><text class="u-title" x="545" y="102" text-anchor="middle">scope variables (internal)</text><text class="u-sub" x="545" y="124" text-anchor="middle">variables.items, subtotal</text>
         <line class="u-line" x1="360" y1="110" x2="394" y2="110" marker-end="url(#mk-l10-1)"/>
         <text class="u-lbl" x="380" y="186" text-anchor="middle">Publik dipanggil dari luar; internal hanya dari dalam komponen</text>
       </svg></div><figcaption class="fig-cap"><b>Gambar 10.1</b> Struktur CFC: scope this untuk publik, variables untuk internal, dan init sebagai konstruktor.</figcaption></figure>`
@@ -48,7 +48,7 @@ window.LUCEE_LESSONS.push({
 <cfcomponent displayname="Keranjang" hint="Mengelola item belanja">
 
     <cfproperty name="items" type="array" />
-    <cfproperty name="total" type="numeric" />
+    <cfproperty name="subtotal" type="numeric" />
 
     <cffunction name="init" access="public" returntype="Keranjang">
         <cfset variables.items = []>
@@ -107,7 +107,7 @@ writeDump(k3.getSubtotal());`,
     },
     {
       type: "text",
-      html: "<h3>Modifier Akses dan Kontrol Keluaran</h3><p>Setiap metode punya tingkat akses: <code>public</code> (default), <code>private</code>, <code>protected</code>, <code>package</code>, dan <code>remote</code>. Dua yang paling sering dipakai adalah public untuk API komponen dan private untuk langkah internal yang tidak boleh disentuh dari luar.</p><p>Atribut lain seperti <code>output</code> mengontrol apakah teks yang tidak tertangkap <code>cfoutput</code>/<code>writeOutput</code> ikut tercetak, dan <code>hint</code> memberi dokumentasi singkat yang muncul di halaman dokumentasi CFC otomatis Lucee.</p>"
+      html: "<h3>Modifier Akses dan Kontrol Keluaran</h3><p>Setiap metode punya tingkat akses: <code>public</code> (default), <code>private</code>, <code>package</code>, dan <code>remote</code>. Dua yang paling sering dipakai adalah public untuk API komponen dan private untuk langkah internal yang tidak boleh disentuh dari luar.</p><p>Atribut lain seperti <code>output</code> mengontrol apakah teks yang tidak tertangkap <code>cfoutput</code>/<code>writeOutput</code> ikut tercetak, dan <code>hint</code> memberi dokumentasi singkat yang muncul di halaman dokumentasi CFC otomatis Lucee.</p>"
     },
     {
       type: "example",
@@ -207,7 +207,7 @@ writeDump(k3.getSubtotal());`,
 </cfcomponent>
 
 <cfset svc = new ProdukService('appDB')>
-<cfoutput query="svc.cari('blender')">#nama# — #harga#<br></cfoutput>`,
+<cfoutput query="#svc.cari('blender')#">#nama# — #harga#<br></cfoutput>`,
       explain: [
         "<code>init()</code> menerima dependensi (datasource) sehingga objek tidak menyimpan konfigurasi rahasia di dalam kode metode.",
         "Parameter query memakai <i>named parameter</i> <code>:kw</code> dengan <code>cfsqltype</code>, sehingga tetap aman dari SQL injection.",
