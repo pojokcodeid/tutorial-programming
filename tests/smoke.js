@@ -136,6 +136,27 @@ async function main() {
     'content/gorestapi/08-unit-testing.js',
     'content/gorestapi/09-integration-testing.js',
     'content/gorestapi/10-proyek-scalable.js',
+    'content/lucee/quiz-questions.js',
+    'content/lucee/01-pengenalan-setup.js',
+    'content/lucee/02-sintaks-dasar.js',
+    'content/lucee/03-variabel-scope.js',
+    'content/lucee/04-kontrol-perulangan.js',
+    'content/lucee/05-struktur-data.js',
+    'content/lucee/06-koneksi-database.js',
+    'content/lucee/07-query-crud.js',
+    'content/lucee/08-orm.js',
+    'content/lucee/09-fungsi-udf.js',
+    'content/lucee/10-cfc.js',
+    'content/lucee/11-modularisasi.js',
+    'content/lucee/12-lifecycle-appcfc.js',
+    'content/lucee/13-oop.js',
+    'content/lucee/14-di-wirebox.js',
+    'content/lucee/15-rest-api.js',
+    'content/lucee/16-json-xml-jwt.js',
+    'content/lucee/17-admin-konfigurasi.js',
+    'content/lucee/18-integrasi-java.js',
+    'content/lucee/19-testing-quality.js',
+    'content/lucee/20-devops-security.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -290,6 +311,52 @@ async function main() {
   check('rujukan Go REST API (net/http, jwt, mariadb)',
     ['https://pkg.go.dev/net/http', 'https://github.com/golang-jwt/jwt', 'https://mariadb.com/kb/en/documentation/']
       .every(u => apiRefs.includes(u)));
+
+  // 4f) konten Lucee CFML: 20 pelajaran sesuai topik info.md
+  const lucee = CONTENT.get('lucee');
+  check('Lucee CFML terdaftar & status ready', !!lucee && lucee.status === 'ready');
+  check('20 pelajaran Lucee CFML', lucee.lessons.length === 20);
+  const luceeIds = lucee.lessons.map(l => l.id);
+  check('id pelajaran Lucee unik', new Set(luceeIds).size === luceeIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Lucee terisi',
+    lucee.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && l.intro && l.intro.length && l.objectives && l.objectives.length &&
+      l.recap && l.recap.length));
+  check('tiap pelajaran Lucee punya contoh kode CFML & figur ilustrasi',
+    lucee.lessons.every(l =>
+      l.sections.some(s => s.type === 'example' && s.code) &&
+      l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))));
+  let luceeBadSection = 0, luceeLive = 0, luceeLiveOk = 0;
+  for (const l of lucee.lessons) {
+    const typesL = new Set(l.sections.map(s => s.type));
+    if (typesL.size < 3) luceeBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && s.items.length >= 5)) luceeBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.lang === 'cfml')) luceeBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) luceeBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false) luceeBadSection++;       // CFML hanya jalan di server
+        if (!s.explain || s.explain.length < 2) luceeBadSection++;
+      }
+      if (s.type === 'live') {
+        if (s.lang !== 'html' || !/<!DOCTYPE/i.test(s.initial || '') || !s.hint) luceeLive++;
+        else luceeLiveOk++;
+      }
+    }
+  }
+  check('struktur section pelajaran Lucee valid', luceeBadSection === 0);
+  check('latihan simulasi (live) Lucee valid', luceeLive === 0 && luceeLiveOk === 2);
+  const luceeBad = lucee.quizPool.filter(q =>
+    !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+    typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain);
+  check('soal kuis Lucee memadai (>= 45) & lengkap',
+    lucee.quizPool.length >= 45 && luceeBad.length === 0);
+  check('id soal kuis Lucee unik',
+    new Set(lucee.quizPool.map(q => q.id)).size === lucee.quizPool.length);
+  const luceeRefs = (lucee.refs || []).map(r => r.url);
+  check('rujukan Lucee sesuai info.md (docs.lucee.org & GitBook)',
+    ['https://docs.lucee.org/index.html', 'https://rorylaitila.gitbooks.io/lucee/content/']
+      .every(u => luceeRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

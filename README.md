@@ -5,10 +5,10 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, dan **Docker (12 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Docker (12 pelajaran)**, dan **Lucee CFML (20 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
-- ✅ Contoh kode dengan pewarnaan syntax (highlight.js)
+- ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
 - ✅ **Pratinjau hasil langsung** untuk setiap contoh + editor latihan interaktif
 - ✅ Contoh CSS bisa menampilkan **hanya kode CSS** di panel, sementara pratinjau memakai dokumen HTML lengkap (penanda `__CODE__`)
 - ✅ Playground untuk bereksperimen bebas (HTML / HTML+CSS / HTML+CSS+JS)
@@ -52,6 +52,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
 ├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
+├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
 ├── lib/                  # sql.js (SQLite/WASM) & highlight.js — lokal
 ├── server.js             # server lokal opsional (tanpa dependensi)
@@ -112,6 +113,7 @@ __CODE__
 - **Go Web Examples** — https://gowebexamples.com/
 - **Go REST API** — https://pkg.go.dev/net/http · https://github.com/golang-jwt/jwt · https://github.com/go-sql-driver/mysql · https://mariadb.com/kb/en/documentation/
 - **Docker** — https://www.freecodecamp.org/news/the-docker-handbook/ · https://docs.docker.com/get-started/ · https://docs.docker.com/reference/
+- **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 
 (Rujukan lengkap juga tampil di halaman tiap tutorial, di bagian "📖 Rujukan".)
 

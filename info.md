@@ -357,3 +357,79 @@
   - Communications Diagram
   - Interaction Overview Diagram
   - Timing Diagram
+
+## Topik Lucee CFML
+
+- Rujukan
+  - https://rorylaitila.gitbooks.io/lucee/content/
+  - https://docs.lucee.org/index.html
+
+- Materi yang harus ada
+
+1. Fondasi & Dasar-Dasar CFML (Beginner)
+   - Pengenalan Ecosystem & Setup Environment
+     - Apa itu CFML (ColdFusion Markup Language) dan keunggulan Lucee (Open Source & High Performance).
+     - Instalasi Lucee Server lokal menggunakan CommandBox (box server start).
+     - Pemahaman arsitektur dasar Lucee yang berjalan di atas JVM (Java Virtual Machine).
+     - Setup Code Editor (Neovim / VS Code) dengan extension CFML / CFLint.
+   - Sintaks Dasar CFML (Tag-based vs CFScript)
+     - Perbedaan sintaks Tag-based (<cfset>, <cfif>) dan CFScript (sintaks mirip JavaScript/Java).
+     - Variabel dan Tipe Data: String, Number, Boolean, Date.
+     - Variabel Scopes dasar: variables, arguments, local, session, application, request.
+     - Struktur Kontrol: Conditional (if/else, switch/case) dan Looping (for, while, cfloop).
+   - Data Structures & Manipulasi Data
+     - Arrays: Deklarasi, manipulasi, serta fungsi bawaan (arrayAppend, arrayLen, arrayMap, arrayFilter).
+     - Structures (Struct): Key-value pair, manipulasi struct, dan nested struct.
+     - Queries: Konsep data query bawaan CFML.
+
+2. Pengolahan Data & Pemrograman Menengah (Intermediate)
+   - Interaksi Database (SQL & ORM)
+     - Koneksi Database via Lucee Admin atau file konfigurasi Application.cfc (Datasource setup).
+     - Mengabaikan Vulnerability: Menggunakan <cfquery> dengan <cfqueryparam> (Pencegahan SQL Injection).
+     - Operasi CRUD (Create, Read, Update, Delete).
+     - Dasar-dasar Lucee ORM (Hibernate integration) untuk pemetaan objek database.
+
+   - Modularisasi & Reusability
+     - User Defined Functions (UDF): Deklarasi fungsi, argumen, return type, dan scope lokal (local).
+     - ColdFusion Components (CFC): Konsep dasar class/component, properti, method (cffunction), dan akses modifier (public, private, package).
+     - Penggunaan cfinclude dan cfmodule secara efisien.
+
+   - Konfigurasinya & Lifecycle Aplikasi (Application.cfc)
+     - Memahami struktur dan lifecycle event di Application.cfc:
+     - onApplicationStart()
+     - onRequestStart() / onRequestEnd()
+     - onSessionStart() / onSessionEnd()
+     - onError()
+     - Pengelolaan Session Management dan Cookies.
+
+3. Arsitektur Modern & Lanjutan (Advanced)
+   - Object-Oriented Programming (OOP) di CFML
+     - Konsep Encapsulation, Inheritance, Polymorphism, dan Interfaces di CFC.
+     - Dependency Injection & Inversion of Control (IoC) menggunakan framework seperti WireBox.
+     - Design Patterns dasar dalam CFML (DAO, Gateway, Factory, Singleton).
+
+   - Pengembangan RESTful API & Web Services
+     - Membuat REST API native di Lucee menggunakan annotation pada CFC (restpath, httpmethod).
+     - Penanganan request/response JSON & XML (serializeJson, deserializeJson).
+     - Otentikasi dan Otorisasi API (JWT / Token-based Authentication).
+
+4. Performa, Deployment, & Profesional (Expert / Senior)
+   - Lucee Administration & Configuration Management
+     - Pengelolaan Lucee Web Admin dan Server Admin.
+     - Konfigurasi berbasis kode/environment (lucee-web.xml.cfm, Application.cfc settings, environment variables).
+     - Pengaturan Cache Engine (Redis, Ehcache, Memcached) untuk optimasi query dan page caching.
+
+   - Integrasi Java & Sistem Eksternal
+     - Interoperabilitas Java: Memanggil class Java eksternal atau JAR library langsung dari CFML (CreateObject("java", ...) / JavaCast).
+     - Penanganan operasi asinkron: cfthread, Task Scheduling, dan Event Gateways.
+     - File Management & Document Processing (PDF Generation via cfdocument, Spreadsheet via Apache POI / cfspreadsheet).
+
+   - Testing & Code Quality
+     - Unit Testing dan Integration Testing menggunakan TestBox.
+     - Static Code Analysis & Linting menggunakan CFLint.
+     - Logging dan Error Monitoring/Tracking (Sentry, LogBox, custom exception handling).
+
+   - DevOps, Deployment, & Security - Deployment menggunakan Docker container & CommandBox Docker Images.
+     - Web Server Integration: Mengintegrasikan Lucee dengan Nginx atau IIS via BonCode / AJP Connector.
+     - Hardening Security Lucee: Mencegah XSS, CSRF, File Upload Vulnerability, dan Lockdown Lucee Admin.
+     - Profiling & Performance Tuning: Identifikasi memory leak, JVM tuning, dan optimasi garbage collection.

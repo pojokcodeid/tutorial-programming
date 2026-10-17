@@ -223,6 +223,24 @@ const CONTENT = (() => {
         { label: 'freeCodeCamp — UML Diagrams Full Course', url: 'https://www.freecodecamp.org/news/uml-diagrams-full-course/' },
         { label: 'TutorialsPoint — UML', url: 'https://www.tutorialspoint.com/uml/index.htm' }
       ]
+    },
+
+    lucee: {
+      id: 'lucee',
+      title: 'Lucee CFML',
+      tagline: 'Bahasa Server CFML Open Source',
+      icon: 'assets/logos/lucee.svg',
+      color: '#01798A',
+      desc: 'Belajar Lucee CFML dari nol hingga mahir: sintaks tag & cfscript, variabel dan scope, database dengan CRUD aman, ORM, CFC & OOP, REST API, lifecycle Application.cfc, konfigurasi & cache, integrasi Java, testing, hingga Docker, deployment & keamanan.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.LUCEE_LESSONS || []).slice(),
+      quizPool: (window.LUCEE_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Lucee', url: 'https://docs.lucee.org/index.html' },
+        { label: 'Lucee GitBook — Rory Laitila', url: 'https://rorylaitila.gitbooks.io/lucee/content/' },
+        { label: 'CommandBox Book — Ortus Solutions', url: 'https://commandbox.ortusbooks.com/' }
+      ]
     }
   };
 
@@ -232,5 +250,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, all, get, readyList };
 })();
