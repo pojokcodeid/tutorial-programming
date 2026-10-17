@@ -12,7 +12,7 @@
   pertanyaan dan jawaban selalu berubah jika di buka di lain waktu atau masih salah
 - user bisa login dan tersimpan history pembelajarannya
 - materi pembelajaran bersipat terpadu atau tahap demi tahap
-- tutorial dapat dijalankan secara ofline
+- tutorial dapat dijalankan sebagai web statis (mis. GitHub Pages) maupun dengan server lokal
 - tutorial dapat di jalankan secara portable
 
 ## Teknologi

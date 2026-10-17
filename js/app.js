@@ -320,7 +320,7 @@ const App = (() => {
       <div class="hero">
         <div class="hero-emoji">💻</div>
         <h1>Belajar Koding, dari Nol</h1>
-        <p>Tutorial pemrograman interaktif berbahasa Indonesia — bekerja 100% offline di komputermu. Materi tersusun bertahap, ada contoh kode berwarna, pratinjau langsung, playground, dan kuis yang soalnya berganti setiap hari.</p>
+        <p>Tutorial pemrograman interaktif berbahasa Indonesia. Materi tersusun bertahap, ada contoh kode berwarna, pratinjau langsung, playground, dan kuis yang soalnya berganti setiap hari.</p>
         <div class="actions">
           <a class="btn primary" href="#/t/html">Mulai Belajar HTML →</a>
           <a class="btn" href="#/t/css">🎨 Belajar CSS</a>
@@ -333,7 +333,7 @@ const App = (() => {
       <div class="grid-tuts">${cards}</div>
       <div class="section-title">ℹ️ Tentang aplikasi</div>
       <div class="card" style="padding:18px 22px;font-size:14px;color:var(--text-2)">
-        Aplikasi ini berjalan sepenuhnya <b>lokal &amp; offline</b>. Database memakai <b>SQLite</b> (tersimpan di browser, bisa diekspor sebagai file .sqlite dari halaman Profil). Akun dibuat lokal di komputermu — privasi terjaga, tanpa server.
+        Data tersimpan di browser kamu memakai <b>SQLite</b> (bisa diekspor sebagai file .sqlite dari halaman Profil). Akun dibuat di perangkatmu — privasi terjaga, tanpa server backend.
       </div>`
     };
   }
@@ -817,7 +817,7 @@ const App = (() => {
 
       <div class="section-title">Tentang</div>
       <div class="card" style="padding:16px 20px;font-size:13.5px;color:var(--text-2)">
-        <p><b>Belajar Koding</b> — aplikasi tutorial interaktif berbahasa Indonesia. Berjalan 100% offline &amp; portabel: tinggal buka <code>index.html</code>.</p>
+        <p><b>Belajar Koding</b> — aplikasi tutorial interaktif berbahasa Indonesia.</p>
         <p>Teknologi: HTML, CSS, JavaScript murni · <b>SQLite</b> (sql.js/WASM, disimpan di IndexedDB) · syntax highlighting <b>highlight.js</b> — semua library tersimpan lokal.</p>
         <p>Referensi materi HTML &amp; CSS: MDN Web Docs, W3Schools, dan web.dev.</p>
       </div>`

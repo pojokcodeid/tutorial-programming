@@ -1,7 +1,7 @@
-# Belajar Koding — Aplikasi Web Tutorial Interaktif (Offline)
+# Belajar Koding — Aplikasi Web Tutorial Interaktif
 
 Aplikasi tutorial pemrograman interaktif berbahasa Indonesia. Topik pertama: **HTML**.
-Berjalan **100% offline** dan **portabel** — semua library tersimpan lokal, tanpa server, tanpa internet.
+Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
@@ -20,7 +20,7 @@ Berjalan **100% offline** dan **portabel** — semua library tersimpan lokal, ta
 - ✅ Kuis di akhir materi — soal & urutan jawaban **berubah setiap hari**, soal yang masih salah **muncul lagi** di ujian berikutnya
 - ✅ Login & riwayat belajar tersimpan (akun lokal di SQLite)
 - ✅ Materi bertahap: pelajaran terbuka setelah pelajaran sebelumnya selesai
-- ✅ Offline & portabel (buka index.html langsung, atau pakai server lokal)
+- ✅ Bisa dijalankan langsung sebagai web statis (GitHub Pages) atau dengan server lokal
 
 ## Cara menjalankan
 
@@ -52,7 +52,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
 ├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
-├── assets/               # gambar & audio contoh (offline), termasuk logo resmi tiap bahasa di assets/logos/
+├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
 ├── lib/                  # sql.js (SQLite/WASM) & highlight.js — lokal
 ├── server.js             # server lokal opsional (tanpa dependensi)
 └── start*.command        # peluncur macOS

@@ -224,11 +224,6 @@ img { max-width: 100%; }
 }
 #topbar .acc-btn:hover { border-color: var(--accent); text-decoration: none; }
 #topbar .acc-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
-.off-badge {
-  font-size: 11px; font-weight: 700; color: var(--green);
-  background: var(--green-soft); padding: 4px 10px; border-radius: 99px;
-  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
-}
 #hamburger {
   display: none; background: none; border: 1px solid var(--border);
   border-radius: 8px; width: 38px; height: 38px; font-size: 17px;
@@ -614,7 +609,6 @@ img { max-width: 100%; }
   .hero { padding: 26px 22px; }
   .hero-emoji { display: none; }
   #topbar { padding: 0 12px; }
-  .off-badge { display: none; }
 }
 /* Playground & editor "Coba sendiri" (kelas .code-ed)
    Empat layer yang metriknya WAJIB identik: <pre class="pg-mirror"> teks yang

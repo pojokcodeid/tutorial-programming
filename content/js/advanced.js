@@ -302,7 +302,7 @@ Util.PI;             // 3.14159`,
         'Modul diaktifkan dengan <code>&lt;script type="module"&gt;</code>.',
         'Modul otomatis berjalan <b>setelah HTML siap</b> (seperti defer).',
         'Variabel di modul bersifat <b>lokal</b>, bukan global.',
-        'Untuk latihan offline, buat berkas <code>util.js</code> berisi export-nya di folder yang sama.'
+        'Untuk latihan, buat berkas <code>util.js</code> berisi export-nya di folder yang sama.'
       ]
     },
     {

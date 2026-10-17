@@ -118,7 +118,7 @@ window.HTML_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<p>Tanpa atribut <b>controls</b>, pemutar media tidak akan menampilkan tombol apa pun — pengunjung tidak bisa memutar! Untuk pemanasan, contoh di bawah memakai file <code>assets/beep.wav</code> yang ada di folder aplikasi ini (jadi jalan meski offline).</p>'
+      html: '<p>Tanpa atribut <b>controls</b>, pemutar media tidak akan menampilkan tombol apa pun — pengunjung tidak bisa memutar! Untuk pemanasan, contoh di bawah memakai file <code>assets/beep.wav</code> yang ada di folder aplikasi ini.</p>'
     },
     {
       type: 'example',
@@ -160,7 +160,7 @@ window.HTML_LESSONS.push({
     {
       type: 'warn',
       title: 'Soal ukuran file',
-      text: 'File video besar bikin halaman lambat. Untuk produksi, kompres videomu dan pertimbangkan layanan streaming (YouTube/Vimeo) yang bisa disisipkan lewat &lt;iframe&gt; — sayangnya butuh internet, jadi tidak cocok di tutorial offline ini.'
+      text: 'File video besar bikin halaman lambat. Untuk produksi, kompres videomu dan pertimbangkan layanan streaming (YouTube/Vimeo) yang bisa disisipkan lewat &lt;iframe&gt;.'
     },
     {
       type: 'live',
