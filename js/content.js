@@ -169,6 +169,25 @@ const CONTENT = (() => {
       ]
     },
 
+    gorestapi: {
+      id: 'gorestapi',
+      title: 'Go REST API',
+      tagline: 'RESTful API Produksi dengan Go',
+      icon: 'assets/logos/go.svg',
+      color: '#00838F',
+      desc: 'Membangun RESTful API end-to-end dengan Go: arsitektur modular & scalable, database MariaDB, autentikasi JWT + otorisasi berbasis peran, unit testing, hingga integration testing.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.GORESTAPI_LESSONS || []).slice(),
+      quizPool: (window.GORESTAPI_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi net/http', url: 'https://pkg.go.dev/net/http' },
+        { label: 'golang-jwt/jwt v5 (GitHub)', url: 'https://github.com/golang-jwt/jwt' },
+        { label: 'go-sql-driver/mysql (GitHub)', url: 'https://github.com/go-sql-driver/mysql' },
+        { label: 'Dokumentasi MariaDB', url: 'https://mariadb.com/kb/en/documentation/' }
+      ]
+    },
+
     docker: {
       id: 'docker',
       title: 'Docker',
@@ -213,5 +232,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, docker: t.docker, uml: t.uml, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, all, get, readyList };
 })();

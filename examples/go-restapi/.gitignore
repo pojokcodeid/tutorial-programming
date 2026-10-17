@@ -1,0 +1,10 @@
+# Binary hasil build
+/go-restapi
+/cmd/server/server
+/cmd/seed/seed
+
+# Konfigurasi rahasia — jangan di-commit
+.env
+
+# Dependency cache (regenerasi dengan go mod tidy)
+/vendor/

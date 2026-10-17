@@ -311,6 +311,26 @@
     - CI/CD Pipeline untuk project Go
     - Security best practices (mencegah SQL Injection, sanitasi input, CORS, JWT Auth)
 
+## Topik REST API dengan Go (Go REST API)
+
+- Rujukan
+  - https://pkg.go.dev/net/http
+  - https://github.com/golang-jwt/jwt
+  - https://github.com/go-sql-driver/mysql
+  - https://mariadb.com/kb/en/documentation/
+- Topik yang harus dibahas
+  - Pengenalan RESTful API, prinsip REST, dan perancangan resource
+  - Arsitektur layered (handler → service → repository) untuk proyek modular & scalable
+  - Setup proyek Go modules, struktur folder cmd/ & internal/, konfigurasi .env
+  - Koneksi MariaDB dengan database/sql, DSN, connection pool, dan migrasi schema
+  - Model struct, repository pattern dengan interface, prepared statement, penanganan error database
+  - Routing REST dengan ServeMux Go 1.22+ (method + path pattern), decode/encode JSON, validasi request
+  - Authentication dengan bcrypt (hash password) dan JWT (terbitkan & verifikasi token)
+  - Authorization berbasis peran (admin/user) dengan middleware Authenticate & RequireRole
+  - Unit testing: table-driven test, mock repository dengan interface, httptest
+  - Integration testing: build tag, database test terpisah, seeding & pembersihan data
+  - Graceful shutdown, batas waktu server, dan langkah lanjutan untuk produksi
+
 ## Topik UML
 
 - Rujukan

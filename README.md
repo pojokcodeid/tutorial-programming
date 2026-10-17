@@ -5,7 +5,7 @@ Berjalan **100% offline** dan **portabel** — semua library tersimpan lokal, ta
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, dan **Docker (12 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, dan **Docker (12 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js)
@@ -49,6 +49,8 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/react/        # materi tutorial React JS (Bahasa Indonesia)
 ├── content/go/           # materi tutorial Go / Golang (Bahasa Indonesia)
 ├── content/goweb/        # materi tutorial Go Web Examples (Bahasa Indonesia)
+├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
+├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh (offline), termasuk logo resmi tiap bahasa di assets/logos/
 ├── lib/                  # sql.js (SQLite/WASM) & highlight.js — lokal
@@ -108,6 +110,7 @@ __CODE__
 - **React JS** — https://react.dev/learn · https://www.w3schools.com/react/default.asp · https://www.javascripttutorial.net/react-tutorial/
 - **Go / Golang** — https://www.gotutorial.org/ · https://go.dev/doc/tutorial/ · https://www.w3schools.com/go/index.php
 - **Go Web Examples** — https://gowebexamples.com/
+- **Go REST API** — https://pkg.go.dev/net/http · https://github.com/golang-jwt/jwt · https://github.com/go-sql-driver/mysql · https://mariadb.com/kb/en/documentation/
 - **Docker** — https://www.freecodecamp.org/news/the-docker-handbook/ · https://docs.docker.com/get-started/ · https://docs.docker.com/reference/
 
 (Rujukan lengkap juga tampil di halaman tiap tutorial, di bagian "📖 Rujukan".)

@@ -125,6 +125,17 @@ async function main() {
     'content/react/state-management.js',
     'content/react/advanced.js',
     'content/react/ecosystem.js',
+    'content/gorestapi/quiz-questions.js',
+    'content/gorestapi/01-pengenalan-arsitektur.js',
+    'content/gorestapi/02-setup-konfigurasi.js',
+    'content/gorestapi/03-koneksi-mariadb.js',
+    'content/gorestapi/04-model-repository.js',
+    'content/gorestapi/05-handler-crud.js',
+    'content/gorestapi/06-auth-jwt.js',
+    'content/gorestapi/07-authorization-middleware.js',
+    'content/gorestapi/08-unit-testing.js',
+    'content/gorestapi/09-integration-testing.js',
+    'content/gorestapi/10-proyek-scalable.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -256,6 +267,29 @@ async function main() {
   check('rujukan React sesuai info.md (react.dev, W3Schools, javascripttutorial)',
     ['https://react.dev/learn', 'https://www.w3schools.com/react/default.asp', 'https://www.javascripttutorial.net/react-tutorial/']
       .every(u => reactRefs.includes(u)));
+
+  // 4e) konten Go REST API: 10 pelajaran + 40 soal kuis
+  const api = CONTENT.get('gorestapi');
+  check('Go REST API terdaftar & status ready', !!api && api.status === 'ready');
+  check('10 pelajaran Go REST API', api.lessons.length === 10);
+  const apiIds = api.lessons.map(l => l.id);
+  check('id pelajaran Go REST API unik', new Set(apiIds).size === apiIds.length);
+  check('judul & durasi pelajaran Go REST API terisi',
+    api.lessons.every(l => l.title && /^[\d]+ menit$/.test(l.duration)));
+  check('bab, intro, recap & tujuan pelajaran Go REST API terisi',
+    api.lessons.every(l => l.chapter && l.intro && l.intro.length &&
+      l.recap && l.recap.length && l.objectives && l.objectives.length));
+  check('tiap pelajaran Go REST API punya contoh kode',
+    api.lessons.every(l => l.sections.some(s => s.type === 'example' && s.code)));
+  check('40 soal kuis Go REST API lengkap (4 opsi, jawaban & penjelasan)',
+    api.quizPool.length === 40 &&
+    !api.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const apiRefs = (api.refs || []).map(r => r.url);
+  check('rujukan Go REST API (net/http, jwt, mariadb)',
+    ['https://pkg.go.dev/net/http', 'https://github.com/golang-jwt/jwt', 'https://mariadb.com/kb/en/documentation/']
+      .every(u => apiRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',
