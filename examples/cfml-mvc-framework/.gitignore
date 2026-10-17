@@ -1,0 +1,11 @@
+# Konfigurasi rahasia — jangan di-commit
+.env
+
+# Artefak server CommandBox
+/.commandbox*
+/lucee-server/
+/lucee-web/
+
+# Sistem & editor
+.DS_Store
+._*

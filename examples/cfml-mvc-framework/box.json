@@ -1,0 +1,10 @@
+{
+	"name": "cfml-mvc-framework",
+	"description": "Framework MVC ringan untuk Lucee CFML — konfigurasi dari file .env",
+	"author": "Pojok Code",
+	"type": "app",
+	"version": "1.0.0",
+	"scripts": {
+		"start": "server start"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"name": "cfml-mvc-framework",
+	"startTimeout": "3600",
+	"app": {
+		"cfengine": "lucee@7"
+	},
+	"web": {
+		"host": "localhost",
+		"webroot": "src",
+		"http": {
+			"port": 8888
+		},
+		"rewrites": {
+			"enable": "true",
+			"config": "customRewrites.xml"
+		}
+	}
+}

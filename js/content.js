@@ -231,7 +231,7 @@ const CONTENT = (() => {
       tagline: 'Bahasa Server CFML Open Source',
       icon: 'assets/logos/lucee.svg',
       color: '#01798A',
-      desc: 'Belajar Lucee CFML dari nol hingga mahir: sintaks tag & cfscript, variabel dan scope, database dengan CRUD aman, ORM, CFC & OOP, REST API, lifecycle Application.cfc, konfigurasi & cache, integrasi Java, testing, hingga Docker, deployment & keamanan.',
+      desc: 'Belajar Lucee CFML dari nol hingga mahir: sintaks tag & cfscript, variabel dan scope, database dengan CRUD aman, ORM, CFC & OOP, REST API, lifecycle Application.cfc, konfigurasi & cache, integrasi Java, testing, Docker, deployment & keamanan, hingga proyek praktis membangun framework MVC sendiri (routing, controller, model, view, konfigurasi .env).',
       status: 'ready',
       sequential: true,
       lessons: (window.LUCEE_LESSONS || []).slice(),

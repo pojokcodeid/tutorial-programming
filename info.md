@@ -433,3 +433,24 @@
      - Web Server Integration: Mengintegrasikan Lucee dengan Nginx atau IIS via BonCode / AJP Connector.
      - Hardening Security Lucee: Mencegah XSS, CSRF, File Upload Vulnerability, dan Lockdown Lucee Admin.
      - Profiling & Performance Tuning: Identifikasi memory leak, JVM tuning, dan optimasi garbage collection.
+
+5. Proyek Praktis: Membangun Framework MVC
+   - Fondasi Framework MVC
+     - Arsitektur Model-View-Controller dan struktur folder framework (webroot src terpisah dari konfigurasi proyek).
+     - Setup proyek CommandBox: box.json, server.json, dan URL rewrite (customRewrites.xml).
+     - Front controller index.cfm sebagai satu-satunya pintu masuk request.
+   - Konfigurasi dari File .env
+     - Parser .env buatan sendiri (core/Env.cfc) dan pembagian konfigurasi via application scope.
+     - Datasource dinamis dari nilai .env di Application.cfc; pola .env.example + .gitignore agar rahasia tidak ikut ter-commit.
+   - Mesin Routing
+     - Pencocokan pola route berparameter (:id) dan penerusan argument ke method controller.
+     - Penanganan JSON body sebagai argument content untuk melayani form HTML dan REST API dari satu route.
+   - Controller, View & Flash Message
+     - BaseController: view() dengan layout header/footer, model(), redirect(), upload() ber-UUID.
+     - Flash message di session dan pola POST/Redirect/GET.
+   - Model, Query Aman & Validasi
+     - queryExecute() dengan parameter binding, generatedKey, dan affectedRows.
+     - Validation.cfc bergaya Laravel: aturan string "required|is_email|max:50".
+   - Pengujian & Rilis
+     - Pengujian route via file .http, troubleshooting (rewrite, .env, controller, session).
+     - Checklist rilis produksi dan pengembangan modul baru di atas framework.

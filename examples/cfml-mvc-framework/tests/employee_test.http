@@ -1,0 +1,31 @@
+### Uji endpoint say-hay (respons JSON)
+GET http://localhost:8888/employee/say-hay
+
+### Daftar semua employee (halaman HTML)
+GET http://localhost:8888/employee
+
+### Tambah employee lewat JSON body
+POST http://localhost:8888/employee
+Content-Type: application/json
+
+{
+    "name": "Pojok Code",
+    "email": "info@pojokcode.id",
+    "age": 30
+}
+
+### Ambil satu employee (id=1)
+GET http://localhost:8888/employee/edit/1
+
+### Perbarui employee (id=1)
+POST http://localhost:8888/employee/edit/1
+Content-Type: application/json
+
+{
+    "name": "Pojok Code Updated",
+    "email": "update@pojokcode.id",
+    "age": 31
+}
+
+### Hapus employee (id=1)
+GET http://localhost:8888/employee/delete/1
