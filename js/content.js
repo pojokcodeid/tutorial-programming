@@ -261,6 +261,24 @@ const CONTENT = (() => {
       ]
     },
 
+    jenkins: {
+      id: 'jenkins', title: 'Jenkins',
+      tagline: 'CI/CD dengan Pipeline as Code',
+      icon: 'assets/logos/jenkins.svg',
+      color: '#D24939',
+      desc: 'Belajar Jenkins dari nol secara gratis dengan Podman: konsep CI/CD, instalasi lokal, administrasi & keamanan, Freestyle, Declarative & Scripted Pipeline, webhook dan Multibranch, validasi pull request, agent statis & dinamis container, Shared Library, Configuration as Code, integrasi SonarQube/registry/ArgoCD, hingga 3 proyek praktik ujung ke ujung.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.JENKINS_LESSONS || []).slice(),
+      quizPool: (window.JENKINS_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Jenkins', url: 'https://www.jenkins.io/doc/' },
+        { label: 'Jenkins — Belajar (Tutorial)', url: 'https://www.jenkins.io/learn/tutorials/' },
+        { label: 'Jenkinsfile Reference', url: 'https://www.jenkins.io/doc/pipeline/reference/' },
+        { label: 'Jenkins Configuration as Code', url: 'https://www.jenkins.io/projects/jcasc/' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -323,5 +341,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

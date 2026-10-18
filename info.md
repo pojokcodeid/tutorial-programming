@@ -517,3 +517,45 @@ dengan kuis tersendiri.
 6. Pengujian & Rilis
    - Pengujian route via file .http, troubleshooting (rewrite, .env, controller, session).
    - Checklist rilis produksi dan pengembangan modul baru di atas framework.
+
+## Topik Mengenai Jenkins (CI/CD)
+
+Materi CI/CD dengan Jenkins. Kebutuhan lengkap ada di `jenkins.md` (Jenkins CI/CD
+Mastery Roadmap); materi disusun 16 pelajaran berbahasa Indonesia dengan diagram,
+contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
+(Podman rootless, GitHub/GitLab free tier, registry & cluster lokal).
+
+- Rujukan
+  - https://www.jenkins.io/doc/
+  - https://www.jenkins.io/learn/tutorials/
+  - https://www.jenkins.io/doc/pipeline/reference/
+  - https://www.jenkins.io/projects/jcasc/
+
+- Materi yang harus ada
+
+1. Dasar & Setup (Phase 1)
+   - Konsep CI, Continuous Delivery vs Continuous Deployment, arsitektur Jenkins (Controller vs Agent/Executor), perbedaan build automation tradisional dengan Pipeline-as-Code.
+   - Instalasi lokal dengan Podman (`jenkins/jenkins:lts-jdk17`), Unlock Jenkins, Setup Wizard, instalasi plugin, backup `JENKINS_HOME`.
+2. Administrasi & Operasi Dasar (Phase 2)
+   - Tur Dashboard & Manage Jenkins, manajemen plugin (pasang, update, troubleshooting, System Log).
+   - Keamanan: authentication vs authorization (Matrix, Project-based, Role Strategy), pengguna & grup, Credentials Manager (SSH, username/password, secret text, sertifikat) dan pemakaiannya di pipeline.
+   - Freestyle project: SCM, trigger (Poll SCM/cron `H`), build step, post-build, serta alasan transisi ke Pipeline.
+3. Pipeline as Code (Phase 3)
+   - Declarative: anatomi `Jenkinsfile`, `agent`, `options`, `triggers`, `environment`, `parameters`, `stages`, `post`, dan pemasangan "Pipeline script from SCM".
+   - Scripted: dasar Groovy DSL, `node`/`stage`, `if-else`, `try-catch`, perulangan, kapan dipakai, pengantar sandbox & Script Approval.
+   - Pipeline lanjutan: `parallel`, `when`, `matrix` ringkas, `input` untuk persetujuan manual, `timeout`/`retry`, `stash`/`unstash`.
+4. Integrasi SCM & Pemicu Otomatis (Phase 4)
+   - Koneksi GitHub/GitLab via SSH key & access token, webhook (`/github-webhook/`), Poll SCM, Multibranch Pipeline & Branch Indexing.
+   - Validasi pull request: status check balik ke platform, comment hasil build, merge gate (branch protection), keamanan PR dari fork.
+5. Build Terdistribusi & Agent Container (Phase 5)
+   - Agent statis via SSH & inbound (agent.jar), executor, label, routing `agent { label '...' }`.
+   - Agent dinamis container (Docker/Podman), isolasi build, membangun & mendorong image ke registry lokal, catatan keamanan socket container.
+6. Fitur Enterprise, Shared Library & Keamanan (Phase 6)
+   - Shared library (`vars/`, `src/`, `resources/`), `@Library(...)`, pendaftaran Global Trusted Pipeline Libraries, versioning.
+   - Hardening: Content Security Policy, Script Approval/sandbox, audit log, Configuration as Code (JCasC/YAML), backup & disaster recovery (ThinBackup, tar `JENKINS_HOME`).
+7. Ekosistem Produksi (Phase 7)
+   - Testing & kualitas (JUnit, SonarQube Community, OWASP Dependency-Check), artefak (Nexus/Artifactory OSS, registry), CD & GitOps (Helm, ArgoCD), notifikasi (email, Slack, Teams).
+8. Praktik Proyek
+   - Proyek 1: pipeline web app sederhana (test → build image → tag rilis).
+   - Proyek 2: Multibranch microservice dengan webhook; `feature` test saja, `main` build & push registry lokal.
+   - Proyek 3: GitOps ujung ke ujung — Jenkins memperbarui repository manifest, ArgoCD/Kubernetes menyinkronkan ke cluster lokal Minikube/Kind.

@@ -184,6 +184,23 @@ async function main() {
     'content/luceemvc/04-mvc-controller-view.js',
     'content/luceemvc/05-mvc-model-validasi.js',
     'content/luceemvc/06-mvc-rilis.js',
+    'content/jenkins/quiz-questions.js',
+    'content/jenkins/01-pengantar-cicd.js',
+    'content/jenkins/02-instalasi-jenkins.js',
+    'content/jenkins/03-administrasi-plugin.js',
+    'content/jenkins/04-keamanan-kredensial.js',
+    'content/jenkins/05-freestyle-job.js',
+    'content/jenkins/06-pipeline-deklaratif.js',
+    'content/jenkins/07-pipeline-terprogram.js',
+    'content/jenkins/08-pipeline-lanjutan.js',
+    'content/jenkins/09-git-webhook-multibranch.js',
+    'content/jenkins/10-validasi-pull-request.js',
+    'content/jenkins/11-agent-statis.js',
+    'content/jenkins/12-agent-dinamis.js',
+    'content/jenkins/13-shared-library.js',
+    'content/jenkins/14-hardening-jcasc.js',
+    'content/jenkins/15-integrasi-ekosistem.js',
+    'content/jenkins/16-praktik-proyek.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -501,6 +518,48 @@ async function main() {
   check('rujukan Go GUI (fyne.io, docs Fyne, pkg.go.dev)',
     ['https://fyne.io/', 'https://docs.fyne.io/started/', 'https://pkg.go.dev/fyne.io/fyne/v2']
       .every(u => guiRefs.includes(u)));
+
+  // 4i) konten Jenkins: 16 pelajaran sesuai spesifikasi jenkins.md + kuis
+  const jk = CONTENT.get('jenkins');
+  check('Jenkins terdaftar & status ready', !!jk && jk.status === 'ready');
+  check('16 pelajaran Jenkins', jk.lessons.length === 16);
+  const jkIds = jk.lessons.map(l => l.id);
+  check('id pelajaran Jenkins unik', new Set(jkIds).size === jkIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Jenkins terisi',
+    jk.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  let jkBadSection = 0, jkFig = 0;
+  for (const l of jk.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) jkBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) jkFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) jkBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) jkBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) jkBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) jkBadSection++;
+        if ((s.code || '').includes('`')) jkBadSection++;      // kode bebas backtick
+      }
+      if (s.type === 'live') jkBadSection++;                    // bab Jenkins tanpa latihan live
+    }
+  }
+  check('struktur section pelajaran Jenkins valid', jkBadSection === 0);
+  check('tiap pelajaran Jenkins memuat figur ilustrasi (16/16)', jkFig === 16);
+  check('40 soal kuis Jenkins lengkap (4 opsi, jawaban & penjelasan) & id unik jqNN',
+    jk.quizPool.length === 40 &&
+    new Set(jk.quizPool.map(q => q.id)).size === jk.quizPool.length &&
+    jk.quizPool.every(q => /^jq\d{2}$/.test(q.id)) &&
+    !jk.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const jkRefs = (jk.refs || []).map(r => r.url);
+  check('rujukan Jenkins (jenkins.io doc, tutorial, pipeline reference, jcasc)',
+    ['https://www.jenkins.io/doc/', 'https://www.jenkins.io/learn/tutorials/',
+     'https://www.jenkins.io/doc/pipeline/reference/', 'https://www.jenkins.io/projects/jcasc/']
+      .every(u => jkRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',
