@@ -208,9 +208,26 @@ const CONTENT = (() => {
       ]
     },
 
+    gogui: {
+      id: 'gogui',
+      title: 'Contoh Project Go GUI',
+      tagline: 'Todo App Desktop dengan Fyne + Database Bebas',
+      icon: 'assets/logos/go.svg',
+      color: '#0E7490',
+      desc: 'Bangun aplikasi desktop nyata dengan Go: GUI Fyne, arsitektur repository untuk database bebas (SQLite/MySQL/in-memory), CRUD dengan validasi, pencarian & filter, background task aman, testing unit & integrasi, hingga build & rilis aplikasi.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.GOGUI_LESSONS || []).slice(),
+      quizPool: (window.GOGUI_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Situs Resmi Fyne', url: 'https://fyne.io/' },
+        { label: 'Dokumentasi Fyne — Getting Started', url: 'https://docs.fyne.io/started/' },
+        { label: 'Go Reference — fyne.io/fyne/v2', url: 'https://pkg.go.dev/fyne.io/fyne/v2' }
+      ]
+    },
+
     docker: {
-      id: 'docker',
-      title: 'Docker',
+      id: 'docker',      title: 'Docker',
       tagline: 'Containerisasi Aplikasi',
       icon: 'assets/logos/docker.png',
       color: '#2496ED',
@@ -288,5 +305,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

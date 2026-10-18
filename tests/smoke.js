@@ -145,6 +145,17 @@ async function main() {
     'content/gorestapi/08-unit-testing.js',
     'content/gorestapi/09-integration-testing.js',
     'content/gorestapi/10-proyek-scalable.js',
+    'content/gogui/quiz-questions.js',
+    'content/gogui/01-pengenalan-proyek.js',
+    'content/gogui/02-jendela-widget.js',
+    'content/gogui/03-daftar-list.js',
+    'content/gogui/04-form-validasi.js',
+    'content/gogui/05-database-repository.js',
+    'content/gogui/06-crud-dialog.js',
+    'content/gogui/07-filter-pencarian.js',
+    'content/gogui/08-arsitektur-testing.js',
+    'content/gogui/09-tugas-latar-tema.js',
+    'content/gogui/10-build-rilis.js',
     'content/lucee/quiz-questions.js',
     'content/lucee/01-pengenalan-setup.js',
     'content/lucee/02-sintaks-dasar.js',
@@ -440,6 +451,56 @@ async function main() {
   check('rujukan Framework MVC (docs Lucee, CommandBox, GitHub pojokcodeid)',
     ['https://docs.lucee.org/index.html', 'https://commandbox.ortusbooks.com/', 'https://github.com/pojokcodeid/cfml-mvc-framework']
       .every(u => mvcRefs.includes(u)));
+
+  // 4h) konten Contoh Project Go GUI: 10 pelajaran + 40 soal kuis
+  const gui = CONTENT.get('gogui');
+  check('Contoh Project Go GUI terdaftar & status ready', !!gui && gui.status === 'ready');
+  check('10 pelajaran Contoh Project Go GUI', gui.lessons.length === 10);
+  const guiIds = gui.lessons.map(l => l.id);
+  check('id pelajaran Go GUI unik', new Set(guiIds).size === guiIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Go GUI terisi',
+    gui.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && l.intro && l.intro.length && l.objectives && l.objectives.length &&
+      l.recap && l.recap.length));
+  check('tiap pelajaran Go GUI punya contoh kode, vocab & tip/warn',
+    gui.lessons.every(l =>
+      l.sections.some(s => s.type === 'example' && s.code && s.output === false) &&
+      l.sections.some(s => s.type === 'vocab' && s.items.length >= 6) &&
+      (l.sections.some(s => s.type === 'tip') || l.sections.some(s => s.type === 'warn'))));
+  check('contoh kode Go bebas backtick & ${',
+    gui.lessons.every(l => l.sections.every(s =>
+      s.type !== 'example' || (!s.code.includes('`') && !s.code.includes('${')))));
+  let guiFig = 0, guiLiveOk = 0, guiLiveBad = 0, guiBadSection = 0;
+  for (const l of gui.lessons) {
+    const typesL = new Set(l.sections.map(s => s.type));
+    if (typesL.size < 3) guiBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) guiFig++;
+    for (const s of l.sections) {
+      if (s.type === 'live') {
+        if (s.lang !== 'html' || /<!DOCTYPE/i.test(s.initial || '') !== true || !s.hint ||
+            !/^<!DOCTYPE/i.test((s.initial || '').trim())) guiLiveBad++;
+        else guiLiveOk++;
+      }
+    }
+  }
+  check('struktur section pelajaran Go GUI valid', guiBadSection === 0);
+  check('pelajaran pilihan & pengujian memuat figur ilustrasi (>= 2)',
+    gui.lessons.filter(l => ['gui-database', 'gui-testing'].includes(l.id))
+      .every(l => l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))));
+  check('figur ilustrasi Go GUI tersebar (>= 3 pelajaran)', guiFig >= 3);
+  check('latihan simulasi (live) Go GUI valid & memadai (>= 3)',
+    guiLiveBad === 0 && guiLiveOk >= 3);
+  check('40 soal kuis Go GUI lengkap (4 opsi, jawaban & penjelasan) & id unik guiNN',
+    gui.quizPool.length === 40 &&
+    new Set(gui.quizPool.map(q => q.id)).size === gui.quizPool.length &&
+    gui.quizPool.every(q => /^gui\d{2}$/.test(q.id)) &&
+    !gui.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const guiRefs = (gui.refs || []).map(r => r.url);
+  check('rujukan Go GUI (fyne.io, docs Fyne, pkg.go.dev)',
+    ['https://fyne.io/', 'https://docs.fyne.io/started/', 'https://pkg.go.dev/fyne.io/fyne/v2']
+      .every(u => guiRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

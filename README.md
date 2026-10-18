@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, dan **Framework MVC Lucee CFML (6 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, dan **Framework MVC Lucee CFML (6 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
@@ -52,6 +52,8 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/goweb/        # materi tutorial Go Web Examples (Bahasa Indonesia)
 ├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
 ├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
+├── content/gogui/        # materi tutorial Contoh Project Go GUI (Bahasa Indonesia)
+├── examples/go-todo-app/ # contoh proyek desktop Go + Fyne + database bebas (dari materi gogui)
 ├── examples/react-project/ # contoh proyek React nyata (dari materi reactproject)
 ├── examples/cfml-mvc-framework/  # contoh proyek framework MVC (dari materi luceemvc)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
@@ -117,6 +119,7 @@ __CODE__
 - **Go / Golang** — https://www.gotutorial.org/ · https://go.dev/doc/tutorial/ · https://www.w3schools.com/go/index.php
 - **Go Web Examples** — https://gowebexamples.com/
 - **Go REST API** — https://pkg.go.dev/net/http · https://github.com/golang-jwt/jwt · https://github.com/go-sql-driver/mysql · https://mariadb.com/kb/en/documentation/
+- **Contoh Project Go GUI** — https://fyne.io/ · https://docs.fyne.io/started/ · https://pkg.go.dev/fyne.io/fyne/v2
 - **Docker** — https://www.freecodecamp.org/news/the-docker-handbook/ · https://docs.docker.com/get-started/ · https://docs.docker.com/reference/
 - **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 - **Framework MVC (Lucee CFML)** — https://github.com/pojokcodeid/cfml-mvc-framework · https://commandbox.ortusbooks.com/ · https://docs.lucee.org/index.html

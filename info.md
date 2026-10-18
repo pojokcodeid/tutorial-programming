@@ -361,6 +361,27 @@ project nyata ada di folder `examples/react-project/`.
   - Integration testing: build tag, database test terpisah, seeding & pembersihan data
   - Graceful shutdown, batas waktu server, dan langkah lanjutan untuk produksi
 
+## Topik Contoh Project Go GUI (Fyne)
+
+Proyek nyata: aplikasi desktop Todo App dengan Go + Fyne + database bebas.
+Contoh proyek lengkap ada di `examples/go-todo-app/`.
+
+- Rujukan
+  - https://fyne.io/
+  - https://docs.fyne.io/started/
+  - https://pkg.go.dev/fyne.io/fyne/v2
+- Topik yang harus dibahas (10 pelajaran)
+  - Pengenalan proyek: apa yang dibangun, arsitektur layered (ui → service → repository), struktur folder cmd/ & internal/, dan peta belajar 10 pelajaran
+  - Setup Go modules, instalasi Fyne (fyne get & toolchain), jendela aplikasi, widget dasar (Label, Button, Entry), layout Border/VBox, serta perintah fyne doctor untuk mendiagnosis masalah build GUI
+  - Menampilkan daftar data dengan widget.List, template cell (NewLabel), binding data lewat closure, perbandingan Border vs VBox, dan refresh daftar setelah data berubah
+  - Form input: Entry, Select, Check, validasi di dua lapis (model & service), Entry.Validator, serta pesan error yang ramah pengguna
+  - Database bebas: interface Repository, driver SQLite (modernc.org/sqlite, tanpa cgo), MySQL (go-sql-driver), dan in-memory untuk testing, dipilih lewat environment variable
+  - CRUD lengkap: dialog tambah/edit (Dialog.NewCustom), konfirmasi hapus, goroutine + fyne.Do/fyne.DoAndWait untuk update widget dari latar belakang, dan bug pemanggilan OnChanged saat inisialisasi
+  - Filter & pencarian: gabungan filter tombol + kata kunci, query dinamis di SQL (placeholder aman), pencarian case-insensitive, dan tampilan kosong (empty state)
+  - Arsitektur & testing: unit test table-driven dengan mock repository, uji UI headless (test.NewApp), serta race detector (go test -race)
+  - Tugas lanjutan & kustomisasi tema: resource gambar (fyne.io/fyne/v2/app), tema kustom dengan accent color, preferensi aplikasi, dan ide fitur tambahan (snooze, ekspor JSON, prioritas warna)
+  - Build & rilis: perintah fyne package (Windows/macOS/Linux/Android/iOS), ikon & metadata, cross-compile, serta checklist sebelum distribusi
+
 ## Topik UML
 
 - Rujukan
