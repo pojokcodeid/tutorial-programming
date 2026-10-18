@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 21: Fondasi Framework MVC (L21)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 1: Fondasi Framework MVC (M1)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-fondasi',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-fondasi',
   title: 'Fondasi Framework MVC: Arsitektur & Setup Proyek',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '16 menit',

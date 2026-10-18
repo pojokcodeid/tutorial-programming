@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 26: Rilis & Pengujian (L26)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 6: Rilis & Pengujian (M6)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-rilis',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-rilis',
   title: 'Pengujian Route, Troubleshooting & Rilis',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '14 menit',

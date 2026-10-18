@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 24: Controller & View (L24)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 4: Controller & View (M4)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-controller-view',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-controller-view',
   title: 'BaseController, View & Flash Message',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '16 menit',

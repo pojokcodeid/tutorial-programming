@@ -157,6 +157,13 @@ async function main() {
     'content/lucee/18-integrasi-java.js',
     'content/lucee/19-testing-quality.js',
     'content/lucee/20-devops-security.js',
+    'content/luceemvc/quiz-questions.js',
+    'content/luceemvc/01-mvc-fondasi.js',
+    'content/luceemvc/02-env-config.js',
+    'content/luceemvc/03-mvc-router.js',
+    'content/luceemvc/04-mvc-controller-view.js',
+    'content/luceemvc/05-mvc-model-validasi.js',
+    'content/luceemvc/06-mvc-rilis.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -357,6 +364,44 @@ async function main() {
   check('rujukan Lucee sesuai info.md (docs.lucee.org & GitBook)',
     ['https://docs.lucee.org/index.html', 'https://rorylaitila.gitbooks.io/lucee/content/']
       .every(u => luceeRefs.includes(u)));
+  check('soal kuis Lucee berhenti di lq66 (soal Framework MVC pindah materi)',
+    lucee.quizPool.every(q => /^lq\d+$/.test(q.id) && parseInt(q.id.slice(2), 10) <= 66));
+
+  // 4g) konten Framework MVC (Lucee CFML): 6 pelajaran + 15 soal kuis, materi terpisah dari Lucee CFML
+  const mvc = CONTENT.get('luceemvc');
+  check('Framework MVC (Lucee CFML) terdaftar & status ready', !!mvc && mvc.status === 'ready');
+  check('6 pelajaran Framework MVC', mvc.lessons.length === 6);
+  const mvcIds = mvc.lessons.map(l => l.id);
+  check('id pelajaran Framework MVC unik', new Set(mvcIds).size === mvcIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Framework MVC terisi',
+    mvc.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && l.intro && l.intro.length && l.objectives && l.objectives.length &&
+      l.recap && l.recap.length));
+  let mvcBadSection = 0, mvcCfml = 0, mvcFig = 0;
+  for (const l of mvc.lessons) {
+    const typesL = new Set(l.sections.map(s => s.type));
+    if (typesL.size < 3) mvcBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && s.items.length >= 5)) mvcBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) mvcBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) mvcBadSection++;
+    if (l.sections.some(s => s.type === 'example' && s.lang === 'cfml')) mvcCfml++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) mvcFig++;
+    for (const s of l.sections) {
+      if (s.type === 'example' && (s.output !== false || !s.explain || s.explain.length < 2)) mvcBadSection++;
+    }
+  }
+  check('struktur section pelajaran Framework MVC valid', mvcBadSection === 0);
+  check('pelajaran Framework MVC memuat contoh CFML & figur ilustrasi', mvcCfml >= 5 && mvcFig >= 2);
+  check('15 soal kuis Framework MVC lengkap (4 opsi, jawaban & penjelasan) & id unik',
+    mvc.quizPool.length === 15 &&
+    new Set(mvc.quizPool.map(q => q.id)).size === mvc.quizPool.length &&
+    !mvc.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const mvcRefs = (mvc.refs || []).map(r => r.url);
+  check('rujukan Framework MVC (docs Lucee, CommandBox, GitHub pojokcodeid)',
+    ['https://docs.lucee.org/index.html', 'https://commandbox.ortusbooks.com/', 'https://github.com/pojokcodeid/cfml-mvc-framework']
+      .every(u => mvcRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

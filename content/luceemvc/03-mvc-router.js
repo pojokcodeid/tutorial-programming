@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 23: Mesin Routing (L23)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 3: Mesin Routing (M3)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-router',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-router',
   title: 'Mesin Routing: URL ke Controller Method',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '17 menit',

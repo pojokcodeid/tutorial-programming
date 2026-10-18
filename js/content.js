@@ -231,7 +231,7 @@ const CONTENT = (() => {
       tagline: 'Bahasa Server CFML Open Source',
       icon: 'assets/logos/lucee.svg',
       color: '#01798A',
-      desc: 'Belajar Lucee CFML dari nol hingga mahir: sintaks tag & cfscript, variabel dan scope, database dengan CRUD aman, ORM, CFC & OOP, REST API, lifecycle Application.cfc, konfigurasi & cache, integrasi Java, testing, Docker, deployment & keamanan, hingga proyek praktis membangun framework MVC sendiri (routing, controller, model, view, konfigurasi .env).',
+      desc: 'Belajar Lucee CFML dari nol hingga mahir: sintaks tag & cfscript, variabel dan scope, database dengan CRUD aman, ORM, CFC & OOP, REST API, lifecycle Application.cfc, konfigurasi & cache, integrasi Java, testing, hingga Docker, deployment & keamanan. Untuk proyek praktis membangun framework MVC sendiri, lanjut ke materi Framework MVC (Lucee CFML).',
       status: 'ready',
       sequential: true,
       lessons: (window.LUCEE_LESSONS || []).slice(),
@@ -240,6 +240,24 @@ const CONTENT = (() => {
         { label: 'Dokumentasi Resmi Lucee', url: 'https://docs.lucee.org/index.html' },
         { label: 'Lucee GitBook — Rory Laitila', url: 'https://rorylaitila.gitbooks.io/lucee/content/' },
         { label: 'CommandBox Book — Ortus Solutions', url: 'https://commandbox.ortusbooks.com/' }
+      ]
+    },
+
+    luceemvc: {
+      id: 'luceemvc',
+      title: 'Framework MVC (Lucee CFML)',
+      tagline: 'Proyek Praktis: Framework Buatan Sendiri',
+      icon: 'assets/logos/lucee.svg',
+      color: '#026E7E',
+      desc: 'Proyek praktis membangun framework MVC ringan dari nol dengan Lucee CFML: struktur folder & front controller, URL rewrite CommandBox, konfigurasi .env, mesin routing berparameter, controller & view dengan flash message, model dengan query aman & validasi bergaya Laravel, hingga checklist rilis produksi.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.LUCEEMVC_LESSONS || []).slice(),
+      quizPool: (window.LUCEEMVC_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Lucee', url: 'https://docs.lucee.org/index.html' },
+        { label: 'CommandBox Book — Ortus Solutions', url: 'https://commandbox.ortusbooks.com/' },
+        { label: 'cfml-mvc-framework — GitHub (pojokcodeid)', url: 'https://github.com/pojokcodeid/cfml-mvc-framework' }
       ]
     }
   };
@@ -250,5 +268,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

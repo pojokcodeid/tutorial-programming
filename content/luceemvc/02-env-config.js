@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 22: Konfigurasi .env (L22)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 2: Konfigurasi .env (M2)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-env',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-env',
   title: 'Konfigurasi Aplikasi dari File .env',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '15 menit',

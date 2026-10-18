@@ -1,12 +1,12 @@
 /* ============================================================
-   Pelajaran Lucee CFML — Bab 25: Model & Validasi (L25)
+   Pelajaran Framework MVC (Lucee CFML) — Bab 5: Model & Validasi (M5)
    ============================================================ */
 'use strict';
 
-window.LUCEE_LESSONS = window.LUCEE_LESSONS || [];
+window.LUCEEMVC_LESSONS = window.LUCEEMVC_LESSONS || [];
 
-window.LUCEE_LESSONS.push({
-  id: 'lucee-mvc-model-validasi',
+window.LUCEEMVC_LESSONS.push({
+  id: 'mvc-model-validasi',
   title: 'Model, Query Aman & Validasi Input',
   chapter: 'Proyek Praktis: Framework MVC',
   duration: '16 menit',
