@@ -279,6 +279,24 @@ const CONTENT = (() => {
       ]
     },
 
+    rabbitmq: {
+      id: 'rabbitmq', title: 'RabbitMQ',
+      tagline: 'Message Broker & Antrean Pesan',
+      icon: 'assets/logos/rabbitmq.svg',
+      color: '#FF6600',
+      desc: 'Belajar RabbitMQ dari nol dengan Podman: konsep message broker & AMQP, arsitektur exchange-queue-binding, pola routing (direct, fanout, topic, headers), keandalan pesan (durability, ACK, prefetch, dead letter, TTL, priority), praktik kode Node.js/Go/Java, hingga high availability, keamanan, monitoring, dan production readiness.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.RABBITMQ_LESSONS || []).slice(),
+      quizPool: (window.RABBITMQ_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi RabbitMQ', url: 'https://www.rabbitmq.com/docs' },
+        { label: 'RabbitMQ Tutorials', url: 'https://www.rabbitmq.com/tutorials' },
+        { label: 'RabbitMQ Management Plugin', url: 'https://www.rabbitmq.com/docs/management' },
+        { label: 'RabbitMQ Clustering & Quorum Queues', url: 'https://www.rabbitmq.com/docs/clustering' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -341,5 +359,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

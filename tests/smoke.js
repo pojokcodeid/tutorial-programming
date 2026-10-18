@@ -201,6 +201,27 @@ async function main() {
     'content/jenkins/14-hardening-jcasc.js',
     'content/jenkins/15-integrasi-ekosistem.js',
     'content/jenkins/16-praktik-proyek.js',
+    'content/rabbitmq/quiz-questions.js',
+    'content/rabbitmq/01-pengantar-broker.js',
+    'content/rabbitmq/02-setup-podman.js',
+    'content/rabbitmq/03-arsitektur-dasar.js',
+    'content/rabbitmq/04-exchange-default-direct.js',
+    'content/rabbitmq/05-exchange-fanout-topic.js',
+    'content/rabbitmq/06-exchange-headers-routing.js',
+    'content/rabbitmq/07-durability-persistence.js',
+    'content/rabbitmq/08-consumer-acknowledgement.js',
+    'content/rabbitmq/09-prefetch-fair-dispatch.js',
+    'content/rabbitmq/10-dead-letter-exchange.js',
+    'content/rabbitmq/11-ttl-priority-queue.js',
+    'content/rabbitmq/12-integrasi-nodejs.js',
+    'content/rabbitmq/13-integrasi-go.js',
+    'content/rabbitmq/14-integrasi-java.js',
+    'content/rabbitmq/15-cluster-high-availability.js',
+    'content/rabbitmq/16-federation-shovel.js',
+    'content/rabbitmq/17-keamanan-vhost-tls.js',
+    'content/rabbitmq/18-monitoring-prometheus.js',
+    'content/rabbitmq/19-tuning-production.js',
+    'content/rabbitmq/20-praktik-proyek.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -560,6 +581,47 @@ async function main() {
     ['https://www.jenkins.io/doc/', 'https://www.jenkins.io/learn/tutorials/',
      'https://www.jenkins.io/doc/pipeline/reference/', 'https://www.jenkins.io/projects/jcasc/']
       .every(u => jkRefs.includes(u)));
+
+  // 4j) konten RabbitMQ: 20 pelajaran sesuai kurikulum rabbitmq.md + 40 soal kuis
+  const rq = CONTENT.get('rabbitmq');
+  check('RabbitMQ terdaftar & status ready', !!rq && rq.status === 'ready');
+  check('20 pelajaran RabbitMQ', rq.lessons.length === 20);
+  const rqIds = rq.lessons.map(l => l.id);
+  check('id pelajaran RabbitMQ unik', new Set(rqIds).size === rqIds.length);
+  check('judul, durasi, bab, intro, objectives & recap RabbitMQ terisi',
+    rq.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  let rqBadSection = 0, rqFig = 0;
+  for (const l of rq.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) rqBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) rqFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) rqBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) rqBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) rqBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) rqBadSection++;
+      }
+      if (s.type === 'live') rqBadSection++; // bab RabbitMQ tanpa latihan live
+    }
+  }
+  check('struktur section pelajaran RabbitMQ valid', rqBadSection === 0);
+  check('tiap pelajaran RabbitMQ memuat figur ilustrasi (20/20)', rqFig === 20);
+  check('40 soal kuis RabbitMQ lengkap (4 opsi, jawaban & penjelasan) & id unik rqNN',
+    rq.quizPool.length === 40 &&
+    new Set(rq.quizPool.map(q => q.id)).size === rq.quizPool.length &&
+    rq.quizPool.every(q => /^rq\d{2}$/.test(q.id)) &&
+    !rq.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const rqRefs = (rq.refs || []).map(r => r.url);
+  check('rujukan RabbitMQ (rabbitmq.com docs, tutorials, management, clustering)',
+    ['https://www.rabbitmq.com/docs', 'https://www.rabbitmq.com/tutorials',
+     'https://www.rabbitmq.com/docs/management', 'https://www.rabbitmq.com/docs/clustering']
+      .every(u => rqRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

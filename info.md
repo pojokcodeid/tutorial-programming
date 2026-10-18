@@ -559,3 +559,45 @@ contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
    - Proyek 1: pipeline web app sederhana (test → build image → tag rilis).
    - Proyek 2: Multibranch microservice dengan webhook; `feature` test saja, `main` build & push registry lokal.
    - Proyek 3: GitOps ujung ke ujung — Jenkins memperbarui repository manifest, ArgoCD/Kubernetes menyinkronkan ke cluster lokal Minikube/Kind.
+
+## Topik Mengenai RabbitMQ (Message Broker)
+
+Materi RabbitMQ (message broker & protokol AMQP). Kebutuhan lengkap ada di `rabbitmq.md` (RabbitMQ
+Mastery Roadmap); materi disusun 20 pelajaran berbahasa Indonesia dengan diagram,
+contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
+(Podman rootless, image `rabbitmq:3-management`, tanpa layanan berbayar).
+
+- Rujukan
+  - https://www.rabbitmq.com/docs
+  - https://www.rabbitmq.com/tutorials
+  - https://www.rabbitmq.com/docs/management
+  - https://www.rabbitmq.com/docs/clustering
+
+- Materi yang harus ada
+
+1. Pengenalan (Phase 0–1)
+   - Konsep message broker, komunikasi sinkron vs asinkron, peran broker (antre, routing, menyerahkan ketika siap), decoupling.
+   - Setup RabbitMQ dengan Podman (`rabbitmq:3-management`), port 5672 (AMQP) & 15672 (dashboard), kredensial `admin`/`admin123`.
+2. Arsitektur & Exchange (Phase 2–3)
+   - Alur pesan RabbitMQ: producer → exchange → binding → queue → consumer.
+   - Tipe exchange: default (nama antrean), direct, fanout, topic (wildcard `*`/`#`), headers (x-match all/any).
+3. Keandalan Pesan (Phase 4)
+   - Durability antrean (`durable`) vs persistence pesan (`persistent`), pengaruhnya saat restart broker.
+   - Consumer acknowledgment (ACK/NACK), requeue vs DLX, prefetch (QoS) & fair dispatch.
+   - Dead Letter Exchange (DLX) & DLQ: nack requeue=false, TTL, x-max-length; pola retry berbasis TTL.
+   - TTL pesan (expiration) & antrean (x-message-ttl), priority queue (x-max-priority 0–255).
+4. Integrasi Aplikasi (Phase 5)
+   - Node.js (amqplib): publisher, worker, prefetch, graceful shutdown.
+   - Go (amqp091-go): QueueDeclare, PublishWithContext, Qos, goroutine, signal handling.
+   - Java (Spring AMQP): RabbitTemplate, @RabbitListener, konversi JSON, retry & DLQ deklaratif.
+5. High Availability & Multi-Region (Phase 6)
+   - Cluster RabbitMQ (Erlang cookie, join_cluster), quorum queue (Raft) vs mirrored queue (legacy).
+   - Federation (upstream-downstream, exchange-to-exchange) & shovel (queue-to-remote, ack-mode on-confirm).
+6. Keamanan & Monitoring (Phase 7)
+   - User, vhost, permission (configure/write/read) dengan pola regex; TLS (port 5671, amqps).
+   - Monitoring: plugin `rabbitmq_prometheus`, endpoint `/metrics`, Prometheus + Grafana, metrik kunci & alarm.
+7. Production Readiness & Praktik Proyek
+   - Tuning: publisher confirm, watermark memori, disk limit, heartbeat; anti-pattern yang harus dihindari.
+   - Proyek 1: worker queue sederhana (publisher, antrean durable, worker dengan ACK & prefetch).
+   - Proyek 2: publisher-subscriber (fanout) dengan retry & dead letter queue.
+   - Proyek 3: graceful shutdown — cancel consumer, selesaikan yang berjalan, tutup channel & koneksi.
