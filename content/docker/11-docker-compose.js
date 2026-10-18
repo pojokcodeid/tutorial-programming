@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Compose',
   duration: '9–11 menit',
   intro: [
-    '<b>Docker Compose</b> mempermudah menjalankan aplikasi yang terdiri dari <b>banyak container</b> (mis. web + db + redis). Semua didefinisikan dalam 1 file <code>docker-compose.yml</code> dan dikendalikan dengan 1 perintah.'
+    '<b>Docker Compose</b> mempermudah kamu menjalankan aplikasi yang terdiri dari <b>banyak container</b> sekaligus, misalnya kombinasi web, database, dan redis. Seluruhnya didefinisikan dalam satu file <code>docker-compose.yml</code> lalu dikendalikan dengan beberapa perintah sederhana.',
+    'Dengan Compose, kamu tidak perlu lagi menghafal deretan opsi <code>docker run</code> yang panjang untuk setiap container.'
   ],
   objectives: [
     'Memahami apa itu Docker Compose & kapan dipakai',
@@ -23,11 +24,11 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Apa itu Docker Compose?</h3><p>Tanpa Compose, kamu harus jalankan <code>docker run</code> berkali-kali dengan banyak flag (network, volume, env, port). Dengan Compose, kamu definisikan <b>services</b> (container), <b>networks</b>, <b>volumes</b> dalam <code>docker-compose.yml</code>.</p><p>Perintah utama: <code>docker compose up</code>, <code>docker compose down</code>, <code>docker compose ps</code>, <code>docker compose logs</code>.</p>'
+      html: '<h3>Apa itu Docker Compose?</h3><p>Tanpa Compose, kamu harus menjalankan <code>docker run</code> berkali-kali dengan berbagai opsi seperti jaringan, volume, variabel lingkungan, dan port untuk setiap container. Dengan Compose, kamu cukup mendefinisikan <b>layanan (services)</b>, <b>jaringan (networks)</b>, dan <b>volume</b> di dalam satu file <code>docker-compose.yml</code>.</p><p>Perintah utama yang akan sering dipakai: <code>docker compose up</code>, <code>docker compose down</code>, <code>docker compose ps</code>, dan <code>docker compose logs</code>.</p>'
     },
     {
       type: 'text',
-      html: '<h3>Struktur docker-compose.yml (dasar)</h3><p>Format modern (Compose Specification) umumnya tidak butuh <code>version:</code> lagi, tapi aman tetap ditulis atau bisa di-skip.</p>'
+      html: '<h3>Struktur dasar docker-compose.yml</h3><p>Pada format modern (Compose Specification), baris <code>version:</code> umumnya sudah tidak diperlukan lagi, namun tidak masalah jika tetap ditulis. Kamu bebas menuliskannya atau melewatkannya.</p>'
     },
     {
       type: 'example',
@@ -61,15 +62,15 @@ networks:
 volumes:
   db-data:`,
       explain: [
-        '<code>services</code> = definisi container (web, db).',
-        '<code>networks</code> = jaringan custom untuk komunikasi antar service.',
-        '<code>volumes</code> = named volume untuk persistensi.',
-        'Secara default, Compose buat network per project & semua service bisa saling reach via <b>nama service</b>.'
+        '<code>services</code> berisi definisi container, dalam contoh ini adalah web dan db.',
+        '<code>networks</code> adalah jaringan buatan untuk komunikasi antar layanan.',
+        '<code>volumes</code> adalah named volume yang dipakai untuk menyimpan data secara persisten.',
+        'Secara bawaan, Compose membuat jaringan tersendiri untuk setiap proyek sehingga semua layanan saling terhubung melalui <b>nama layanan</b>.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Contoh Praktis: Node.js + MySQL</h3><p>Kita buat project simpel: API Node.js (Express) yang connect ke MySQL. Kedua dijalankan bareng pakai Compose.</p><p>Struktur folder:</p><pre><code>compose-demo/\n├── docker-compose.yml\n├── app/\n│   ├── Dockerfile\n│   ├── package.json\n│   └── index.js</code></pre>'
+      html: '<h3>Contoh Praktis: Node.js + MySQL</h3><p>Mari kita buat proyek sederhana berupa API Node.js (Express) yang terhubung ke MySQL, lalu keduanya dijalankan bersama menggunakan Compose.</p><p>Struktur foldernya sebagai berikut:</p><pre><code>compose-demo/\n├── docker-compose.yml\n├── app/\n│   ├── Dockerfile\n│   ├── package.json\n│   └── index.js</code></pre>'
     },
     {
       type: 'text',
@@ -196,15 +197,15 @@ CMD ["npm", "start"]`,
 volumes:
   db-data:`,
       explain: [
-        '<code>build: ./app</code> → Compose akan build image dari Dockerfile di folder app.',
-        '<code>depends_on</code> + <code>condition: service_healthy</code> (pakai <code>service_healthy</code> butuh healthcheck) memastikan app mulai setelah DB siap.',
-        '<code>restart: unless-stopped</code> berguna biar auto-restart jika crash.',
-        'Port host 8086 → container 3000.'
+        '<code>build: ./app</code> membuat Compose membangun image dari Dockerfile yang ada di folder app.',
+        '<code>depends_on</code> beserta <code>condition: service_healthy</code> (memerlukan healthcheck) memastikan aplikasi baru mulai setelah database benar-benar siap menerima koneksi.',
+        '<code>restart: unless-stopped</code> membuat container otomatis dijalankan kembali bila mengalami crash.',
+        'Port 8086 di host diteruskan ke port 3000 di dalam container.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Perintah Docker Compose</h3>'
+      html: '<h3>Perintah Docker Compose</h3><p>Berikut kumpulan perintah yang paling sering dipakai untuk mengelola proyek Compose.</p>'
     },
     {
       type: 'example',
@@ -244,41 +245,41 @@ docker compose build --no-cache
 # Pull image terbaru
 docker compose pull`,
       explain: [
-        '<code>up -d</code> build (jika perlu) + create + start + attach network.',
-        '<code>down</code> bersih-bersih resource project ini.',
-        '<code>--volumes</code> akan menghapus named volume → data hilang.'
+        '<code>up -d</code> melakukan build bila diperlukan, lalu membuat, menjalankan, dan menghubungkan jaringan untuk seluruh stack.',
+        '<code>down</code> membersihkan seluruh resource milik proyek ini.',
+        'Opsi <code>--volumes</code> akan ikut menghapus named volume sehingga data di dalamnya hilang.'
       ]
     },
     {
       type: 'tip',
-      title: 'Networking Otomatis',
-      text: 'Kamu TIDAK perlu buat network manual. Compose otomatis buat network dengan nama <code>&lt;project&gt;_default</code>. Antar service bisa komunikasi via <b>nama service</b>.'
+      title: 'Jaringan Otomatis',
+      text: 'Kamu TIDAK perlu membuat jaringan secara manual. Compose otomatis membuat jaringan bernama <code>&lt;project&gt;_default</code>. Seluruh layanan dapat saling berkomunikasi melalui <b>nama layanan</b> tersebut.'
     },
     {
       type: 'warn',
       title: 'depends_on vs healthcheck',
-      text: '<code>depends_on</code> saja cuma jamin urutan start, BUKAN jamin DB "siap terima koneksi". Tambahkan <code>healthcheck</code> + <code>condition</code> biar lebih aman.'
+      text: 'Perintah <code>depends_on</code> saja hanya menjamin urutan penyalaan, BUKAN menjamin database sudah benar-benar siap menerima koneksi. Tambahkan <code>healthcheck</code> beserta <code>condition</code> agar lebih andal.'
     },
     {
       type: 'vocab',
       items: [
-        ['docker-compose.yml', 'File deklaratif untuk multi-container app.'],
-        ['service', 'Definisi container dalam Compose (bisa build atau image).'],
-        ['depends_on', 'Mengatur urutan start antar service.'],
-        ['healthcheck', 'Cek kesiapan service (healthy).'],
-        ['up', 'Buat & jalankan seluruh stack.'],
-        ['down', 'Hentikan & hapus resource project (opsional volumes).'],
-        ['ps', 'Lihat status service project.'],
-        ['logs', 'Tampilkan logs service.'],
-        ['exec', 'Eksekusi perintah di service running.']
+        ['docker-compose.yml', 'File deklaratif yang mendefinisikan aplikasi multi-container.'],
+        ['service', 'Definisi sebuah container dalam Compose, bisa dibuat dari build atau image.'],
+        ['depends_on', 'Mengatur urutan penyalaan antar layanan.'],
+        ['healthcheck', 'Pemeriksaan untuk memastikan sebuah layanan sudah siap (healthy).'],
+        ['up', 'Membuat dan menjalankan seluruh stack.'],
+        ['down', 'Menghentikan dan menghapus resource proyek (volume opsional).'],
+        ['ps', 'Melihat status layanan dalam proyek.'],
+        ['logs', 'Menampilkan log dari sebuah layanan.'],
+        ['exec', 'Menjalankan perintah di layanan yang sedang berjalan.']
       ]
     }
   ],
   recap: [
-    'Compose: 1 file (<code>docker-compose.yml</code>) → kendalikan banyak container.',
-    'Antar service komunikasi via <b>nama service</b> (network otomatis).',
-    '<code>docker compose up -d</code> untuk menjalankan stack.',
-    '<code>docker compose down</code> untuk bersihin (hindari <code>--volumes</code> kalau data mau dipertahankan).',
-    'Pakai <code>depends_on + healthcheck</code> biar app tunggu DB siap.'
+    'Compose memungkinkan satu file <code>docker-compose.yml</code> mengendalikan banyak container sekaligus.',
+    'Antar layanan saling berkomunikasi melalui <b>nama layanan</b> berkat jaringan otomatis.',
+    'Gunakan <code>docker compose up -d</code> untuk menjalankan seluruh stack.',
+    'Gunakan <code>docker compose down</code> untuk membersihkan; hindari <code>--volumes</code> bila data masih ingin dipertahankan.',
+    'Selalu gunakan <code>depends_on</code> bersama <code>healthcheck</code> agar aplikasi menunggu database benar-benar siap.'
   ]
 });

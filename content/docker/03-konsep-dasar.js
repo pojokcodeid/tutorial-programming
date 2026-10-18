@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Konsep',
   duration: '6–8 menit',
   intro: [
-    'Kamu sudah menjalankan <code>hello-world</code>. Sekarang pahami apa yang sebenarnya terjadi: Docker mencari Image, menarik (pull) dari Registry, lalu membuat & menjalankan Container.'
+    'Kamu sudah menjalankan <code>hello-world</code>. Sekarang mari pahami apa yang sebenarnya terjadi di balik layar: Docker mencari sebuah Image, menariknya (pull) dari Registry bila belum ada, lalu membuat dan menjalankan sebuah Container.',
+    'Pemahaman konsep Image, Container, dan Registry adalah fondasi yang akan kamu pakai di setiap perintah Docker berikutnya.'
   ],
   objectives: [
     'Membedakan Image vs Container',
@@ -22,7 +23,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Image vs Container</h3><p><b>Image</b> bersifat <b>immutable (read-only)</b>. Berisi filesystem, konfigurasi, perintah default, dan metadata. <b>Container</b> adalah <b>writable runtime</b> dari Image – saat container berjalan, Docker menambahkan <b>writable layer</b> di atas layer-layer read-only Image.</p>'
+      html: '<h3>Image vs Container</h3><p><b>Image</b> bersifat <b>immutable (read-only)</b>. Image berisi filesystem, konfigurasi, perintah bawaan (default command), dan metadata. Setelah dibuat, isinya tidak boleh diubah.</p><p><b>Container</b> adalah bentuk runtime yang bisa dibaca dan ditulis (read-write) dari sebuah Image. Saat container berjalan, Docker menambahkan satu <b>writable layer</b> di atas seluruh layer read-only Image. Segala perubahan file saat runtime (log, file sementara, konfigurasi tambahan) ditulis ke lapisan ini — dan lapisan inilah yang hilang ketika container dihapus.</p>'
     },
     {
       type: 'text',
@@ -68,7 +69,7 @@ Writable layer (container): [perubahan file saat runtime, log, tmp]`,
     },
     {
       type: 'text',
-      html: '<h3>Registry & Docker Hub</h3><p><b>Docker Registry</b> adalah server tempat menyimpan Image. <b>Docker Hub</b> (<a href="https://hub.docker.com/" target="_blank" rel="noopener">hub.docker.com</a>) adalah public registry default. Kamu bisa pakai registry lain (GitHub Container Registry, Google Artifact Registry, dll) atau self-hosted.</p><p>Image di registry biasanya ditulis dengan format: <code>[namespace/]nama[:tag]</code>. Contoh: <code>hello-world:latest</code>, <code>fhsinchy/hello-dock:latest</code>.</p>'
+      html: '<h3>Registry &amp; Docker Hub</h3><p><b>Docker Registry</b> adalah server tempat menyimpan dan mendistribusikan Image. <b>Docker Hub</b> (<a href="https://hub.docker.com/" target="_blank" rel="noopener">hub.docker.com</a>) adalah registry publik yang dipakai secara bawaan oleh Docker. Selain itu kamu juga dapat memakai registry lain seperti GitHub Container Registry, Google Artifact Registry, atau membuat registry privat sendiri.</p><p>Path sebuah Image di registry ditulis dengan format: <code>[namespace/]nama[:tag]</code>. Contoh: <code>hello-world:latest</code>, <code>library/nginx:1.27</code>, atau <code>fhsinchy/hello-dock:1.0.0</code>.</p>'
     },
     {
       type: 'example',
@@ -80,14 +81,14 @@ alpine:3.20
 nginx:1.27-alpine
 fhsinchy/hello-dock:1.0.0`,
       explain: [
-        '<code>latest</code> adalah tag default jika tidak disebutkan.',
-        'Pakai tag spesifik (versi) biar lebih aman & reproducible.',
-        'Image tanpa namespace biasanya resmi/library di Docker Hub.'
+        '<code>latest</code> adalah tag bawaan jika kamu tidak menyebutkan tag apa pun.',
+        'Untuk proyek produksi, gunakan tag versi yang spesifik agar lebih aman dan hasil build bisa diulang (reproducible).',
+        'Image tanpa namespace biasanya merupakan image resmi dari organisasi <code>library</code> di Docker Hub.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Alur docker run hello-world</h3><ol><li><b>Client</b> kirim <code>docker run hello-world</code> ke <b>Daemon</b>.</li><li>Daemon cek: ada <code>hello-world:latest</code> di local cache?</li><li>Jika tidak ada → <b>pull</b> dari Docker Hub.</li><li>Daemon <b>create</b> container dari Image (tambahkan writable layer).</li><li>Daemon <b>start</b> container → jalankan entrypoint/cmd → tampil output ke Client.</li></ol>'
+      html: '<h3>Alur Perintah docker run hello-world</h3><p>Satu perintah <code>docker run</code> sebenarnya menjalankan beberapa tahap di belakang layar. Memahami alur ini akan membantu kamu menebak di mana sebuah perintah bisa gagal:</p><ol><li><b>Client</b> mengirim perintah <code>docker run hello-world</code> ke <b>Daemon</b>.</li><li>Daemon mengecek apakah <code>hello-world:latest</code> sudah ada di cache lokal.</li><li>Jika belum ada, Daemon melakukan <b>pull</b> (unduh) Image dari Docker Hub.</li><li>Daemon <b>membuat (create)</b> container baru dari Image tersebut dengan menambahkan writable layer.</li><li>Daemon <b>menjalankan (start)</b> container, yaitu mengeksekusi perintah bawaan (ENTRYPOINT/CMD), lalu output-nya dikirim kembali ke Client (terminal kamu).</li></ol>'
     },
     {
       type: 'text',
@@ -133,31 +134,31 @@ docker image ls
 # Atau
 docker images`,
       explain: [
-        '<code>docker pull</code> hanya mengambil Image, tidak membuat container.',
-        '<code>docker image ls</code> menampilkan semua Image yang tersimpan lokal.'
+        '<code>docker pull</code> hanya mengambil Image ke lokal, tidak membuat container.',
+        '<code>docker image ls</code> menampilkan seluruh Image yang tersimpan di cache lokal beserta ukurannya.'
       ]
     },
     {
       type: 'tip',
-      title: 'Fakta Kecil',
-      text: 'Satu Image bisa dipakai untuk membuat ratusan container. Karena layer read-only dibagi, ini hemat disk & RAM.'
+      title: 'Fakta Menarik',
+      text: 'Satu Image dapat dipakai untuk membuat ratusan container sekaligus. Karena semua container dari Image yang sama berbagi layer read-only yang sama, penggunaan disk dan memori menjadi jauh lebih hemat.'
     },
     {
       type: 'vocab',
       items: [
-        ['Layer', 'Setiap instruksi di Dockerfile biasanya menghasilkan layer read-only baru.'],
-        ['Immutable', 'Tidak bisa diubah setelah dibuat (kondisi Image).'],
-        ['Writable layer', 'Lapisan tulis-hapus saat container berjalan (temporary).'],
-        ['Tag', 'Penanda versi/build pada Image (mis. :latest, :1.0.0).'],
-        ['Pull', 'Mengunduh Image dari Registry ke lokal.'],
-        ['Run', 'Gabungan create + start untuk menjalankan container dari Image.']
+        ['Layer', 'Setiap instruksi di Dockerfile umumnya menghasilkan satu layer read-only baru.'],
+        ['Immutable', 'Tidak dapat diubah setelah dibuat (sifat Image).'],
+        ['Writable layer', 'Lapisan tulis-sementara yang muncul saat container berjalan; hilang bila container dihapus.'],
+        ['Tag', 'Penanda versi/build pada Image (misalnya <code>:latest</code>, <code>:1.0.0</code>).'],
+        ['Pull', 'Proses mengunduh Image dari Registry ke penyimpanan lokal.'],
+        ['Run', 'Gabungan create + start untuk menjalankan container dari sebuah Image.']
       ]
     }
   ],
   recap: [
-    'Image = blueprint (read-only), Container = instance (read-write saat jalan).',
-    'Image berlapis (layered) → hemat resource.',
-    'Registry pusat penyimpanan Image (Docker Hub).',
-    'Alur: pull (jika perlu) → create → start.'
+    'Image adalah blueprint (read-only), Container adalah instance yang berjalan (read-write).',
+    'Image bersifat berlapis (layered) sehingga hemat sumber daya dan bisa dibagikan antar container.',
+    'Registry berfungsi sebagai pusat penyimpanan Image; Docker Hub adalah registry publik bawaan.',
+    'Alur di balik <code>docker run</code>: pull (jika belum ada) → create → start.'
   ]
 });

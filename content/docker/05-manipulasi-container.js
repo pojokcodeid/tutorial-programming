@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Praktik Dasar',
   duration: '7–9 menit',
   intro: [
-    'Kamu akan belajar: menjalankan container interaktif, masuk ke dalam container, mengeksekusi perintah di container yang sedang jalan, serta membuat container tanpa langsung menjalankannya.'
+    'Pada bab ini kamu akan belajar cara berinteraksi lebih dalam dengan container: menjalankan shell secara interaktif, masuk ke dalam container yang sedang berjalan, mengeksekusi perintah tambahan, serta membuat container tanpa langsung menjalankannya.',
+    'Kemampuan exec dan interactive shell ini sangat berguna saat kamu perlu mendiagnosis masalah di dalam container.'
   ],
   objectives: [
     'Menjalankan container dalam mode interaktif (-it)',
@@ -23,7 +24,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Mode Interaktif (-it)</h3><p>Untuk berinteraksi langsung dengan shell di dalam container, pakai <code>-it</code> (gabungan <code>-i</code> dan <code>-t</code>).</p><ul><li><code>-i</code> / <code>--interactive</code> – menjaga STDIN tetap terbuka</li><li><code>-t</code> / <code>--tty</code> – alokasikan pseudo-TTY (biar mirip terminal biasa)</li></ul>'
+      html: '<h3>Mode Interaktif (-it)</h3><p>Untuk berinteraksi langsung dengan shell di dalam container, gunakan opsi <code>-it</code>, yaitu gabungan dari <code>-i</code> dan <code>-t</code>:</p><ul><li><code>-i</code> / <code>--interactive</code> – menjaga kanal masukan (STDIN) tetap terbuka sehingga ketikanmu sampai ke container.</li><li><code>-t</code> / <code>--tty</code> – mengalokasikan terminal virtual (pseudo-TTY) sehingga tampilan output lebih rapi dan mudah dibaca.</li></ul><p>Kombinasi keduanya membuat kamu benar-benar "masuk" ke dalam shell container, persis seperti membuka terminal biasa.</p>'
     },
     {
       type: 'example',
@@ -35,19 +36,18 @@ window.DOCKER_LESSONS.push({
 # Atau singkat
 docker container run -it --rm alpine sh`,
       explain: [
-        'Kamu akan masuk ke shell <code>/ #</code> di dalam container Alpine.',
-        'Coba <code>ls</code>, <code>pwd</code>, <code>cat /etc/os-release</code>.',
-        '<code>--rm</code> otomatis hapus container saat kamu keluar (<code>exit</code>). Sangat berguna untuk coba-coba.'
+        'Kamu akan masuk ke shell <code>/ #</code> di dalam container Alpine. Coba ketik <code>ls</code>, <code>pwd</code>, atau <code>cat /etc/os-release</code>.',
+        'Opsi <code>--rm</code> otomatis menghapus container begitu kamu keluar (<code>exit</code>). Sangat berguna untuk keperluan percobaan sekali jalan.'
       ]
     },
     {
       type: 'tip',
       title: 'Keluar dari shell container',
-      text: 'Ketik <code>exit</code> atau tekan <code>Ctrl+D</code>. Jika pakai <code>--rm</code>, container langsung terhapus.'
+      text: 'Ketik <code>exit</code> atau tekan <code>Ctrl+D</code> untuk keluar. Jika kamu memakai <code>--rm</code>, container akan langsung terhapus pada saat kamu keluar.'
     },
     {
       type: 'text',
-      html: '<h3>Mengeksekusi Perintah di Container yang Sedang Berjalan (exec)</h3><p><code>docker container exec</code> dipakai untuk menjalankan perintah tambahan di <b>container yang sudah running</b>, tanpa menghentikan proses utamanya.</p>'
+      html: '<h3>Mengeksekusi Perintah di Container yang Sedang Berjalan (exec)</h3><p><code>docker container exec</code> dipakai untuk menjalankan perintah tambahan di <b>container yang sudah berjalan</b>, tanpa menghentikan proses utamanya. Ini adalah cara paling umum untuk memeriksa isi container atau mendiagnosis masalah.</p>'
     },
     {
       type: 'example',
@@ -60,19 +60,20 @@ docker container run -d --name web nginx:alpine
 # Cek isi direktori /usr/share/nginx/html
 docker container exec web ls /usr/share/nginx/html
 
-# Masuk shell bash di dalam container (nginx:alpine pakai sh/busybox)
+# Masuk ke shell di dalam container
+# (nginx:alpine memakai sh dari busybox, bukan bash)
 docker container exec -it web sh
 
-# Keluar: exit`,
+# Keluar dari shell dengan mengetik: exit`,
       explain: [
-        '<code>exec</code> tidak membuat container baru, cuma "masuk" & jalanin perintah.',
-        'Bisa dipakai untuk debug, cek file, restart service internal (jarang), dll.'
+        '<code>exec</code> tidak membuat container baru, ia hanya "masuk" ke container yang sudah ada lalu menjalankan perintah.',
+        'Perintah ini berguna untuk mendiagnosis masalah, memeriksa file, atau melihat isi direktori tanpa mengganggu proses utama.'
       ]
     },
     {
       type: 'warn',
       title: 'Perbedaan run vs exec',
-      text: '<code>run</code> = buat container BARU dari image. <code>exec</code> = jalanin perintah di container YANG SUDAH ADA & RUNNING.'
+      text: '<code>run</code> membuat container BARU dari sebuah image, sedangkan <code>exec</code> menjalankan perintah pada container yang SUDAH ADA dan sedang berjalan.'
     },
     {
       type: 'text',
@@ -95,52 +96,52 @@ docker container exec -it web sh
     },
     {
       type: 'text',
-      html: '<h3>Membuat Tanpa Menjalankan (create) lalu start</h3><p>Kadang kamu pengen siapkan container dulu (konfigurasi port/name/env) tanpa langsung menjalankannya. Gunakan <code>create</code> + <code>start</code>.</p>'
+      html: '<h3>Membuat Tanpa Menjalankan (create) lalu start</h3><p>Kadang kamu ingin menyiapkan container terlebih dahulu (misalnya mengatur port, nama, atau variabel lingkungan) tanpa langsung menjalankannya. Untuk keperluan ini gunakan kombinasi <code>create</code> lalu <code>start</code>, yang merupakan langkah pembentukan dan penjalanan secara terpisah.</p>'
     },
     {
       type: 'example',
       title: 'create + start',
       lang: 'bash',
       output: false,
-      code: `# Buat container (status Created)
+      code: `# Buat container terlebih dahulu (status Created)
 docker container create --name tmp-nginx -p 8082:80 nginx:alpine
 
-# Lihat status
+# Lihat statusnya (belum berjalan)
 docker container ls -a
 
-# Jalankan
+# Jalankan container tersebut
 docker container start tmp-nginx
 
-# Cek
+# Cek kembali (sekarang sudah Up/berjalan)
 docker container ls
 
-# Bersihin
+# Setelah selesai, bersihkan
 docker container stop tmp-nginx && docker container rm tmp-nginx`,
       explain: [
-        '<code>create</code> menghasilkan container dalam state <b>Created</b> (belum running).',
-        'Berguna misalnya untuk skenario advanced atau automation.'
+        '<code>create</code> menghasilkan container dalam status <b>Created</b>, artinya sudah dibuat tetapi belum berjalan.',
+        'Pemisahan ini berguna untuk skenario tingkat lanjut atau otomatisasi, misalnya menyiapkan banyak container lalu menjalankannya pada waktu tertentu.'
       ]
     },
     {
       type: 'tip',
-      title: 'Kapan pakai --rm?',
-      text: 'Pakai <code>--rm</code> saat eksplorasi (alpine sh, ubuntu bash, one-off command). Hindari <code>--rm</code> untuk container yang mau dipertahankan (database, web app jangka panjang).'
+      title: 'Kapan memakai --rm?',
+      text: 'Gunakan <code>--rm</code> saat eksplorasi atau perintah sekali jalan (misalnya <code>alpine sh</code>, <code>ubuntu bash</code>). Hindari memakai <code>--rm</code> untuk container yang ingin dipertahankan, seperti database atau aplikasi web jangka panjang.'
     },
     {
       type: 'vocab',
       items: [
-        ['-i (interactive)', 'Menjaga STDIN tetap terbuka biar bisa ketik perintah.'],
-        ['-t (tty)', 'Memberi terminal virtual agar output lebih rapi.'],
+        ['-i (interactive)', 'Menjaga kanal masukan (STDIN) tetap terbuka agar kamu bisa mengetik perintah.'],
+        ['-t (tty)', 'Memberi terminal virtual sehingga tampilan output lebih rapi.'],
         ['exec', 'Menjalankan proses tambahan di dalam container yang sedang berjalan.'],
-        ['entrypoint/cmd', 'Perintah default yang dijalankan saat container start.'],
+        ['entrypoint/cmd', 'Perintah bawaan yang dijalankan saat container mulai berjalan.'],
         ['create', 'Membuat container tanpa langsung menjalankannya.']
       ]
     }
   ],
   recap: [
-    '<code>-it</code> wajib kalau mau interaksi dengan shell di container.',
-    '<code>exec -it &lt;container&gt; sh</code> buat "nyemplung" ke container yang sedang jalan.',
-    '<code>create</code> + <code>start</code> = alternatif <code>run</code> (pisah tahap).',
-    '<code>--rm</code> auto-hapus container setelah selesai – praktis buat latihan.'
+    'Opsi <code>-it</code> wajib dipakai bila kamu ingin berinteraksi dengan shell di dalam container.',
+    '<code>exec -it &lt;container&gt; sh</code> dipakai untuk masuk ke container yang sedang berjalan.',
+    '<code>create</code> + <code>start</code> merupakan alternatif <code>run</code> dengan langkah pembuatan dan penjalanan yang dipisah.',
+    '<code>--rm</code> menghapus container otomatis setelah selesai — praktis untuk keperluan latihan.'
   ]
 });

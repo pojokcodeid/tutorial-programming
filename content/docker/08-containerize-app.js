@@ -11,7 +11,7 @@ window.DOCKER_LESSONS.push({
   chapter: 'Dockerfile Lanjutan',
   duration: '9–11 menit',
   intro: [
-    'Kamu akan belajar cara nyaman develop pakai Docker (bind mount), mengabaikan file nggak perlu (.dockerignore), dan mengecilkan Image dengan <b>Multi-stage Build</b>.'
+    'Pada bab ini kamu akan mempelajari tiga hal yang membuat proses pengemasan aplikasi lebih praktis: cara mengembangkan aplikasi dengan nyaman memakai Docker (bind mount), cara mengecualikan file yang tidak diperlukan (.dockerignore), serta cara mengecilkan ukuran image dengan <b>Multi-stage Build</b>.'
   ],
   objectives: [
     'Memahami perbedaan bind mount vs volume (pengantar)',
@@ -23,7 +23,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Bind Mount untuk Development</h3><p><b>Bind mount</b> memetakan direktori/ file di host ke dalam container. Sangat berguna saat dev: ubah kode di editor → langsung terlihat di container (tanpa rebuild).</p>'
+      html: '<h3>Bind Mount untuk Development</h3><p><b>Bind mount</b> memetakan sebuah direktori atau file di host langsung ke dalam container. Fitur ini sangat berguna saat pengembangan: ketika kamu mengubah kode di editor, perubahan tersebut langsung terlihat di dalam container tanpa perlu melakukan build ulang.</p>'
     },
     {
       type: 'example',
@@ -39,19 +39,19 @@ docker run -d -p 8085:3000 --name node-dev \
   -v /app/node_modules \
   node:20-alpine sh -c "cd /app && npm install && npm start"`,
       explain: [
-        '<code>-v $(pwd):/app</code> → sync kode host dengan /app di container.',
-        '<code>-v /app/node_modules</code> → buat anonymous volume biar node_modules di container tetap (bukan dari host). Ini penting biar deps sesuai environment container.',
-        'Khusus dev, kamu bisa pakai tools seperti <code>nodemon</code> di package.json.'
+        '<code>-v $(pwd):/app</code> memetakan folder proyek di host ke direktori <code>/app</code> di dalam container sehingga kode selalu sinkron.',
+        '<code>-v /app/node_modules</code> membuat anonymous volume untuk melindungi folder <code>node_modules</code> di container agar tidak tertimpa oleh folder dari host. Ini penting agar dependensi tetap sesuai dengan environment container.',
+        'Untuk keperluan pengembangan, kamu juga dapat memakai alat seperti <code>nodemon</code> yang tercantum dalam <code>package.json</code> agar aplikasi memulai ulang otomatis.'
       ]
     },
     {
       type: 'tip',
       title: 'Bind mount di Windows/macOS',
-      text: 'Docker Desktop butuh permission akses folder. Pastikan folder project kamu sudah di-share. Di WSL2 lebih smooth pakai path WSL.'
+      text: 'Docker Desktop memerlukan izin akses folder. Pastikan folder proyekmu sudah diizinkan melalui pengaturan Docker Desktop. Di WSL 2, alangkah baiknya menggunakan path milik WSL agar performanya lebih baik.'
     },
     {
       type: 'text',
-      html: '<h3>.dockerignore</h3><p>Mirip <code>.gitignore</code>. File/folder yang masuk <code>.dockerignore</code> TIDAK dikirim ke <b>build context</b>. Tujuannya: lebih kecil, lebih cepat build, hindari masukin file sensitif.</p>'
+      html: '<h3>.dockerignore</h3><p>Cara kerjanya mirip dengan <code>.gitignore</code>. File atau folder yang tercantum di dalam <code>.dockerignore</code> TIDAK dikirim ke <b>build context</b>. Tujuannya adalah menjaga ukuran context tetap kecil, mempercepat proses build, dan mencegah file sensitif ikut terbawa.</p>'
     },
     {
       type: 'example',
@@ -69,13 +69,13 @@ README.md
 dist
 coverage`,
       explain: [
-        'Jangan COPY <code>node_modules</code> dari host (harus di-install di dalam container).',
-        'Hindari kirim file config/git yang nggak dibutuhkan saat build.'
+        'Jangan menyalin <code>node_modules</code> dari host, karena dependensi harus diinstal di dalam container agar sesuai environment-nya.',
+        'Hindari mengirim file konfigurasi atau berkas git yang tidak dibutuhkan saat proses build.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Multi-stage Build</h3><p>Masalah klasik: Image jadi besar karena ada dev-deps, build tools, source mentah. <b>Multi-stage build</b> membagi build jadi beberapa <b>stage</b>. Hanya artefak yang dibutuhkan dari stage akhir yang masuk ke final Image.</p><p>Hasilnya: Image jauh lebih kecil, lebih aman (minimal attack surface).</p>'
+      html: '<h3>Multi-stage Build</h3><p>Masalah klasik ketika membuat image adalah ukurannya yang menjadi besar karena memuat dependensi pengembangan, alat-alat build, dan source mentah. <b>Multi-stage build</b> memecah proses build menjadi beberapa <b>stage</b>, dan hanya artefak dari stage terakhir yang masuk ke image final.</p><p>Hasilnya adalah image yang jauh lebih kecil dan lebih aman karena memiliki area serangan (attack surface) yang minimal.</p>'
     },
     {
       type: 'text',
@@ -125,14 +125,14 @@ COPY --from=builder /app/dist ./dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]`,
       explain: [
-        '<code>AS builder</code> memberi nama stage.',
+        '<code>AS builder</code> memberi nama pada stage tersebut agar mudah dirujuk.',
         '<code>COPY --from=builder</code> mengambil file hasil build dari stage sebelumnya.',
-        'Final stage cuma bawa <code>dist</code> + production deps → ukuran jauh lebih kecil.'
+        'Stage akhir hanya membawa <code>dist</code> beserta dependensi produksi sehingga ukurannya jauh lebih kecil.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Aplikasi Node.js dengan Multi-stage (praktis)</h3><p>Misal pakai <code>tsc</code> (TypeScript) atau bundler. Untuk JS murni, multi-stage juga bisa dipakai (mis. pisah deps).</p><p>Contoh sederhana: kita cuma pengen jalankan <code>index.js</code> tanpa dev tools.</p>'
+      html: '<h3>Aplikasi Node.js dengan Multi-stage (praktis)</h3><p>Multi-stage build sangat umum dipakai ketika proyek memerlukan tahap kompilasi, misalnya dengan <code>tsc</code> (TypeScript) atau sebuah bundler. Untuk proyek JavaScript murni pun multi-stage tetap berguna, misalnya untuk memisahkan dependensi produksi dari dependensi pengembangan.</p><p>Pada contoh berikut, kita hanya ingin menjalankan <code>index.js</code> tanpa membawa alat-alat pengembangan.</p>'
     },
     {
       type: 'example',
@@ -155,45 +155,45 @@ USER node
 EXPOSE 3000
 CMD ["node", "index.js"]`,
       explain: [
-        '<code>USER node</code> menjalankan container dengan user non-root (praktik keamanan dasar).',
-        'Hanya <code>node_modules</code> (prod), <code>index.js</code>, <code>package.json</code> yang dibawa ke final image.',
-        'Cek ukuran: bandingin dengan single-stage sebelumnya.'
+        '<code>USER node</code> menjalankan container dengan user non-root, yang merupakan praktik keamanan dasar yang dianjurkan.',
+        'Hanya <code>node_modules</code> (versi produksi), <code>index.js</code>, dan <code>package.json</code> yang dibawa ke image akhir.',
+        'Coba periksa ukurannya dan bandingkan dengan versi single-stage sebelumnya.'
       ]
     },
     {
       type: 'example',
-      title: 'Build & bandingkan ukuran',
+      title: 'Build &amp; bandingkan ukuran',
       lang: 'bash',
       output: false,
       code: `docker build -t node-single:1.0.0 -f Dockerfile.single .
 docker build -t node-multi:1.0.0 -f Dockerfile.multi .
 
 docker image ls | grep node-`,
-      explain: ['Biasanya <code>node-multi</code> jauh lebih kecil ketimbang single-stage.']
+      explain: ['Umumnya <code>node-multi</code> jauh lebih kecil dibandingkan versi single-stage.']
     },
     {
       type: 'tip',
       title: 'Tips Multi-stage',
-      text: 'Kamu bisa pakai base image lebih kecil di final stage (mis. <code>node:20-alpine</code> → <code>distroless</code> lebih ekstrem, tapi butuh pemahaman lebih). Alpine udah cukup untuk pemula.'
+      text: 'Kamu dapat memakai base image yang lebih kecil lagi pada stage akhir, misalnya <code>distroless</code> yang lebih ekstrem namun memerlukan pemahaman lebih lanjut. Untuk pemula, Alpine sudah cukup memadai.'
     },
     {
       type: 'vocab',
       items: [
-        ['Bind mount', 'Mapping langsung folder host → container (sync real-time, cocok dev).'],
-        ['Anonymous volume', 'Volume tanpa nama, biasanya auto-managed (dipakai buat "protect" node_modules).'],
-        ['.dockerignore', 'Daftar file/folder yang dikecualikan dari build context.'],
-        ['Multi-stage build', 'Beberapa FROM dalam 1 Dockerfile untuk memisahkan build vs runtime.'],
-        ['AS', 'Memberi alias stage (builder/runner/deps).'],
-        ['COPY --from', 'Mengambil artefak dari stage lain.'],
-        ['USER', 'Menentukan user yang dipakai saat container jalan (non-root).']
+        ['Bind mount', 'Pemetaan langsung folder host ke container dengan sinkronisasi waktu nyata, cocok untuk pengembangan.'],
+        ['Anonymous volume', 'Volume tanpa nama yang dikelola otomatis oleh Docker, sering dipakai untuk melindungi <code>node_modules</code>.'],
+        ['.dockerignore', 'Daftar file atau folder yang dikecualikan dari build context.'],
+        ['Multi-stage build', 'Beberapa instruksi <code>FROM</code> dalam satu Dockerfile untuk memisahkan tahap build dan runtime.'],
+        ['AS', 'Memberi nama (alias) pada sebuah stage, misalnya builder, runner, atau deps.'],
+        ['COPY --from', 'Mengambil artefak hasil build dari stage lain.'],
+        ['USER', 'Menentukan user yang dipakai saat container berjalan, sebaiknya non-root.']
       ]
     }
   ],
   recap: [
-    'Bind mount: ubah kode host → langsung muncul di container (dev-friendly).',
-    '.dockerignore: perkecil build context & hindari file nggak perlu.',
-    'Multi-stage: pisah build & runtime → Image final lebih kecil & minimal.',
-    'Pakai <code>USER node</code> sebagai best practice dasar.',
-    '<code>COPY --from</code> kunci multi-stage build.'
+    'Bind mount membuat perubahan kode di host langsung muncul di container sehingga nyaman untuk pengembangan.',
+    '.dockerignore mengecilkan build context dan menghindari file yang tidak diperlukan ikut terkirim.',
+    'Multi-stage build memisahkan tahap build dan runtime sehingga image akhir jauh lebih ramping dan aman.',
+    'Gunakan <code>USER node</code> sebagai praktik keamanan dasar.',
+    'Instruksi <code>COPY --from</code> adalah kunci keberhasilan multi-stage build.'
   ]
 });

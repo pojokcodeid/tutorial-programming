@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Persiapan',
   duration: '6–8 menit',
   intro: [
-    'Sebelum praktik, kamu perlu menginstal Docker di komputermu. Docker tersedia untuk macOS, Windows, dan Linux dengan langkah yang berbeda.'
+    'Sebelum praktik, kamu perlu menginstal Docker di komputer. Docker tersedia untuk macOS, Windows, dan Linux, dan setiap sistem operasi memiliki langkah pemasangan yang berbeda.',
+    'Pada bab ini kamu akan memasang Docker, memverifikasi bahwa instalasi berjalan benar, dan memahami perbedaan antara Docker Desktop dan Docker Engine.'
   ],
   objectives: [
     'Mengetahui cara instalasi Docker Desktop di macOS & Windows',
@@ -22,7 +23,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Docker Desktop vs Docker Engine</h3><p><b>Docker Desktop</b> (macOS/Windows) berisi Docker Engine, Docker Compose, GUI, Kubernetes (opsional), dan tools pendukung. <b>Docker Engine</b> (Linux) hanya engine + CLI, biasanya dipasang terpisah bersama Docker Compose.</p>'
+      html: '<h3>Docker Desktop vs Docker Engine</h3><p>Sebelum memasang, penting mengetahui dua edisi utama Docker:</p><ul><li><b>Docker Desktop</b> (untuk macOS & Windows) adalah paket lengkap yang sudah memuat Docker Engine, Docker Compose, antarmuka grafis (GUI), hingga Kubernetes (opsional). Karena macOS dan Windows tidak berbasis kernel Linux, Docker Desktop menjalankan Docker Engine di dalam sebuah mesin virtual Linux kecil yang dikelola otomatis.</li><li><b>Docker Engine</b> (untuk Linux) hanya berisi inti runtime Docker: CLI (<code>docker</code>) dan daemon (<code>dockerd</code>). Docker Compose umumnya dipasang terpisah sebagai plugin.</li></ul>'
     },
     {
       type: 'text',
@@ -48,15 +49,50 @@ window.DOCKER_LESSONS.push({
     },
     {
       type: 'text',
-      html: '<h3>1) Instalasi di macOS</h3><ol><li>Kunjungi <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">docker.com/products/docker-desktop</a></li><li>Download <b>Docker Desktop for Mac</b> (stable)</li><li>Buka file <code>.dmg</code>, drag <b>Docker.app</b> ke folder <b>Applications</b></li><li>Jalankan Docker.app (ikon akan muncul di menu bar)</li></ol>'
+      html: '<h3>1) Instalasi di macOS</h3><ol><li>Kunjungi <a href="https://www.docker.com/products/docker-desktop/" target="_blank" rel="noopener">docker.com/products/docker-desktop</a></li><li>Unduh <b>Docker Desktop for Mac</b> (pilih versi stabil). Untuk Apple Silicon (M1/M2/M3) pilih versi <b>Apple Silicon</b>; untuk Intel pilih <b>Intel Chip</b>.</li><li>Buka file <code>.dmg</code>, lalu seret (drag) <b>Docker.app</b> ke folder <b>Applications</b>.</li><li>Jalankan Docker dari folder Applications. Ikon paus Docker akan muncul di menu bar dan berputar selama proses penyiapan.</li></ol>'
     },
     {
       type: 'text',
-      html: '<h3>2) Instalasi di Windows</h3><ol><li>Pastikan <b>WSL 2</b> terpasang (lihat <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener">panduan Microsoft</a>)</li><li>Download <b>Docker Desktop for Windows</b></li><li>Jalankan installer (biarkan default)</li><li>Setelah selesai, jalankan Docker Desktop</li></ol>'
+      html: '<h3>2) Instalasi di Windows</h3><ol><li>Pastikan <b>WSL 2</b> (Windows Subsystem for Linux) sudah terpasang dengan benar — ikuti <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener">panduan resmi Microsoft</a>.</li><li>Unduh <b>Docker Desktop for Windows</b> dari situs resmi.</li><li>Jalankan installer dan biarkan pilihan default (pastikan opsi <b>Use WSL 2</b> tercentang).</li><li>Setelah instalasi selesai, buka Docker Desktop dan tunggu hingga statusnya <b>Running</b>.</li></ol>'
     },
     {
       type: 'text',
-      html: '<h3>3) Instalasi di Linux (contoh Ubuntu)</h3><p>Dokumentasi resmi lebih up-to-date. Secara umum langkahnya:</p><ol><li>Hapus versi lama (opsional): <code>sudo apt remove docker docker-engine docker.io containerd runc</code></li><li>Pasang dependensi & repositori Docker</li><li>Install <code>docker-ce</code>, <code>docker-ce-cli</code>, <code>containerd.io</code>, <code>docker-buildx-plugin</code>, <code>docker-compose-plugin</code></li><li>Tambahkan user ke grup <code>docker</code> agar bisa jalan tanpa <code>sudo</code></li></ol>'
+      html: '<h3>3) Instalasi di Linux (contoh Ubuntu)</h3><p>Di Linux, Docker Engine dipasang langsung dari repositori resmi Docker. Dokumentasi resmi selalu paling mutakhir, tetapi secara umum langkahnya seperti di bawah ini.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Langkah Pemasangan Docker Engine di Ubuntu',
+      lang: 'bash',
+      output: false,
+      code: `# 1) Hapus versi Docker lama agar tidak bentrok (opsional)
+sudo apt-get remove -y docker docker-engine docker.io containerd runc
+
+# 2) Pasang dependensi & kunci repositori
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \\
+  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# 3) Tambahkan repositori resmi Docker
+echo \\
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\
+  https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" \\
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 4) Pasang Docker Engine + Compose plugin
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io \\
+  docker-buildx-plugin docker-compose-plugin
+
+# 5) Tambahkan usermu ke grup docker (agar tanpa sudo)
+sudo usermod -aG docker $USER
+# lalu logout & login kembali agar grup aktif`,
+      explain: [
+        '<b>docker-ce</b> adalah Docker Engine, <b>docker-ce-cli</b> adalah perintah <code>docker</code>, dan <b>containerd.io</b> adalah container runtime.',
+        '<b>docker-compose-plugin</b> membuat perintah <code>docker compose</code> tersedia di Linux.',
+        'Langkah 5 membuat kamu bisa menjalankan perintah docker tanpa <code>sudo</code> setelah logout/login.'
+      ]
     },
     {
       type: 'example',
@@ -69,40 +105,40 @@ docker --version
 # Cek versi Docker Compose (plugin v2: docker compose)
 docker compose version
 
-# Atau jika masih pakai docker-compose v1
+# Atau jika masih memakai docker-compose v1 lama
 docker-compose --version
 
 # Coba jalankan container pertama
 docker run hello-world`,
       explain: [
         '<code>docker --version</code> menampilkan versi Docker Engine/Client.',
-        '<code>docker compose version</code> menampilkan versi Compose plugin.',
-        '<code>docker run hello-world</code> akan pull image & tampil pesan sukses jika instalasi benar.'
+        '<code>docker compose version</code> menampilkan versi plugin Compose.',
+        '<code>docker run hello-world</code> akan menarik image hello-world lalu menampilkan pesan sukses bila instalasi sudah benar.'
       ]
     },
     {
       type: 'tip',
-      title: 'Tips Linux Post-Install',
-      text: 'Setelah menambahkan user ke grup docker, logout/login ulang agar perubahan grup berlaku. Tanpa langkah ini, kamu harus pakai sudo untuk kebanyakan perintah docker.'
+      title: 'Tips Linux Pasca-Instalasi',
+      text: 'Setelah menambahkan user ke grup docker, lakukan logout lalu login kembali agar perubahan grup berlaku. Tanpa langkah ini, kamu wajib memakai <code>sudo</code> untuk hampir semua perintah docker.'
     },
     {
       type: 'warn',
       title: 'Perhatian',
-      text: 'Hindari menjalankan Docker sebagai root. Gunakan grup docker atau Docker Desktop yang sudah mengelola konteksnya.'
+      text: 'Hindari menjalankan Docker sebagai root. Gunakan grup docker di Linux, atau Docker Desktop yang sudah mengelola konteksnya dengan aman.'
     },
     {
       type: 'vocab',
       items: [
-        ['Docker Desktop', 'Bundle lengkap Docker untuk macOS/Windows (GUI + Engine + Compose).'],
-        ['Docker Engine', 'Core runtime Docker untuk Linux (CLI + daemon).'],
-        ['Docker Compose', 'Tools untuk mendefinisikan & menjalankan multi-container app (bisa via plugin).'],
-        ['WSL 2', 'Windows Subsystem for Linux v2 (backend Docker Desktop di Windows).']
+        ['Docker Desktop', 'Paket lengkap Docker untuk macOS/Windows (GUI + Engine + Compose + Kubernetes opsional).'],
+        ['Docker Engine', 'Inti runtime Docker untuk Linux (CLI + daemon dockerd).'],
+        ['Docker Compose', 'Alat untuk mendefinisikan dan menjalankan aplikasi multi-container (kini berupa plugin <code>docker compose</code>).'],
+        ['WSL 2', 'Windows Subsystem for Linux versi 2, menjadi backend Docker Desktop di Windows.']
       ]
     }
   ],
   recap: [
-    'Instal sesuai platform: Docker Desktop (macOS/Windows), Docker Engine (Linux).',
-    'Verifikasi dengan <code>docker --version</code> & <code>docker run hello-world</code>.',
-    'Di Linux, biasakan post-install (grup docker) biar lebih nyaman.'
+    'Sesuaikan pemasangan dengan platform: Docker Desktop untuk macOS/Windows, Docker Engine untuk Linux.',
+    'Verifikasi keberhasilan dengan <code>docker --version</code>, <code>docker compose version</code>, dan <code>docker run hello-world</code>.',
+    'Di Linux, jalankan langkah pasca-instalasi (menambahkan user ke grup docker) agar lebih nyaman dan tidak perlu <code>sudo</code>.'
   ]
 });

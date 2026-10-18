@@ -11,8 +11,9 @@ window.DOCKER_LESSONS.push({
   chapter: 'Pengenalan',
   duration: '8–10 menit',
   intro: [
-    '<b>Containerization</b> adalah cara mengemas aplikasi beserta semua dependensinya ke dalam satu paket terisolasi, agar bisa berjalan konsisten di mana saja (laptop, server, atau cloud).',
-    '<b>Docker</b> adalah platform containerization yang paling populer. Docker membuat proses containerizing jadi jauh lebih mudah dibandingkan solusi sebelumnya.'
+    'Pernah mengalami aplikasimu berjalan lancar di laptop sendiri, tetapi malah error saat dipindahkan ke server? Masalah klasik ini muncul karena <b>perbedaan lingkungan</b>: versi library, konfigurasi sistem, atau dependensi yang tidak sama.',
+    '<b>Containerization</b> adalah cara mengemas aplikasi beserta seluruh dependensinya (library, runtime, konfigurasi) ke dalam satu paket yang terisolasi, sehingga aplikasi dapat berjalan <b>konsisten di mana saja</b> — di laptop, server, maupun cloud.',
+    '<b>Docker</b> adalah platform containerization yang paling populer saat ini. Docker membuat proses pengemasan aplikasi (containerizing) menjadi jauh lebih mudah dan terstandar dibandingkan solusi sebelumnya.'
   ],
   objectives: [
     'Memahami apa itu container dan bedanya dengan Virtual Machine (VM)',
@@ -23,7 +24,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Apa itu Container?</h3><p>Container adalah lingkungan terisolasi untuk menjalankan aplikasi. Berbeda dengan VM yang menjalankan <b>Guest OS</b> penuh untuk tiap mesin virtual, container <b>memanfaatkan Host OS</b> melalui container runtime (Docker). Akibatnya, container jauh lebih ringan, cepat dijalankan, dan bisa di-scale dalam jumlah besar.</p>'
+      html: '<h3>Apa itu Container?</h3><p>Container adalah lingkungan eksekusi yang terisolasi untuk menjalankan sebuah aplikasi. Di dalamnya tersedia ruang sendiri untuk filesystem, jaringan, dan proses, sehingga aplikasi di dalam container tidak saling mengganggu aplikasi lain.</p><p>Berbeda dengan Virtual Machine (VM) yang menjalankan <b>Guest OS</b> penuh untuk setiap mesin virtual, container <b>memanfaatkan kernel dari Host OS</b> melalui container runtime (Docker). Karena tidak perlu menggandakan sistem operasi utuh, container menjadi jauh lebih ringan, sangat cepat dijalankan (hitungan detik), dan dapat diskalakan dalam jumlah besar.</p>'
     },
     {
       type: 'text',
@@ -68,14 +69,14 @@ window.DOCKER_LESSONS.push({
       code: `VM: Aplikasi + Guest OS + Hypervisor + Host OS + Hardware
 Container: Aplikasi + Dependencies + Container Runtime (Docker) + Host OS + Hardware`,
       explain: [
-        'VM memvirtualisasi seluruh mesin (termasuk OS).',
-        'Container memvirtualisasi sistem operasi host (berbagi kernel).',
-        'Hasilnya: container lebih ringan & startup jauh lebih cepat.'
+        'VM memvirtualisasi seluruh mesin, termasuk sistem operasi lengkap sehingga berat dan lambat start.',
+        'Container memvirtualisasi sistem operasi host dan hanya membawa aplikasi beserta dependensinya, sehingga berbagi satu kernel yang sama.',
+        'Hasilnya container jauh lebih ringan dan waktu startup turun dari menit (VM) menjadi hitungan detik (container).'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Konsep Dasar Docker</h3><p>Ada 3 konsep fundamental yang wajib dipahami:</p><ul><li><b>Image</b> – Template read-only (berlapis/layered) berisi aplikasi + dependensi. Mirip seperti "blueprint".</li><li><b>Container</b> – Instance yang sedang berjalan dari sebuah Image (Image + writable layer saat runtime).</li><li><b>Registry</b> – Tempat menyimpan & berbagi Image (contoh: <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a>, <a href="https://quay.io/" target="_blank" rel="noopener">Quay.io</a>, registry privat).</li></ul>'
+      html: '<h3>Konsep Dasar Docker</h3><p>Ada 3 konsep fundamental yang wajib kamu pahami sejak awal, karena semua perintah Docker berputar di ketiganya:</p><ul><li><b>Image</b> – Template read-only (berlapis/layered) yang berisi aplikasi beserta seluruh dependensinya. Bayangkan seperti "blueprint" atau resep masakan.</li><li><b>Container</b> – Instance yang sedang berjalan dari sebuah Image (Image ditambah writable layer saat runtime). Satu Image bisa menghasilkan banyak Container.</li><li><b>Registry</b> – Tempat menyimpan dan berbagi Image (contoh: <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a>, <a href="https://quay.io/" target="_blank" rel="noopener">Quay.io</a>, atau registry privat buatan sendiri).</li></ul>'
     },
     {
       type: 'example',
@@ -92,7 +93,7 @@ Registry  = Buku resep online (bisa dibagikan: pull/push)`,
     },
     {
       type: 'text',
-      html: '<h3>Arsitektur Docker</h3><p>Docker menggunakan arsitektur <b>Client–Server</b>:</p><ul><li><b>Docker Client (docker)</b> – CLI yang kamu pakai (terminal).</li><li><b>Docker Daemon (dockerd)</b> – Proses background yang mengelola objek Docker (container, image, network, volume).</li><li><b>REST API</b> – Jembatan komunikasi antara Client dan Daemon.</li></ul><p>Ketika kamu menjalankan perintah <code>docker run</code>, Client mengirim permintaan via REST API ke Daemon untuk dieksekusi.</p>'
+      html: '<h3>Arsitektur Docker</h3><p>Docker menggunakan arsitektur <b>Client–Server</b>. Memahami arsitektur ini membantu kamu menebak penyebab error, misalnya ketika perintah berjalan tetapi tidak ada respons:</p><ul><li><b>Docker Client (docker)</b> – Program CLI yang kamu ketik di terminal. Tugasnya hanya mengirim permintaan.</li><li><b>Docker Daemon (dockerd)</b> – Proses berjalan di latar belakang (background) yang mengelola semua objek Docker: container, image, network, dan volume. Semua pekerjaan berat dilakukan di sini.</li><li><b>REST API</b> – Jembatan komunikasi antara Client dan Daemon (lewat unix socket di Linux/macOS atau TCP).</li></ul><p>Ketika kamu menjalankan <code>docker run</code>, Client mengirim permintaan melalui REST API ke Daemon, lalu Daemon yang mengeksekusinya. Karena pemisahan inilah, Client bisa berhenti tetapi container tetap berjalan.</p>'
     },
     {
       type: 'text',
@@ -130,24 +131,24 @@ Registry  = Buku resep online (bisa dibagikan: pull/push)`,
     {
       type: 'tip',
       title: 'Manfaat Docker',
-      text: 'Konsisten antar lingkungan ("works on my machine" → "works everywhere"), isolasi, ringan, mudah diskalakan, deployment lebih aman & reproducible.'
+      text: 'Docker membuat aplikasi konsisten antar lingkungan (masalah "works on my machine" berubah menjadi "works everywhere"), memberi isolasi antar aplikasi, lebih ringan dibanding VM, mudah diskalakan, serta deployment lebih aman dan dapat diulang dengan hasil sama (reproducible).'
     },
     {
       type: 'vocab',
       items: [
-        ['Containerization', 'Teknik mengemas aplikasi + dependensi agar bisa berjalan terisolasi & konsisten.'],
-        ['Image', 'Template read-only untuk membuat container (berlapis).'],
+        ['Containerization', 'Teknik mengemas aplikasi beserta dependensinya agar dapat berjalan terisolasi dan konsisten di berbagai lingkungan.'],
+        ['Image', 'Template read-only berlapis yang menjadi dasar pembuatan container.'],
         ['Container', 'Lingkungan runtime terisolasi hasil dari menjalankan sebuah Image.'],
-        ['Registry', 'Repositori untuk menyimpan & mendistribusikan Docker Image.'],
-        ['Daemon (dockerd)', 'Proses background Docker yang melakukan pekerjaan berat.'],
+        ['Registry', 'Repositori untuk menyimpan dan mendistribusikan Docker Image (contoh: Docker Hub).'],
+        ['Daemon (dockerd)', 'Proses Docker di latar belakang yang melakukan semua pekerjaan berat.'],
         ['Client (docker)', 'Antarmuka CLI untuk berinteraksi dengan Docker Daemon.']
       ]
     }
   ],
   recap: [
-    'Container ≠ VM. Container berbagi kernel Host OS → lebih ringan & cepat.',
-    'Image (template) → Container (runtime). Banyak container bisa dibuat dari 1 image.',
-    'Registry menyimpan image (Docker Hub default-nya).',
-    'Arsitektur Docker: Client → REST API → Daemon.'
+    'Container bukan VM. Container berbagi kernel Host OS sehingga lebih ringan dan cepat.',
+    'Image (template) menghasilkan Container (runtime). Banyak container dapat dibuat dari satu image.',
+    'Registry menyimpan image; Docker Hub adalah registry publik bawaan.',
+    'Arsitektur Docker: Client mengirim permintaan → REST API → Daemon yang mengeksekusi.'
   ]
 });

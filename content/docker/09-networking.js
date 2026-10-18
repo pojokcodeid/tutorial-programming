@@ -11,7 +11,7 @@ window.DOCKER_LESSONS.push({
   chapter: 'Networking',
   duration: '7–9 menit',
   intro: [
-    'Secara default, container bisa saling komunikasi? Tergantung network-nya. Di sini kamu belajar network dasar Docker: bridge default vs user-defined bridge, plus cara container saling "ngobrol".'
+    'Secara bawaan, Docker sudah menyediakan jaringan untuk setiap container yang kamu buat. Pada bab ini kamu akan mempelajari jaringan dasar Docker: perbedaan antara bridge bawaan (default) dan bridge buatan sendiri (user-defined), serta bagaimana cara container bisa saling berkomunikasi.'
   ],
   objectives: [
     'Memahami konsep jaringan di Docker',
@@ -23,11 +23,11 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Docker Network Basics</h3><p>Docker otomatis menyediakan jaringan untuk container. Saat container dibuat tanpa <code>--network</code>, ia masuk ke <b>bridge network</b> default (<code>bridge</code>).</p><p>Beberapa driver umum:</p><ul><li><b>bridge</b> – paling umum, private network internal Docker (default)</li><li><b>host</b> – share network stack host (kurang terisolasi)</li><li><b>none</b> – tanpa jaringan</li><li><b>overlay</b> – untuk multi-host (Swarm/K8s context)</li></ul>'
+      html: '<h3>Dasar Jaringan Docker (Network Basics)</h3><p>Docker menyediakan jaringan secara otomatis bagi setiap container. Ketika sebuah container dibuat tanpa opsi <code>--network</code>, container tersebut akan masuk ke <b>jaringan bridge bawaan</b> (bernama <code>bridge</code>).</p><p>Berikut beberapa driver jaringan yang umum dipakai:</p><ul><li><b>bridge</b> – paling umum dipakai, berupa jaringan privat internal Docker (ini bawaan).</li><li><b>host</b> – container memakai susunan jaringan (network stack) milik host secara langsung sehingga kurang terisolasi.</li><li><b>none</b> – container tanpa jaringan sama sekali.</li><li><b>overlay</b> – dipakai untuk komunikasi antar beberapa host (dalam konteks Swarm atau Kubernetes).</li></ul>'
     },
     {
       type: 'text',
-      html: '<h3>Melihat Network yang Ada</h3>'
+      html: '<h3>Melihat Jaringan yang Tersedia</h3><p>Kamu dapat melihat daftar jaringan beserta detail konfigurasinya dengan perintah berikut.</p>'
     },
     {
       type: 'example',
@@ -36,16 +36,16 @@ window.DOCKER_LESSONS.push({
       output: false,
       code: `docker network ls
 
-# Lihat detail network
+# Lihat detail sebuah network
 docker network inspect bridge`,
       explain: [
-        'Secara default ada: <code>bridge</code>, <code>host</code>, <code>none</code>.',
-        '<code>inspect</code> menunjukkan container yang terhubung, IP range, dll.'
+        'Secara bawaan tersedia jaringan: <code>bridge</code>, <code>host</code>, dan <code>none</code>.',
+        'Perintah <code>inspect</code> menampilkan container yang terhubung, rentang IP, dan konfigurasi lainnya.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Default Bridge vs User-defined Bridge</h3><p>Pada <b>default bridge</b>:</p><ul><li>Container cuma bisa saling reach pakai IP (bukan nama container)</li><li>DNS resolution antar container terbatas</li><li>Kurang ideal untuk multi-container app</li></ul><p>Pada <b>user-defined bridge</b>:</p><ul><li>Container bisa saling reach pakai <b>nama container</b> sebagai hostname</li><li>Isolasi lebih baik (app terpisah dari default bridge)</li><li>Lebih aman & nyaman untuk development</li></ul>'
+      html: '<h3>Default Bridge vs User-defined Bridge</h3><p>Pada <b>bridge bawaan (default bridge)</b>:</p><ul><li>Container hanya dapat saling dijangkau melalui alamat IP, bukan nama container.</li><li>Tidak ada resolusi DNS otomatis antar container berdasarkan nama, sehingga kamu harus mengetahui IP-nya terlebih dahulu.</li><li>Kurang ideal untuk aplikasi yang terdiri dari banyak container.</li></ul><p>Pada <b>bridge buatan (user-defined bridge)</b>:</p><ul><li>Container dapat saling dijangkau menggunakan <b>nama container</b> sebagai hostname, berkat adanya DNS internal.</li><li>Isolasi lebih baik karena aplikasi kamu terpisah dari bridge bawaan.</li><li>Lebih aman dan nyaman untuk pengembangan maupun produksi.</li></ul>'
     },
     {
       type: 'text',
@@ -68,7 +68,7 @@ docker network inspect myapp-net`,
     },
     {
       type: 'text',
-      html: '<h3>Menjalankan Container di Network Custom</h3><p>Kita coba 2 container: <code>web</code> (nginx) dan <code>tester</code> (alpine). Kedua masuk ke <code>myapp-net</code>. Lalu test ping/curl via <b>nama container</b>.</p>'
+      html: '<h3>Menjalankan Container di Network Buatan</h3><p>Sebagai latihan, kita jalankan dua container: <code>web</code> (nginx) dan <code>tester</code> (alpine). Keduanya dimasukkan ke dalam <code>myapp-net</code>, lalu kita uji koneksi di antara keduanya memakai <b>nama container</b>.</p>'
     },
     {
       type: 'text',
@@ -103,13 +103,13 @@ docker run -d --name web --network myapp-net nginx:alpine
 # Jalankan tester (alpine)
 docker run -it --rm --name tester --network myapp-net alpine sh`,
       explain: [
-        'Keduanya pakai <code>--network myapp-net</code>.',
-        'Kamu sekarang ada di shell <code>tester</code>.'
+        'Keduanya sama-sama memakai <code>--network myapp-net</code> sehingga berada dalam jaringan yang sama.',
+        'Setelah perintah kedua, kamu akan berada di dalam shell container <code>tester</code>.'
       ]
     },
     {
       type: 'example',
-      title: 'Test koneksi antar container (dari tester)',
+      title: 'Uji koneksi antar container (dari tester)',
       lang: 'bash',
       output: false,
       code: `# Dari dalam container tester
@@ -117,22 +117,22 @@ ping -c 3 web
 # atau
 wget -O- http://web`,
       explain: [
-        '<code>web</code> bisa di-resolve jadi IP container nginx karena user-defined bridge punya <b>internal DNS</b>.',
-        'Coba bandingin kalau keduanya cuma di default bridge → harus pakai IP.'
+        'Nama <code>web</code> dapat diterjemahkan menjadi IP container nginx karena bridge buatan memiliki <b>DNS internal</b> bawaan.',
+        'Coba bandingkan bila keduanya hanya berada di bridge bawaan — di sana kamu harus memakai alamat IP secara langsung.'
       ]
     },
     {
       type: 'tip',
-      title: 'Cek IP container',
-      text: 'Dari host: <code>docker inspect --format "{{.NetworkSettings.Networks.myapp-net.IPAddress}}" web</code>. Atau masuk container & <code>ip addr</code>.'
+      title: 'Memeriksa IP container',
+      text: 'Dari host, jalankan <code>docker inspect --format "{{.NetworkSettings.Networks.myapp-net.IPAddress}}" web</code>. Alternatif lain, masuk ke dalam container lalu jalankan <code>ip addr</code>.'
     },
     {
       type: 'text',
-      html: '<h3>Attach/Detach Container ke Network</h3><p>Container yang sudah berjalan bisa dipindah/ditambah ke network lain.</p>'
+      html: '<h3>Menambah/Memutus Container dari Network</h3><p>Container yang sudah berjalan tetap dapat ditambahkan ke jaringan lain atau dilepas dari jaringannya.</p>'
     },
     {
       type: 'example',
-      title: 'Attach & detach',
+      title: 'Connect &amp; disconnect',
       lang: 'bash',
       output: false,
       code: `# Hubungkan container yang sudah ada ke network lain
@@ -140,49 +140,49 @@ docker network connect myapp-net existing-container
 
 # Putuskan dari network
 docker network disconnect myapp-net existing-container`,
-      explain: ['Satu container bisa terhubung ke beberapa network (multi-network).']
+      explain: ['Satu container dapat terhubung ke beberapa jaringan sekaligus (multi-network).']
     },
     {
       type: 'text',
-      html: '<h3>Menghapus Network</h3><p>Network tidak bisa dihapus kalau masih ada container terhubung.</p>'
+      html: '<h3>Menghapus Network</h3><p>Sebuah network tidak dapat dihapus selama masih ada container yang terhubung ke dalamnya. Karena itu, lepaskan atau hapus container terlebih dahulu.</p>'
     },
     {
       type: 'example',
-      title: 'Remove network',
+      title: 'Menghapus network',
       lang: 'bash',
       output: false,
-      code: `# Hapus container dulu
+      code: `# Hapus container terlebih dahulu
 docker stop web tester 2>/dev/null; docker rm web tester 2>/dev/null
 
-# Hapus network
+# Baru hapus network
 docker network rm myapp-net
 
-# Atau bersihin network unused
+# Atau bersihkan seluruh network yang tidak terpakai
 docker network prune`,
-      explain: ['<code>network prune</code> aman asal kamu yakin network unused.']
+      explain: ['Perintah <code>network prune</code> aman dijalankan asalkan kamu yakin bahwa jaringan tersebut memang tidak terpakai.']
     },
     {
       type: 'warn',
       title: 'Perhatian',
-      text: 'Jangan pakai <code>--network host</code> untuk app yang expose port (bisa bentrok). Cukup bridge/user-defined bridge untuk kebanyakan kasus dev.'
+      text: 'Hindari memakai <code>--network host</code> untuk aplikasi yang membuka (mempublish) port, karena bisa menyebabkan bentrok port. Untuk sebagian besar keperluan pengembangan, bridge bawaan atau bridge buatan sudah memadai.'
     },
     {
       type: 'vocab',
       items: [
-        ['Bridge network', 'Jaringan virtual private antar container (default).'],
-        ['User-defined bridge', 'Bridge buatan manual, lebih nyaman (DNS by name).'],
-        ['DNS resolution', 'Kemampuan resolve nama container → IP address.'],
-        ['connect', 'Menambahkan container ke network tambahan.'],
-        ['disconnect', 'Melepas container dari network.'],
-        ['network inspect', 'Lihat detail konfigurasi network.']
+        ['Bridge network', 'Jaringan virtual privat untuk komunikasi antar container (bawaan Docker).'],
+        ['User-defined bridge', 'Bridge yang dibuat manual, lebih nyaman karena mendukung DNS berbasis nama.'],
+        ['DNS resolution', 'Kemampuan menerjemahkan nama container menjadi alamat IP.'],
+        ['connect', 'Menambahkan container ke sebuah jaringan.'],
+        ['disconnect', 'Melepas container dari sebuah jaringan.'],
+        ['network inspect', 'Menampilkan detail konfigurasi sebuah jaringan.']
       ]
     }
   ],
   recap: [
-    'Default bridge: komunikasi via IP, DNS by name terbatas.',
-    'User-defined bridge: komunikasi via <b>nama container</b> (praktis).',
-    'Buat: <code>docker network create nama</code>, pakai: <code>--network nama</code>.',
-    'Test antar container: <code>curl http://nama-container</code> atau <code>ping nama-container</code>.',
-    'Bersihin: stop/rm container dulu baru <code>network rm</code>.'
+    'Bridge bawaan berkomunikasi melalui IP, tanpa dukungan DNS berdasarkan nama.',
+    'Bridge buatan berkomunikasi melalui <b>nama container</b> sehingga jauh lebih praktis.',
+    'Membuat: <code>docker network create nama</code>, memakai: <code>--network nama</code>.',
+    'Menguji koneksi antar container: <code>curl http://nama-container</code> atau <code>ping nama-container</code>.',
+    'Sebelum menghapus jaringan, stop lalu hapus container-nya terlebih dahulu, baru <code>network rm</code>.'
   ]
 });

@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Latihan',
   duration: '12–15 menit',
   intro: [
-    'Saatnya menggabungkan semua materi: Dockerfile, Volume, Network, dan Docker Compose. Kerjakan bertahap & coba modifikasi sesuai kreativitasmu — termasuk satu <b>build project lengkap</b> dari nol sampai image siap produksi.'
+    'Saatnya menggabungkan seluruh materi yang sudah dipelajari: Dockerfile, Volume, Network, dan Docker Compose. Kerjakan secara bertahap dan coba modifikasi sesuai kreativitasmu, termasuk satu <b>proyek lengkap</b> dari awal hingga image siap produksi.',
+    'Bab ini ditutup dengan checklist latihan mandiri dan langkah lanjutan yaitu mengunggah image ke Docker Hub.'
   ],
   objectives: [
     'Menyelesaikan Proyek A: Containerize Web Statis + .dockerignore',
@@ -104,7 +105,7 @@ docker run -d -p 8090:80 --name proyek-a proyek-a:1.0.0
     },
     {
       type: 'text',
-      html: '<h3>Proyek B: Node.js App + Bind Mount (Development)</h3><p><b>Target:</b> Containerize app Node.js, pakai bind mount biar perubahan kode langsung reflekt.</p>'
+      html: '<h3>Proyek B: Node.js App + Bind Mount (Development)</h3><p><b>Target:</b> Mengemas aplikasi Node.js ke dalam container, lalu memakai bind mount agar setiap perubahan kode langsung terlihat tanpa build ulang.</p>'
     },
     {
       type: 'example',
@@ -357,7 +358,7 @@ $ docker build -t proyek-d:1.0.1 .
       explain: [
         'Dari <b>12.4 detik → 1.9 detik</b>: instalasi dependensi tetap memakai cache karena <code>package*.json</code> tidak berubah.',
         'Yang di-build ulang hanya langkah setelah file yang kamu ubah — inilah gunanya mengurutkan Dockerfile dengan benar.',
-        'Kalau seluruh baris ikut berubah, coba <code>docker build --no-cache</code> untuk memastikan bukan masalah cache yang "nyangkut".'
+        'Bila seluruh baris ikut berubah, coba <code>docker build --no-cache</code> untuk memastikan bukan akibat cache yang tersangkut.'
       ]
     },
     {
@@ -382,18 +383,18 @@ docker system df
 docker stop proyek-d && docker rm proyek-d`,
       explain: [
         '<code>docker images</code> → pastikan tag <code>1.0.0</code> &amp; ukuran image masuk akal.',
-        '<code>docker history</code> menampilkan ukuran tiap layer — cocok untuk menemukan layer yang membuat image bengkak.',
+        '<code>docker history</code> menampilkan ukuran tiap layer — cocok untuk menemukan layer yang membuat image menjadi besar.',
         '<code>docker logs</code> menunjukkan pesan <code>Proyek D jalan di port 3000</code> bila build &amp; run benar.'
       ]
     },
     {
       type: 'tip',
-      title: 'Troubleshooting build yang sering muncul',
-      text: '<b>1)</b> <code>failed to compute cache key: ... not found</code> → file tidak ada di build context: cek nama file, path COPY, dan apakah file terkena <code>.dockerignore</code>. <b>2)</b> <code>npm ci can only install with an existing package-lock.json</code> → jalankan <code>npm install</code> dulu di lokal. <b>3)</b> Semua layer rebuild padahal cuma ubah 1 baris → pastikan <code>COPY package*.json</code> &amp; <code>RUN npm ci</code> berada <b>sebelum</b> <code>COPY . .</code>.'
+      title: 'Penanganan masalah build yang sering muncul',
+      text: '<b>1)</b> <code>failed to compute cache key: ... not found</code> → file tidak ada di build context: periksa nama file, path <code>COPY</code>, dan apakah file tersebut terkena <code>.dockerignore</code>. <b>2)</b> <code>npm ci can only install with an existing package-lock.json</code> → jalankan <code>npm install</code> terlebih dahulu di komputer lokal agar lock file terbentuk. <b>3)</b> Seluruh layer di-build ulang padahal kamu hanya mengubah satu baris → pastikan <code>COPY package*.json</code> dan <code>RUN npm ci</code> berada <b>sebelum</b> <code>COPY . .</code>.'
     },
     {
       type: 'text',
-      html: '<h3>Checklist Latihan Mandiri</h3><p>Centang kemampuanmu setelah praktik:</p>'
+      html: '<h3>Checklist Latihan Mandiri</h3><p>Centang kemampuanmu setelah selesai praktik:</p>'
     },
     {
       type: 'example',
@@ -416,7 +417,7 @@ docker stop proyek-d && docker rm proyek-d`,
     },
     {
       type: 'text',
-      html: '<h3>Next Step: Push Image ke Docker Hub</h3><p>Setelah sukses build image, kamu bisa share ke Docker Hub.</p>'
+      html: '<h3>Langkah Berikutnya: Mengunggah Image ke Docker Hub</h3><p>Setelah berhasil membangun image, kamu dapat membagikannya kepada orang lain melalui Docker Hub agar bisa diunduh dari komputer mana pun.</p>'
     },
     {
       type: 'example',
@@ -426,40 +427,40 @@ docker stop proyek-d && docker rm proyek-d`,
       code: `# 1) Login
 docker login
 
-# 2) Tag image sesuai username Docker Hub
+# 2) Beri tag image sesuai username Docker Hub-mu
 docker image tag proyek-a:1.0.0 usernamekamu/proyek-a:1.0.0
 
-# 3) Push
+# 3) Unggah (push)
 docker push usernamekamu/proyek-a:1.0.0
 
-# 4) Pull dari mana aja
+# 4) Unduh (pull) dari komputer mana pun
 docker pull usernamekamu/proyek-a:1.0.0`,
       explain: [
-        'Ganti <code>usernamekamu</code> dengan username Docker Hub-mu.',
-        'Bisa buat repo private/public di Docker Hub.'
+        'Ganti <code>usernamekamu</code> dengan username Docker Hub milikmu.',
+        'Kamu dapat membuat repository dengan visibilitas publik maupun privat sesuai kebutuhan.'
       ]
     },
     {
       type: 'tip',
       title: 'Tips Belajar Lanjutan',
-      text: 'Coba eksplor: Multi-stage build yang beneran (build frontend → copy ke nginx), docker compose dengan healthcheck, atau cobain image Distroless. Fokus pada "membaca & memahami" Dockerfile orang lain juga sangat berguna.'
+      text: 'Coba jelajahi materi lebih lanjut, misalnya multi-stage build yang sesungguhnya (membangun frontend lalu menyalinnya ke nginx), Docker Compose dengan healthcheck, atau mencoba image Distroless. Selain itu, membaca dan memahami Dockerfile milik orang lain juga sangat melatih pemahamanmu.'
     },
     {
       type: 'vocab',
       items: [
-        ['Containerize', 'Proses mengemas aplikasi jadi Image Docker siap dijalankan.'],
-        ['Healthcheck', 'Pemeriksaan kesiapan service/container.'],
-        ['Orphaned volume', 'Volume yang tidak ter-attach ke container manapun.'],
-        ['Push', 'Mengupload Image ke Registry (Docker Hub).'],
-        ['Login', 'Autentikasi ke Docker Registry.']
+        ['Containerize', 'Proses mengemas aplikasi menjadi Image Docker yang siap dijalankan.'],
+        ['Healthcheck', 'Pemeriksaan untuk memastikan sebuah layanan atau container sudah siap.'],
+        ['Orphaned volume', 'Volume yang tidak lagi terpasang pada container mana pun.'],
+        ['Push', 'Mengunggah Image ke Registry seperti Docker Hub.'],
+        ['Login', 'Proses autentikasi ke sebuah Docker Registry.']
       ]
     }
   ],
   recap: [
-    'Alur build project selalu sama: kode → Dockerfile → <code>docker build</code> → image → <code>docker run</code> → uji.',
-    'Proyek A–D bantu menguatkan konsep dasar → praktik nyata, termasuk membaca output build.',
-    'Fokus: build → run → manage → multi-container dengan Compose.',
-    'Setelah nyaman CLI, kamu bisa explore push ke registry & optimasi image (multi-stage).',
-    'Kuncinya: <b>praktik > hafalin semua perintah</b>. Coba modifikasi contoh biar makin paham.'
+    'Alur pembangunan proyek selalu sama: kode → Dockerfile → <code>docker build</code> → image → <code>docker run</code> → uji.',
+    'Proyek A sampai D membantu menguatkan konsep dasar hingga praktik nyata, termasuk cara membaca output build.',
+    'Alur yang perlu dikuasai: build → run → kelola → multi-container dengan Compose.',
+    'Setelah nyaman dengan CLI, kamu dapat melanjutkan ke pengunggahan image ke registry dan optimasi image (multi-stage).',
+    'Kuncinya adalah <b>praktik lebih penting daripada menghafal semua perintah</b>. Coba modifikasi contoh agar pemahamanmu semakin kuat.'
   ]
 });

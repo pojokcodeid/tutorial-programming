@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Image',
   duration: '7–9 menit',
   intro: [
-    'Kamu sudah sering pakai Image (nginx, alpine). Sekarang fokus ke manajemen Image: melihat, menarik, memberi tag, menghapus, dan memahami layer.'
+    'Kamu sudah memakai image seperti nginx dan alpine beberapa kali. Sekarang fokusnya berganti ke pengelolaan image: melihat, menarik, memberi tag, menghapus, serta memahami cara kerja layer di balik sebuah image.',
+    'Memahami image dengan baik akan membantu kamu membuat image aplikasimu sendiri di bab berikutnya.'
   ],
   objectives: [
     'Melihat daftar Image lokal (<code>image ls</code>)',
@@ -23,7 +24,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Melihat Image Lokal</h3>'
+      html: '<h3>Melihat Image Lokal</h3><p>Perintah <code>docker image ls</code> menampilkan seluruh image yang tersimpan di penyimpanan lokal Docker beserta informasinya.</p>'
     },
     {
       type: 'example',
@@ -32,38 +33,38 @@ window.DOCKER_LESSONS.push({
       output: false,
       code: `docker image ls
 
-# Tampilkan semua (termasuk dangling)
+# Tampilkan semua, termasuk image dangling
 docker image ls --all`,
       explain: [
-        'Kolom: <b>REPOSITORY</b>, <b>TAG</b>, <b>IMAGE ID</b>, <b>CREATED</b>, <b>SIZE</b>.',
-        '<b>Dangling image</b> = image tanpa tag/repo (biasanya sisa build lama).'
+        'Kolom yang tampil: <b>REPOSITORY</b> (nama repo), <b>TAG</b> (versi), <b>IMAGE ID</b> (hash unik), <b>CREATED</b> (usia), dan <b>SIZE</b> (ukuran).',
+        '<b>Dangling image</b> adalah image yang tidak lagi memiliki tag atau referensi repository, biasanya sisa dari build lama.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Menarik (Pull) Image</h3><p><code>docker pull</code> mengunduh Image dari registry ke lokal cache.</p>'
+      html: '<h3>Menarik (Pull) Image</h3><p><code>docker pull</code> berfungsi mengunduh image dari registry ke penyimpanan lokal. Perintah ini berguna bila kamu membutuhkan image tanpa langsung menjalankannya, atau ingin memastikan image sudah tersedia sebelum build.</p>'
     },
     {
       type: 'example',
       title: 'Contoh pull',
       lang: 'bash',
       output: false,
-      code: `# Pull latest
+      code: `# Tarik image dengan tag bawaan (latest)
 docker pull node:20-alpine
 
-# Pull tag spesifik
+# Tarik image dengan tag versi yang spesifik
 docker pull node:20.17.0-alpine
 
-# Pull dari registry lain (opsional)
+# Tarik dari registry selain Docker Hub (opsional)
 # docker pull ghcr.io/username/repo:tag`,
       explain: [
-        'Jika tag tidak disebut, defaultnya <code>latest</code>.',
-        'Lebih baik pakai tag spesifik untuk stabilitas.'
+        'Bila kamu tidak menyebutkan tag, Docker akan memakai tag bawaan <code>latest</code>.',
+        'Untuk proyek produksi, gunakan tag versi yang spesifik agar hasil build tetap stabil dan dapat diulang.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Memberi Tag Image (<code>docker image tag</code>)</h3><p>Tag berguna saat mau push ke Docker Hub dengan nama repo-mu, atau sekadar memberi alias.</p>'
+      html: '<h3>Memberi Tag Image (<code>docker image tag</code>)</h3><p>Tagging berguna ketika kamu ingin mengunggah (push) image ke Docker Hub dengan nama repository milikmu, atau sekadar memberi nama alias yang lebih mudah diingat pada image yang sama.</p>'
     },
     {
       type: 'example',
@@ -82,8 +83,8 @@ docker image tag node:20-alpine asepkomarudin/mynode:1.0.0
 # Cek hasil
 docker image ls`,
       explain: [
-        'Tagging TIDAK meng-copy image, cuma bikin referensi baru ke IMAGE ID yang sama.',
-        'Sangat efisien (hemat disk).'
+        'Tagging TIDAK menyalin (meng-copy) image, ia hanya membuat referensi baru yang menunjuk ke IMAGE ID yang sama.',
+        'Cara ini sangat efisien karena tidak memakan ruang disk tambahan.'
       ]
     },
     {
@@ -112,7 +113,7 @@ docker image ls`,
     },
     {
       type: 'text',
-      html: '<h3>Menghapus Image (<code>rmi</code>)</h3><p>Hapus image dari lokal. Image tidak bisa dihapus kalau masih ada container (running/stopped) yang dibuat darinya.</p>'
+      html: '<h3>Menghapus Image (<code>rmi</code>)</h3><p>Perintah <code>docker image rm</code> berfungsi menghapus image dari penyimpanan lokal. Sebuah image tidak bisa dihapus selama masih dipakai oleh container mana pun, baik yang sedang berjalan maupun yang sudah berhenti.</p>'
     },
     {
       type: 'example',
@@ -135,26 +136,27 @@ docker image rm node:20-alpine node:20.17.0-alpine
     },
     {
       type: 'text',
-      html: '<h3>Bersihin Image Tidak Terpakai</h3>'
+      html: '<h3>Membersihkan Image yang Tidak Terpakai</h3><p>Seiring waktu, penyimpanan lokal bisa penuh oleh image lama. Docker menyediakan perintah <code>prune</code> untuk membersihkannya.</p>'
     },
     {
       type: 'example',
       title: 'Prune image',
       lang: 'bash',
       output: false,
-      code: `# Hapus dangling images
+      code: `# Hapus image dangling (yang tidak berna)
 docker image prune
 
-# Hapus semua image yang TIDAK dipakai oleh container manapun (berhati-hati!)
+# Hapus semua image yang TIDAK dipakai container mana pun
+# (gunakan dengan hati-hati)
 docker image prune --all`,
       explain: [
-        '<code>--all</code> menghapus unused images (bisa lumayan besar hemat disk).',
-        'Pastikan kamu nggak perlu image tersebut lagi.'
+        'Opsi <code>--all</code> menghapus seluruh image yang tidak sedang dipakai container, yang biasanya cukup besar hemat ruang disknya.',
+        'Pastikan kamu benar-benar tidak membutuhkan image tersebut lagi sebelum menjalankannya.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Memahami Layer pada Image</h3><p>Setiap perintah di <code>Dockerfile</code> (mis. FROM, COPY, RUN) menciptakan layer baru. Layer bersifat read-only & bisa dipakai ulang (cache).</p><p>Kamu bisa lihat history layer sebuah image:</p>'
+      html: '<h3>Memahami Layer pada Image</h3><p>Setiap instruksi di dalam <code>Dockerfile</code> (misalnya <code>FROM</code>, <code>COPY</code>, <code>RUN</code>) menghasilkan satu layer baru. Layer bersifat read-only dan dapat dipakai ulang sebagai cache.</p><p>Kamu dapat melihat riwayat (history) pembentukan sebuah image beserta ukuran tiap layer-nya:</p>'
     },
     {
       type: 'example',
@@ -163,32 +165,32 @@ docker image prune --all`,
       output: false,
       code: `docker image history nginx:alpine --no-trunc`,
       explain: [
-        'Menunjukkan urutan layer, ukuran, dan perintah pembentuknya.',
-        'Inilah alasan kenapa <b>urutan perintah di Dockerfile</b> berpengaruh ke build cache & ukuran image.'
+        'Perintah ini menampilkan urutan layer, ukurannya, dan instruksi yang membentuknya.',
+        'Inilah alasan mengapa <b>urutan instruksi di Dockerfile</b> sangat berpengaruh terhadap kecepatan build cache dan ukuran image akhir.'
       ]
     },
     {
       type: 'tip',
       title: 'Tips Hemat Disk',
-      text: 'Sering pull image resmi (alpine) yang lebih kecil. Bersihin dangling/unused dengan prune secara berkala.'
+      text: 'Gunakan image resmi berbasis Alpine yang ukurannya lebih kecil bila memungkinkan. Secara berkala, bersihkan image dangling dan tidak terpakai dengan perintah prune agar ruang disk tetap lega.'
     },
     {
       type: 'vocab',
       items: [
-        ['REPOSITORY:TAG', 'Identitas unik Image (opsional namespace).'],
-        ['IMAGE ID', 'Hash unik Image (SHA256).'],
-        ['Dangling image', 'Image tanpa referensi repo:tag.'],
-        ['Layer', 'Lapisan read-only hasil instruksi build.'],
-        ['Cache', 'Layer lama dipakai ulang biar build lebih cepat.'],
-        ['rmi', 'Singkatan remove image.']
+        ['REPOSITORY:TAG', 'Penamaan unik sebuah Image, dengan namespace sebagai opsional.'],
+        ['IMAGE ID', 'Nilai hash unik (SHA256) yang mewakili sebuah Image.'],
+        ['Dangling image', 'Image yang tidak lagi memiliki referensi repository:tag.'],
+        ['Layer', 'Lapisan read-only hasil dari satu instruksi build.'],
+        ['Cache', 'Mekanisme pemakaian ulang layer lama agar proses build lebih cepat.'],
+        ['rmi', 'Singkatan dari remove image, berfungsi menghapus image.']
       ]
     }
   ],
   recap: [
-    '<code>docker image ls</code> lihat image lokal.',
-    '<code>docker pull</code> tarik image dari registry.',
-    '<code>docker image tag</code> bikin alias tanpa duplikasi.',
-    '<code>docker image rm</code> hapus image (tidak boleh dipakai container).',
-    'Layer read-only → sharing efisien antar container.'
+    '<code>docker image ls</code> berfungsi melihat image yang tersimpan lokal.',
+    '<code>docker pull</code> berfungsi menarik image dari registry.',
+    '<code>docker image tag</code> membuat nama alias baru tanpa menduplikasi image.',
+    '<code>docker image rm</code> menghapus image, dengan syarat image tersebut tidak sedang dipakai container.',
+    'Sifat layer read-only membuat sharing menjadi efisien antar container.'
   ]
 });

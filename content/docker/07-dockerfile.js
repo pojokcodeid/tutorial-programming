@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Dockerfile',
   duration: '10–12 menit',
   intro: [
-    '<b>Dockerfile</b> adalah file teks berisi instruksi untuk membangun Docker Image secara otomatis. Dengan Dockerfile, kamu bisa membuat Image aplikasi-mu sendiri dan bisa dipakai ulang.'
+    '<b>Dockerfile</b> adalah file teks berisi kumpulan instruksi untuk membangun sebuah Docker Image secara otomatis. Dengan Dockerfile, kamu dapat mengemas aplikasimu sendiri beserta seluruh dependensinya menjadi image yang siap dipakai ulang di mana saja.',
+    'Bab ini akan mengenalkan struktur Dockerfile, instruksi-instruksi dasar yang paling sering dipakai, serta cara membangun image dengan <code>docker build</code>.'
   ],
   objectives: [
     'Memahami tujuan & struktur Dockerfile',
@@ -23,7 +24,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Apa itu Dockerfile?</h3><p>Dockerfile berisi langkah demi langkah untuk membuat Image. Setiap instruksi menghasilkan <b>layer read-only</b> baru. Docker menggunakan <b>build cache</b> untuk mempercepat build jika tidak ada perubahan.</p>'
+      html: '<h3>Apa itu Dockerfile?</h3><p>Dockerfile memuat langkah demi langkah untuk membangun sebuah Image, mulai dari memilih image dasar (base image), menyalin source code, memasang dependensi, hingga menentukan perintah yang dijalankan saat container dijalankan.</p><p>Setiap instruksi dalam Dockerfile umumnya menghasilkan satu <b>layer read-only</b> baru. Docker menyimpan layer-layer ini dalam <b>build cache</b>, sehingga build berikutnya bisa jauh lebih cepat selama instruksi dan file yang terlibat tidak berubah.</p>'
     },
     {
       type: 'text',
@@ -67,7 +68,7 @@ EXPOSE 80
     },
     {
       type: 'text',
-      html: '<h3>Membangun Image (<code>docker build</code>)</h3><p>Perintah build:</p><pre><code>docker build [OPTIONS] PATH | URL | -</code></pre>'
+      html: '<h3>Membangun Image (<code>docker build</code>)</h3><p>Setelah Dockerfile selesai ditulis, kamu membangun image-nya dengan perintah <code>docker build</code>. Bentuk umumnya sebagai berikut:</p><pre><code>docker build [OPTIONS] PATH | URL | -</code></pre><p>Nilai <code>PATH</code> (biasanya <code>.</code> menunjuk folder saat ini) adalah <b>build context</b>, yaitu kumpulan file yang dikirim ke Docker daemon dan bisa diakses oleh instruksi <code>COPY</code>.</p>'
     },
     {
       type: 'text',
@@ -138,10 +139,10 @@ docker run -d -p 8083:80 --name web-static web-static:1.0.0
  => => naming to docker.io/library/web-static:1.0.0                 0.0s
  => => writing image sha256:9f3c2ab71de4...                         0.0s`,
       explain: [
-        '<b>Baris [internal]</b> = pekerjaan internal BuildKit: membaca <code>Dockerfile</code>, <code>.dockerignore</code>, dan metadata base image (muncul sekali saja).',
-        '<b>[1/3], [2/3], …</b> = urutan instruksi Dockerfile yang dieksekusi (setiap instruksi = 1 layer).',
-        '<b>CACHED</b> = layer diambil dari build cache karena instruksi &amp; file-nya tidak berubah — ini yang bikin build ulang hanya butuh hitungan detik.',
-        '<b>naming to docker.io/library/web-static:1.0.0</b> = hasil build sudah diberi tag, siap dipakai <code>docker run</code>.'
+        '<b>Baris [internal]</b> adalah pekerjaan internal BuildKit: membaca <code>Dockerfile</code>, <code>.dockerignore</code>, dan metadata base image (hanya muncul sekali saja).',
+        '<b>[1/3], [2/3], …</b> menunjukkan urutan instruksi Dockerfile yang dieksekusi, di mana setiap instruksi menghasilkan satu layer.',
+        '<b>CACHED</b> berarti layer diambil dari build cache karena instruksi dan file-nya tidak berubah — inilah yang membuat build ulang hanya membutuhkan hitungan detik.',
+        '<b>naming to docker.io/library/web-static:1.0.0</b> menandakan hasil build sudah diberi tag dan siap dipakai dengan <code>docker run</code>.'
       ]
     },
     {
@@ -165,7 +166,7 @@ docker build --help`,
     },
     {
       type: 'text',
-      html: '<h3>Contoh 2: Aplikasi Node.js Sederhana</h3><p>Struktur minimal:</p><pre><code>app-node/\n├── Dockerfile\n├── package.json\n└── index.js</code></pre>'
+      html: '<h3>Contoh 2: Aplikasi Node.js Sederhana</h3><p>Berikut struktur folder minimal untuk contoh ini. Perhatikan adanya <code>package-lock.json</code> — file ini dibutuhkan oleh perintah <code>npm ci</code> dan dibuat dengan menjalankan <code>npm install</code> sekali di komputer lokal:</p><pre><code>app-node/\n├── Dockerfile\n├── package.json\n├── package-lock.json   # dibuat oleh: npm install\n└── index.js</code></pre>'
     },
     {
       type: 'example',
@@ -204,24 +205,25 @@ server.listen(3000, () => console.log('Server jalan di port 3000'));`,
 
 WORKDIR /app
 
-# Salin package.json dulu (untuk cache layer deps)
-COPY package.json ./
+# Salin package.json & package-lock.json dulu
+# (tujuannya agar cache instalasi bertahan lama)
+COPY package*.json ./
 
-# Install dependencies
+# Install dependensi sesuai lock file
 RUN npm ci --omit=dev
 
 # Salin sisa source code
 COPY . .
 
-# Expose port
+# Port yang didengarkan aplikasi (hanya dokumentasi)
 EXPOSE 3000
 
 # Jalankan aplikasi
 CMD ["npm", "start"]`,
       explain: [
-        'Strategi: COPY <code>package.json</code> dulu → <code>RUN npm ci</code> → baru COPY <code>.</code>. Ini memaksimalkan <b>build cache</b> (deps nggak reinstall kalau package.json nggak berubah).',
-        'Pakai <code>npm ci --omit=dev</code> untuk production (lebih stabil & cepat).',
-        'Gunakan <b>JSON form</b> <code>["npm","start"]</code> (exec form) agar sinyal (SIGTERM) diteruskan dengan benar.'
+        'Strateginya: <code>COPY package*.json</code> dulu → <code>RUN npm ci</code> → baru <code>COPY . .</code>. Cara ini memaksimalkan <b>build cache</b>, sehingga dependensi tidak diinstal ulang selama package.json dan lock file tidak berubah.',
+        '<code>npm ci</code> membaca <code>package-lock.json</code> sehingga versi dependensi persis sama di setiap build (cocok untuk produksi). Bila file lock belum ada, jalankan <code>npm install</code> sekali di lokal atau ganti dengan <code>npm install --omit=dev</code>.',
+        'Gunakan <b>bentuk JSON (exec form)</b> <code>["npm","start"]</code> agar sinyal seperti SIGTERM diteruskan dengan benar ke aplikasi.'
       ]
     },
     {
@@ -235,35 +237,35 @@ docker run -d -p 8084:3000 --name node-docker node-docker:1.0.0`,
     },
     {
       type: 'tip',
-      title: 'Build Context & .dockerignore',
-      text: 'Hanya file yang dibutuhkan yang masuk build context. Buat <code>.dockerignore</code> untuk mengabaikan node_modules, .git, dist, log, dsb (hemat ukuran context & lebih aman).'
+      title: 'Build Context &amp; .dockerignore',
+      text: 'Hanya masukkan file yang benar-benar dibutuhkan ke dalam build context. Buat file <code>.dockerignore</code> untuk mengecualikan folder seperti <code>node_modules</code>, <code>.git</code>, <code>dist</code>, dan berkas log. Cara ini membuat ukuran context lebih kecil, build lebih cepat, dan menghindari file sensitif ikut terkirim.'
     },
     {
       type: 'warn',
       title: 'CMD vs ENTRYPOINT',
-      text: '<code>CMD</code> bisa di-override saat <code>docker run</code> (append args). <code>ENTRYPOINT</code> lebih kaku (biasanya executable). Kombinasi umum: ENTRYPOINT ["node"], CMD ["app.js"].'
+      text: '<code>CMD</code> dapat ditimpa (di-override) saat menjalankan <code>docker run</code>, sedangkan <code>ENTRYPOINT</code> bersifat lebih kaku dan umumnya menunjuk program utama. Kombinasi yang umum adalah <code>ENTRYPOINT ["node"]</code> bersama <code>CMD ["app.js"]</code>.'
     },
     {
       type: 'vocab',
       items: [
-        ['Dockerfile', 'File instruksi untuk membangun Image.'],
-        ['Build context', 'Direktori/file yang dikirim ke Docker daemon saat build (ditandai <code>.</code>).'],
-        ['Build cache', 'Layer sebelumnya dipakai ulang jika instruksi & file tidak berubah.'],
-        ['Layer', 'Hasil tiap instruksi Dockerfile (read-only).'],
-        ['FROM', 'Base image pertama & wajib.'],
-        ['WORKDIR', 'Working directory default di container.'],
-        ['COPY vs ADD', 'COPY lebih direkomendasikan untuk file lokal.'],
-        ['RUN', 'Eksekusi saat build.'],
-        ['CMD', 'Default command saat container start (dapat di-override).'],
-        ['ENTRYPOINT', 'Executable utama container.']
+        ['Dockerfile', 'File berisi instruksi untuk membangun sebuah Image.'],
+        ['Build context', 'Direktori atau file yang dikirim ke Docker daemon saat build (ditandai dengan <code>.</code>).'],
+        ['Build cache', 'Mekanisme pemakaian ulang layer lama selama instruksi dan file tidak berubah.'],
+        ['Layer', 'Hasil dari setiap instruksi Dockerfile (bersifat read-only).'],
+        ['FROM', 'Instruksi wajib pertama yang menentukan base image.'],
+        ['WORKDIR', 'Menentukan direktori kerja bawaan di dalam container.'],
+        ['COPY vs ADD', '<code>COPY</code> lebih dianjurkan untuk menyalin file lokal dibanding <code>ADD</code>.'],
+        ['RUN', 'Menjalankan perintah pada saat build berlangsung.'],
+        ['CMD', 'Perintah bawaan saat container mulai berjalan (dapat di-override).'],
+        ['ENTRYPOINT', 'Program utama yang dieksekusi oleh container.']
       ]
     }
   ],
   recap: [
-    'Dockerfile = resep membangun Image sendiri.',
-    'Urutan instruksi penting untuk memaksimalkan build cache.',
-    'Build: <code>docker build -t nama:tag .</code>.',
-    'Strategi Node: COPY package.json dulu → npm ci → COPY sisanya.',
-    'Pakai JSON form CMD/ENTRYPOINT untuk penanganan sinyal yang benar.'
+    'Dockerfile adalah resep untuk membangun Image milikmu sendiri.',
+    'Urutan instruksi sangat menentukan efektivitas build cache, karena itu perhatikan penataannya.',
+    'Perintah build: <code>docker build -t nama:tag .</code>.',
+    'Strategi untuk Node.js: salin <code>package.json</code> dan lock file dahulu, jalankan <code>npm ci</code>, lalu salin sisa source code.',
+    'Gunakan bentuk JSON pada <code>CMD</code>/<code>ENTRYPOINT</code> agar penanganan sinyal berjalan benar.'
   ]
 });

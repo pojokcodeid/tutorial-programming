@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Data',
   duration: '7–9 menit',
   intro: [
-    'Ingat: <b>writable layer</b> container hilang saat container dihapus. Kalau datamu penting (DB, upload file), kamu harus simpan secara persisten pakai <b>Volume</b> (atau bind mount).'
+    'Ingat kembali bahwa <b>writable layer</b> container akan hilang ketika container dihapus. Jika datamu penting — seperti database, file hasil unggahan, atau catatan log permanen — kamu wajib menyimpannya secara persisten memakai <b>Volume</b> atau <b>Bind Mount</b>.',
+    'Bab ini menjelaskan ketiga cara penyimpanan data di Docker beserta kapan sebaiknya masing-masing dipakai.'
   ],
   objectives: [
     'Memahami mengapa data perlu persistensi',
@@ -23,7 +24,7 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Masalah: Data Hilang Saat Container Dihapus</h3><p>Semua perubahan file di dalam container (write layer) akan hilang jika container dihapus (<code>rm</code>). Ini oke buat cache/temp, tapi <b>tidak oke</b> buat database, file upload, logs permanen.</p><p>Solusinya: <b>persist data</b> ke luar lifecycle container → pakai <b>Volume</b> atau <b>Bind Mount</b>.</p>'
+      html: '<h3>Masalah: Data Hilang Saat Container Dihapus</h3><p>Semua perubahan file yang ada di dalam container (pada writable layer) akan ikut hilang ketika container dihapus dengan <code>rm</code>. Hal ini wajar untuk data sementara seperti cache atau berkas temp, tetapi <b>tidak dapat diterima</b> untuk database, file unggahan, atau log yang harus dipertahankan.</p><p>Solusinya adalah menyimpan data di luar siklus hidup container, yaitu dengan memakai <b>Volume</b> atau <b>Bind Mount</b>.</p>'
     },
     {
       type: 'text',
@@ -60,7 +61,7 @@ window.DOCKER_LESSONS.push({
     },
     {
       type: 'text',
-      html: '<h3>Melihat Volume yang Ada</h3>'
+      html: '<h3>Memeriksa Volume yang Tersedia</h3><p>Kamu dapat melihat daftar volume yang ada beserta detailnya dengan perintah berikut.</p>'
     },
     {
       type: 'example',
@@ -69,13 +70,13 @@ window.DOCKER_LESSONS.push({
       output: false,
       code: `docker volume ls
 
-# Inspect volume
+# Lihat detail sebuah volume
 docker volume inspect mydb_data`,
-      explain: ['Volume yang belum dipakai (dangling) bisa dibersihkan nanti.']
+      explain: ['Volume yang belum terpakai (dangling) dapat dibersihkan pada langkah berikutnya.']
     },
     {
       type: 'text',
-      html: '<h3>Membuat Named Volume</h3><p>Named volume = volume dengan nama eksplisit, mudah dikelola & dipakai ulang.</p>'
+      html: '<h3>Membuat Named Volume</h3><p>Named volume adalah volume yang diberi nama eksplisit sehingga mudah dikelola dan dipakai ulang kapan pun dibutuhkan.</p>'
     },
     {
       type: 'example',
@@ -85,13 +86,13 @@ docker volume inspect mydb_data`,
       code: `# Buat named volume
 docker volume create mydb_data
 
-# Lihat
+# Pastikan sudah terdaftar
 docker volume ls`,
       explain: []
     },
     {
       type: 'text',
-      html: '<h3>Menjalankan Container dengan Volume</h3><p>Gunakan <code>-v NAMA_VOLUME:PATH_CONTAINER</code> (rekomendasi untuk named volume). Atau <code>--mount</code> (more verbose, lebih jelas).</p>'
+      html: '<h3>Menjalankan Container dengan Volume</h3><p>Gunakan sintaks <code>-v NAMA_VOLUME:PATH_CONTAINER</code>, yang merupakan cara paling umum untuk memakai named volume. Alternatif lain adalah opsi <code>--mount</code> yang lebih terperinci dan mudah dibaca.</p>'
     },
     {
       type: 'example',
@@ -106,9 +107,9 @@ docker volume ls`,
   -p 3306:3306 \
   mysql:8.0`,
       explain: [
-        '<code>/var/lib/mysql</code> = data directory MySQL di dalam container.',
-        '<code>-v mydb_data:/var/lib/mysql</code> → data disimpan di named volume (tetap ada meski container dihapus).',
-        'Jangan lupa set env password (sesuaikan kebutuhan).'
+        '<code>/var/lib/mysql</code> adalah lokasi penyimpanan data MySQL di dalam container.',
+        '<code>-v mydb_data:/var/lib/mysql</code> mengarahkan data ke named volume sehingga tetap tersimpan walaupun container dihapus.',
+        'Jangan lupa mengatur variabel password melalui <code>-e</code> sesuai kebutuhanmu.'
       ]
     },
     {
@@ -119,10 +120,10 @@ docker volume ls`,
       code: `# Masuk ke MySQL (opsional)
 # docker exec -it mysql-db mysql -uroot -prootpass
 
-# Hentikan & hapus container
+# Hentikan lalu hapus container
 docker stop mysql-db && docker rm mysql-db
 
-# Jalankan ulang container baru dengan volume yang sama
+# Jalankan kembali container baru dengan volume yang sama
 docker run -d \
   --name mysql-db2 \
   -e MYSQL_ROOT_PASSWORD=rootpass \
@@ -131,19 +132,19 @@ docker run -d \
   -p 3306:3306 \
   mysql:8.0
 
-# Data sebelumnya tetap ada!`,
+# Data sebelumnya tetap tersedia!`,
       explain: [
-        'Setelah container lama dihapus, data MySQL masih tersimpan di volume <code>mydb_data</code>.',
-        'Container baru bisa melanjutkan data tersebut.'
+        'Setelah container lama dihapus, data MySQL tetap tersimpan di dalam volume <code>mydb_data</code>.',
+        'Container baru dapat melanjutkan membaca dan menulis data yang sama tanpa kehilangan apa pun.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Anonymous Volume vs Named Volume saat run</h3><p>Kadang image (Dockerfile) sudah define <code>VOLUME</code>, bisa muncul anonymous volume. Lebih baik eksplisit pakai named volume.</p>'
+      html: '<h3>Anonymous Volume vs Named Volume saat Run</h3><p>Kadang sebuah image sudah mendeklarasikan <code>VOLUME</code> di dalam Dockerfile-nya, sehingga Docker otomatis membuat anonymous volume. Untuk data yang penting, sebaiknya gunakan named volume secara eksplisit agar mudah dilacak dan dikelola.</p>'
     },
     {
       type: 'example',
-      title: 'Bersihin Volume',
+      title: 'Membersihkan Volume',
       lang: 'bash',
       output: false,
       code: `# Hapus volume tertentu
@@ -155,38 +156,38 @@ docker volume prune
 # Bersihkan (container + network + volume dangling)
 # docker system prune --volumes`,
       explain: [
-        '<code>volume prune</code> menghapus volume orphaned (tidak ter-attach ke container).',
-        '<code>--volumes</code> pada system prune juga hapus volume unused.'
+        '<code>volume prune</code> menghapus volume yatim (orphaned) yang tidak lagi terpasang pada container mana pun.',
+        'Opsi <code>--volumes</code> pada <code>system prune</code> juga membersihkan volume yang tidak terpakai.'
       ]
     },
     {
       type: 'tip',
-      title: 'Kapan pakai Bind Mount vs Named Volume?',
-      text: '<b>Named Volume</b>: untuk data aplikasi/DB (portabel, dikelola Docker). <b>Bind Mount</b>: untuk development (sync source code) atau perlu akses path host spesifik. Untuk produksi, umumnya prefer <b>Named Volume</b>.'
+      title: 'Kapan memakai Bind Mount vs Named Volume?',
+      text: 'Pakai <b>Named Volume</b> untuk data aplikasi atau database karena portabel dan dikelola Docker. Pakai <b>Bind Mount</b> untuk pengembangan (sinkronisasi source code) atau ketika perlu mengakses path tertentu di host. Untuk lingkungan produksi, umumnya <b>Named Volume</b> lebih dianjurkan.'
     },
     {
       type: 'warn',
       title: 'Hati-hati',
-      text: 'Jangan bind-mount folder penting host ke path yang bisa menimpa (mis. /etc). Selalu tentukan path container dengan tepat.'
+      text: 'Jangan melakukan bind mount terhadap folder penting di host ke path yang berisiko menimpa data (misalnya <code>/etc</code>). Selalu tentukan path di dalam container dengan tepat dan teliti.'
     },
     {
       type: 'vocab',
       items: [
-        ['Persistensi', 'Data tetap tersimpan meski container dihapus/dihentikan.'],
-        ['Writable layer', 'Lapisan tulis di container (hilang saat rm).'],
-        ['Volume', 'Cara Docker menyimpan data persisten (managed).'],
-        ['Named Volume', 'Volume dengan nama, reusable & rekomendasi untuk prod.'],
-        ['Anonymous Volume', 'Volume tanpa nama, auto-created.'],
-        ['Bind Mount', 'Mapping path host → container (manual).'],
-        ['VOLUME (Dockerfile)', 'Mendeklarasikan mount point untuk data.']
+        ['Persistensi', 'Kondisi di mana data tetap tersimpan meski container dihapus atau dihentikan.'],
+        ['Writable layer', 'Lapisan tulis di dalam container yang hilang saat container dihapus.'],
+        ['Volume', 'Cara Docker menyimpan data secara persisten dan dikelola otomatis.'],
+        ['Named Volume', 'Volume dengan nama khusus, dapat dipakai ulang dan dianjurkan untuk produksi.'],
+        ['Anonymous Volume', 'Volume tanpa nama yang dibuat otomatis oleh Docker.'],
+        ['Bind Mount', 'Pemetaan langsung path host ke container secara manual.'],
+        ['VOLUME (Dockerfile)', 'Instruksi untuk mendeklarasikan titik mount bagi data di dalam image.']
       ]
     }
   ],
   recap: [
-    'Data di writable layer HILANG saat <code>docker rm</code>. Gunakan Volume/Bind Mount.',
-    'Rekomendasi: <b>Named Volume</b> untuk data persisten (DB, uploads).',
-    'Mount: <code>-v nama_volume:/path/container</code>.',
-    'Persistensi teruji: hapus container → jalankan baru dengan volume sama → data tetap ada.',
-    'Bersihin unused volume dengan <code>docker volume prune</code> (hati-hati).'
+    'Data pada writable layer HILANG saat <code>docker rm</code>, karena itu gunakan Volume atau Bind Mount.',
+    'Rekomendasi untuk data penting: <b>Named Volume</b> (database, file unggahan).',
+    'Sintaks mount: <code>-v nama_volume:/path/container</code>.',
+    'Persistensi terbukti: hapus container, jalankan container baru dengan volume yang sama, lalu data tetap ada.',
+    'Bersihkan volume yang tidak terpakai dengan <code>docker volume prune</code> (gunakan dengan hati-hati).'
   ]
 });

@@ -11,7 +11,8 @@ window.DOCKER_LESSONS.push({
   chapter: 'Praktik Dasar',
   duration: '8–10 menit',
   intro: [
-    'Sekarang masuk praktik: menjalankan container, mempublish port, mode detached, melihat daftar container, memberi nama, stop/start/restart, hapus container.'
+    'Sekarang kamu masuk ke praktik inti Docker: menjalankan container, mempublish port agar bisa diakses dari browser, menjalankan di latar belakang (detached), melihat daftar container, memberi nama, serta menghentikan, memulai ulang, dan menghapus container.',
+    'Semua perintah di bab ini adalah yang paling sering kamu pakai sehari-hari.'
   ],
   objectives: [
     'Menjalankan container dengan <code>docker run</code>',
@@ -23,22 +24,22 @@ window.DOCKER_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Menjalankan Container</h3><p>Bentuk umum (modern):</p><pre><code>docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]</code></pre><p>Contoh sederhana:</p>'
+      html: '<h3>Menjalankan Container</h3><p>Bentuk umum perintah untuk menjalankan container adalah sebagai berikut:</p><pre><code>docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]</code></pre><p><b>IMAGE</b> adalah image yang akan dijadikan dasar container (misalnya <code>alpine</code> atau <code>nginx:alpine</code>), sedangkan <b>COMMAND</b> adalah perintah yang ingin kamu jalankan di dalamnya. Jika COMMAND tidak diberi, Docker akan memakai perintah bawaan dari image tersebut. Berikut contoh paling sederhana:</p>'
     },
     {
       type: 'example',
-      title: 'Jalankan alpine & eksekusi perintah',
+      title: 'Jalankan alpine &amp; eksekusi perintah',
       lang: 'bash',
       output: false,
       code: `docker container run alpine echo "Halo dari Alpine!"`,
       explain: [
-        'Docker pull alpine (jika belum ada), buat container, jalankan <code>echo</code>, lalu container berhenti otomatis.',
-        'Container berhenti saat proses utama (entrypoint/cmd) selesai.'
+        'Karena image alpine belum ada, Docker menariknya (pull) terlebih dahulu, lalu membuat container, menjalankan <code>echo</code>, dan menghentikan container setelah selesai.',
+        'Container secara otomatis berhenti ketika proses utamanya (entrypoint/cmd) selesai dieksekusi.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Publish Port (-p / --publish)</h3><p>Agar aplikasi di dalam container bisa diakses dari browser/host, publish port: <code>HOST_PORT:CONTAINER_PORT</code>.</p>'
+      html: '<h3>Publish Port (-p / --publish)</h3><p>Secara bawaan, container terisolasi dari jaringan luar. Agar aplikasi di dalam container bisa diakses dari browser atau host, kamu perlu mempublish port dengan format <code>HOST_PORT:CONTAINER_PORT</code>. Artinya, port yang kamu buka di laptop akan meneruskan lalu lintas jaringan ke port yang didengarkan proses di dalam container.</p>'
     },
     {
       type: 'text',
@@ -72,7 +73,7 @@ docker container run --publish 8080:80 nginx:alpine`,
     },
     {
       type: 'text',
-      html: '<h3>Detached Mode (-d / --detach)</h3><p>Supaya container tetap jalan di background (tidak menempel terminal):</p>'
+      html: '<h3>Detached Mode (-d / --detach)</h3><p>Secara bawaan, container berjalan di foreground — yaitu menempel pada terminal dan menampilkan log secara langsung. Bila kamu ingin container tetap berjalan di latar belakang agar terminal bisa dipakai untuk hal lain, gunakan opsi <code>-d</code> (<code>--detach</code>):</p>'
     },
     {
       type: 'example',
@@ -81,15 +82,16 @@ docker container run --publish 8080:80 nginx:alpine`,
       output: false,
       code: `docker container run --detach --publish 8081:80 --name web-nginx nginx:alpine
 
-# Output berupa CONTAINER ID`,
+# Output hanya berupa CONTAINER ID (bukan log),
+# karena container langsung berjalan di background`,
       explain: [
-        '<code>--name web-nginx</code> memberi nama container (lebih mudah dipanggil).',
-        'Container tetap berjalan meski terminal ditutup.'
+        '<code>--name web-nginx</code> memberi nama pada container sehingga lebih mudah dipanggil pada perintah berikutnya.',
+        'Container tetap berjalan walaupun terminal sudah ditutup. Lihat statusnya dengan <code>docker container ls</code>.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Melihat Daftar Container</h3>'
+      html: '<h3>Melihat Daftar Container</h3><p>Gunakan <code>docker container ls</code> untuk melihat container yang sedang berjalan, atau tambahkan <code>--all</code> agar container yang sudah berhenti juga ikut tampil.</p>'
     },
     {
       type: 'example',
@@ -147,57 +149,59 @@ docker ps -a`,
       title: 'Mengelola container',
       lang: 'bash',
       output: false,
-      code: `# Hentikan container (graceful)
+      code: `# Hentikan container (graceful / berhenti dengan aman)
 docker container stop web-nginx
 
-# Mulai kembali container
+# Mulai kembali container yang sudah berhenti
 docker container start web-nginx
 
-# Restart container
+# Restart container (hentikan lalu jalankan lagi)
 docker container restart web-nginx
 
 # Ubah nama container
 docker container rename web-nginx web-server
 
+# Hentikan dulu sebelum dihapus
+# (rm hanya bisa menghapus container yang tidak berjalan)
+docker container stop web-server
+
 # Hapus container yang SUDAH berhenti
 docker container rm web-server
 
-# Hapus paksa meski masih running (hati-hati)
-docker container rm --force web-server
-
-# Hapus semua container yang exited
+# Hapus semua container yang sudah berhenti (exited) sekaligus
 docker container prune`,
       explain: [
-        '<code>stop</code> kirim SIGTERM → graceful shutdown.',
-        '<code>rm</code> hanya bisa jika container tidak running (kecuali pakai <code>--force</code>).',
-        '<code>prune</code> berguna bersihin "sampah" container exited.'
+        '<code>stop</code> mengirimkan sinyal SIGTERM agar container berhenti dengan cara yang aman (graceful shutdown).',
+        'Perintah <code>rm</code> hanya bisa menghapus container yang sudah tidak berjalan. Karena itu <code>stop</code> didahulukan sebelum <code>rm</code>.',
+        'Bila terpaksa harus menghapus container yang masih berjalan, gunakan <code>rm --force</code> (gunakan seperlunya saja).',
+        '<code>prune</code> sangat berguna untuk membersihkan wadah-wadah container yang sudah berhenti (exited).'
       ]
     },
     {
       type: 'tip',
       title: 'Tips',
-      text: 'Kamu bisa pakai CONTAINER ID (full/partial) atau NAME untuk hampir semua perintah (stop/start/rm/exec).'
+      text: 'Kamu bisa memakai CONTAINER ID (baik yang lengkap maupun sebagian) atau NAME untuk hampir semua perintah, seperti <code>stop</code>, <code>start</code>, <code>rm</code>, dan <code>exec</code>. Cukup ketik beberapa karakter awal ID saja.'
     },
     {
       type: 'warn',
       title: 'Peringatan',
-      text: '<code>container prune</code> akan menghapus container exited tanpa konfirmasi tambahan. Pastikan tidak ada yang masih dibutuhkan.'
+      text: 'Perintah <code>container prune</code> akan menghapus seluruh container berstatus exited tanpa konfirmasi tambahan. Pastikan tidak ada container yang masih kamu butuhkan sebelum menjalankannya.'
     },
     {
       type: 'vocab',
       items: [
-        ['Foreground', 'Container menempel ke terminal (output langsung terlihat).'],
-        ['Detached (-d)', 'Container jalan di background.'],
-        ['Publish (-p)', 'Memetakan port host -> port container.'],
-        ['Graceful shutdown', 'Penutupan container dengan cara aman (SIGTERM).'],
-        ['SIGKILL', 'Paksa berhenti segera (bisa dipakai via kill/--force).']
+        ['Foreground', 'Container menempel pada terminal sehingga log langsung terlihat.'],
+        ['Detached (-d)', 'Container berjalan di latar belakang (background).'],
+        ['Publish (-p)', 'Memetakan port host ke port container agar bisa diakses dari luar.'],
+        ['Graceful shutdown', 'Proses menghentikan container dengan cara aman menggunakan sinyal SIGTERM.'],
+        ['SIGKILL', 'Sinyal untuk memaksa proses berhenti segera (dipakai lewat <code>--force</code>).']
       ]
     }
   ],
   recap: [
-    '<code>docker container run</code> = buat + jalankan container.',
-    'Gunakan <code>-p HOST:CONTAINER</code> untuk akses dari host.',
-    '<code>-d</code> biar jalan background, <code>--name</code> biar gampang diidentifikasi.',
-    'Kelola dengan <code>ls/stop/start/restart/rename/rm/prune</code>.'
+    '<code>docker container run</code> berfungsi untuk membuat sekaligus menjalankan container.',
+    'Gunakan <code>-p HOST:CONTAINER</code> agar aplikasi di container bisa diakses dari host.',
+    '<code>-d</code> membuat container berjalan di latar belakang, sedangkan <code>--name</code> memberi nama agar mudah dikenali.',
+    'Kelola container dengan <code>ls</code>, <code>stop</code>, <code>start</code>, <code>restart</code>, <code>rename</code>, <code>rm</code>, dan <code>prune</code>.'
   ]
 });
