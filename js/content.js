@@ -133,6 +133,26 @@ const CONTENT = (() => {
       ]
     },
 
+    reactproject: {
+      id: 'reactproject',
+      title: 'Contoh Project React JS',
+      tagline: 'Satu Proyek Nyata: React + Ant Design + JWT',
+      icon: 'assets/logos/react.svg',
+      color: '#1677FF',
+      desc: 'Proyek praktis membangun Dashboard Toko lengkap dengan React: custom component, routing, Context API, axios, json-server sebagai dummy backend, authentication & authorization, hingga access dan refresh token otomatis — memakai component library Ant Design.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.REACTPROJECT_LESSONS || []).slice(),
+      quizPool: (window.REACTPROJECT_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi React — Learn', url: 'https://react.dev/learn' },
+        { label: 'Ant Design — Dokumentasi', url: 'https://ant.design/' },
+        { label: 'React Router — Dokumentasi', url: 'https://reactrouter.com/' },
+        { label: 'Axios — Dokumentasi', url: 'https://axios-http.com/docs/intro' },
+        { label: 'json-server (GitHub typicode)', url: 'https://github.com/typicode/json-server' }
+      ]
+    },
+
     go: {
       id: 'go',
       title: 'Go (Golang)',
@@ -268,5 +288,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

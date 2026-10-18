@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, dan **Framework MVC Lucee CFML (6 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, dan **Framework MVC Lucee CFML (6 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
@@ -47,10 +47,12 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/git/          # materi tutorial Git & GitHub (Bahasa Indonesia)
 ├── content/sql/          # materi tutorial SQL (Bahasa Indonesia)
 ├── content/react/        # materi tutorial React JS (Bahasa Indonesia)
+├── content/reactproject/ # materi tutorial Contoh Project React JS (Bahasa Indonesia)
 ├── content/go/           # materi tutorial Go / Golang (Bahasa Indonesia)
 ├── content/goweb/        # materi tutorial Go Web Examples (Bahasa Indonesia)
 ├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
 ├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
+├── examples/react-project/ # contoh proyek React nyata (dari materi reactproject)
 ├── examples/cfml-mvc-framework/  # contoh proyek framework MVC (dari materi luceemvc)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
@@ -111,6 +113,7 @@ __CODE__
 - **Git & GitHub** — https://git-scm.com/book/id/v2 · https://www.w3schools.com/git/
 - **SQL** — https://www.w3schools.com/sql/default.asp · https://www.sqltutorial.org/
 - **React JS** — https://react.dev/learn · https://www.w3schools.com/react/default.asp · https://www.javascripttutorial.net/react-tutorial/
+- **Contoh Project React JS** — https://react.dev/learn · https://ant.design/ · https://reactrouter.com/ · https://axios-http.com/docs/intro · https://github.com/typicode/json-server
 - **Go / Golang** — https://www.gotutorial.org/ · https://go.dev/doc/tutorial/ · https://www.w3schools.com/go/index.php
 - **Go Web Examples** — https://gowebexamples.com/
 - **Go REST API** — https://pkg.go.dev/net/http · https://github.com/golang-jwt/jwt · https://github.com/go-sql-driver/mysql · https://mariadb.com/kb/en/documentation/

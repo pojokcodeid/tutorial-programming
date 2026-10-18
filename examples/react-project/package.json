@@ -1,0 +1,27 @@
+{
+  "name": "contoh-project-react",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Contoh project React: custom component, routing, context, axios, auth + refresh token, json-server, Ant Design",
+  "scripts": {
+    "dev": "vite",
+    "server": "node server.js",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.3.4",
+    "antd": "^6.6.6",
+    "axios": "^1.20.0",
+    "jsonwebtoken": "^9.0.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "json-server": "^0.17.4",
+    "vite": "^8.3.4"
+  }
+}

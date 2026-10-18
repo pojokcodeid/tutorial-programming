@@ -214,6 +214,36 @@
   - Mengenal Ekosistem Full-Stack / Framework Modern:
     - Transisi dari Client-Side Rendering (CSR) murni ke Next.js (Server-Side Rendering, App Router, SEO Optimization).
 
+## Topik Contoh Project React JS
+
+Materi proyek praktis membangun satu aplikasi React lengkap (Dashboard Toko):
+custom component, routing, Context API, axios, dummy backend, authentication &
+authorization, hingga access & refresh token otomatis, dengan component library
+Ant Design. Berdiri sebagai tutorial terpisah dengan kuis tersendiri; kode
+project nyata ada di folder `examples/react-project/`.
+
+- Rujukan
+  - https://react.dev/learn
+  - https://ant.design/
+  - https://reactrouter.com/
+  - https://axios-http.com/docs/intro
+  - https://github.com/typicode/json-server
+
+- Materi yang harus ada
+
+1. Fondasi Proyek
+   - Pengenalan & Setup Proyek: gambaran fitur, perpustakaan yang dipakai (React + Vite, Ant Design, React Router DOM, Axios, json-server, JWT), struktur folder, dan menjalankan frontend + backend berdampingan.
+   - json-server sebagai Dummy Backend: db.json (users, products, refreshTokens), json-server programatik lewat server.js, endpoint auth (register, login, refresh, logout, me), middleware authenticate & requireRole, serta aturan akses resource.
+2. Komponen & Navigasi
+   - Custom Component dengan Ant Design: komponen presentasional (PageHeader, StatCard), membungkus Table Ant Design menjadi ProductTable, layout AppShell dengan menu berbasis peran.
+   - Routing dengan React Router DOM: peta rute App.jsx, nested route + Outlet, layout route, ProtectedRoute dengan Navigate state, rute dinamis useParams, useNavigate & useLocation, halaman 404.
+3. State & HTTP
+   - Context API: masalah prop drilling, AuthContext + custom hook useAuth, pemulihan sesi, jembatan event "sesi berakhir" dari axios.
+   - Axios: instance dengan baseURL, interceptor request (header Authorization), modul API terpisah (authApi, productApi, userApi), pola loading & error di halaman.
+4. Keamanan
+   - Authentication & Authorization: form login/register dengan validasi Ant Design, penyimpanan token, ProtectedRoute & RoleGate, otorisasi di sisi tampilan beserta batasannya.
+   - Access & Refresh Token Otomatis: alur 401 → refresh → retry, antrean refresh untuk banyak request, rotasi & pencabutan token di server, pengamatan lewat DevTools dan curl.
+
 ## Topik Mengenai GO-LANG
 
 - Rujukan

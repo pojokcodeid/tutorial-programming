@@ -125,6 +125,15 @@ async function main() {
     'content/react/state-management.js',
     'content/react/advanced.js',
     'content/react/ecosystem.js',
+    'content/reactproject/quiz-questions.js',
+    'content/reactproject/01-pengenalan-setup.js',
+    'content/reactproject/02-json-server.js',
+    'content/reactproject/03-custom-component.js',
+    'content/reactproject/04-routing.js',
+    'content/reactproject/05-context.js',
+    'content/reactproject/06-axios.js',
+    'content/reactproject/07-auth-authorization.js',
+    'content/reactproject/08-refresh-token.js',
     'content/gorestapi/quiz-questions.js',
     'content/gorestapi/01-pengenalan-arsitektur.js',
     'content/gorestapi/02-setup-konfigurasi.js',
@@ -295,6 +304,35 @@ async function main() {
   check('rujukan React sesuai info.md (react.dev, W3Schools, javascripttutorial)',
     ['https://react.dev/learn', 'https://www.w3schools.com/react/default.asp', 'https://www.javascripttutorial.net/react-tutorial/']
       .every(u => reactRefs.includes(u)));
+
+  // 4d2) konten Contoh Project React JS: 8 pelajaran + kuis
+  const rproj = CONTENT.get('reactproject');
+  check('Contoh Project React JS terdaftar & status ready', !!rproj && rproj.status === 'ready');
+  check('8 pelajaran Contoh Project React JS', rproj.lessons.length === 8);
+  const rprojIds = rproj.lessons.map(l => l.id);
+  check('id pelajaran Contoh Project React JS unik', new Set(rprojIds).size === rprojIds.length);
+  check('judul, durasi, bab, intro, objectives & recap terisi',
+    rproj.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && l.intro && l.intro.length && l.objectives && l.objectives.length &&
+      l.recap && l.recap.length));
+  check('tiap pelajaran punya contoh kode, vocab & tip/warn',
+    rproj.lessons.every(l =>
+      l.sections.some(s => s.type === 'example' && s.code && s.output === false) &&
+      l.sections.some(s => s.type === 'vocab' && s.items.length >= 5) &&
+      (l.sections.some(s => s.type === 'tip') || l.sections.some(s => s.type === 'warn'))));
+  check('latihan simulasi (live) tiap pelajaran valid',
+    rproj.lessons.every(l => l.sections.some(s =>
+      s.type === 'live' && s.lang === 'html' && /<!DOCTYPE/i.test(s.initial || '') && s.hint)));
+  check('15 soal kuis Contoh Project React JS lengkap & id unik',
+    rproj.quizPool.length === 15 &&
+    new Set(rproj.quizPool.map(q => q.id)).size === rproj.quizPool.length &&
+    !rproj.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const rprojRefs = (rproj.refs || []).map(r => r.url);
+  check('rujukan Contoh Project React JS (react.dev, ant.design, axios, json-server)',
+    ['https://react.dev/learn', 'https://ant.design/', 'https://axios-http.com/docs/intro', 'https://github.com/typicode/json-server']
+      .every(u => rprojRefs.includes(u)));
 
   // 4e) konten Go REST API: 10 pelajaran + 40 soal kuis
   const api = CONTENT.get('gorestapi');

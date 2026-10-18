@@ -1,0 +1,114 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Admin Toko",
+      "username": "admin",
+      "password": "ea2143886c42561fc9920a393752d565:8db85598442ad0d22935d35f5688804bfdbfdf830567413a10a4e2c9bf7d85c24e6e4a4b3a6c41835c184e365ab8d7be7aa2bd96ffc203b11c2575c133e38b4d",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "name": "Budi Santoso",
+      "username": "budi",
+      "password": "a563535e3694ac745f3cb89d1689424d:730456c575f8ecaecf8c7140cf6ef5b550773ce8e6377487fdf22a92e6a9766d4d190ed03285acac0e0d8b52b0e35d4a31065be13c8f3d9073883f6721088371",
+      "role": "user"
+    },
+    {
+      "id": "3",
+      "name": "Pojok Code",
+      "username": "pcode",
+      "password": "5d814823000327c673ec6f395dc39557:5adcd01603e0cdff1f8a28b0dc79a7e56493c158b4733177eab8dbd3d10f960e594cf3fd6be9db67d18dcd7573c6fbdc6b30b0c69549bce6af9bdd57d23ce429",
+      "role": "user"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Kopi Arabika Gayo 250g",
+      "category": "Minuman",
+      "price": 68000,
+      "stock": 24,
+      "createdBy": "1"
+    },
+    {
+      "id": "2",
+      "name": "Teh Melati Celup 25s",
+      "category": "Minuman",
+      "price": 12500,
+      "stock": 60,
+      "createdBy": "1"
+    },
+    {
+      "id": "3",
+      "name": "Gula Aren Cair 350ml",
+      "category": "Minuman",
+      "price": 24000,
+      "stock": 8,
+      "createdBy": "2"
+    },
+    {
+      "id": "4",
+      "name": "Keripik Singkong Balado 180g",
+      "category": "Makanan",
+      "price": 15500,
+      "stock": 42,
+      "createdBy": "2"
+    },
+    {
+      "id": "5",
+      "name": "Basreng Kering Pedas 200g",
+      "category": "Makanan",
+      "price": 18000,
+      "stock": 5,
+      "createdBy": "1"
+    },
+    {
+      "id": "6",
+      "name": "Sambal Bawang 200ml",
+      "category": "Makanan",
+      "price": 27000,
+      "stock": 31,
+      "createdBy": "1"
+    },
+    {
+      "id": "7",
+      "name": "Madu Hutan Sumbawa 250ml",
+      "category": "Kesehatan",
+      "price": 95000,
+      "stock": 12,
+      "createdBy": "2"
+    },
+    {
+      "id": "8",
+      "name": "Kunyit Asam Instan 10s",
+      "category": "Kesehatan",
+      "price": 9500,
+      "stock": 3,
+      "createdBy": "1"
+    },
+    {
+      "id": "9",
+      "name": "Lilin Aromaterapi Kayu Manis",
+      "category": "Rumah",
+      "price": 42000,
+      "stock": 17,
+      "createdBy": "2"
+    },
+    {
+      "id": "10",
+      "name": "Diffuser USB Mini",
+      "category": "Rumah",
+      "price": 78000,
+      "stock": 9,
+      "createdBy": "1"
+    }
+  ],
+  "refreshTokens": [
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6InJlZnJlc2giLCJqdGkiOiJmZjRjNzI0MWE3NGQ5MDFiIiwiaWF0IjoxNzkyMjkyNzM5LCJleHAiOjE3OTI4OTc1Mzl9.dGpemoHsB4MgC-fVnmySSeV4r5cbAmHKsyLo-xCd8Xs",
+      "userId": "1",
+      "expiresAt": 1792897539397
+    }
+  ]
+}
