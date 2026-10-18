@@ -243,6 +243,24 @@ const CONTENT = (() => {
       ]
     },
 
+    kubernetes: {
+      id: 'kubernetes', title: 'Kubernetes',
+      tagline: 'Orkestrasi Container',
+      icon: 'assets/logos/kubernetes.svg',
+      color: '#326CE5',
+      desc: 'Belajar Kubernetes dari nol dengan Podman: arsitektur cluster, Pod, Deployment, Service, Ingress, storage, autoscaling, RBAC, hingga Helm, GitOps, dan praktik deploy nyata.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.KUBERNETES_LESSONS || []).slice(),
+      quizPool: (window.KUBERNETES_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Kubernetes', url: 'https://kubernetes.io/docs/home/' },
+        { label: 'Kubernetes Tutorial – Kubernetes.io', url: 'https://kubernetes.io/docs/tutorials/' },
+        { label: 'Helm Docs', url: 'https://helm.sh/docs/' },
+        { label: 'Podman – generate/play kube', url: 'https://docs.podman.io/en/latest/markdown/podman-generate-kube.1.html' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -305,5 +323,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

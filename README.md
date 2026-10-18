@@ -57,6 +57,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── examples/react-project/ # contoh proyek React nyata (dari materi reactproject)
 ├── examples/cfml-mvc-framework/  # contoh proyek framework MVC (dari materi luceemvc)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
+├── content/kubernetes/   # materi tutorial Kubernetes dengan Podman (Bahasa Indonesia)
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── content/luceemvc/     # materi tutorial Framework MVC Lucee CFML (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
