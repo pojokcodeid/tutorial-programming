@@ -297,6 +297,25 @@ const CONTENT = (() => {
       ]
     },
 
+    k6: {
+      id: 'k6', title: 'Grafana k6',
+      tagline: 'Performance Testing & Observability',
+      icon: 'assets/logos/k6.svg',
+      color: '#FF671D',
+      desc: 'Belajar performance testing dengan Grafana k6 dari nol hingga mahir: fondasi metrik & SLO, tes pertama, lifecycle & modularisasi script, checks/thresholds/custom metrics, skenario beban (executor VU & arrival rate), API testing lanjutan (autentikasi, correlation, alur multi-langkah), data uji & test suite, membaca hasil, integrasi Prometheus & Grafana, Docker dan CI/CD, hingga analisis bottleneck dan proyek akhir end-to-end.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.K6_LESSONS || []).slice(),
+      quizPool: (window.K6_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Grafana k6 Documentation', url: 'https://grafana.com/docs/k6/latest/' },
+        { label: 'Get started with k6', url: 'https://grafana.com/docs/k6/latest/get-started/' },
+        { label: 'k6 JavaScript API', url: 'https://grafana.com/docs/k6/latest/javascript-api/' },
+        { label: 'k6 Scenarios & Executors', url: 'https://grafana.com/docs/k6/latest/using-k6/scenarios/' },
+        { label: 'Grafana Cloud k6', url: 'https://grafana.com/docs/grafana-cloud/testing/k6/' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -359,5 +378,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

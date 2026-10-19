@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, dan **RabbitMQ (20 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, dan **Grafana k6 (17 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
@@ -60,6 +60,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/kubernetes/   # materi tutorial Kubernetes dengan Podman (Bahasa Indonesia)
 ├── content/jenkins/      # materi tutorial Jenkins CI/CD (Bahasa Indonesia)
 ├── content/rabbitmq/     # materi tutorial RabbitMQ Message Broker (Bahasa Indonesia)
+├── content/k6/           # materi tutorial Grafana k6 Performance Testing (Bahasa Indonesia)
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── content/luceemvc/     # materi tutorial Framework MVC Lucee CFML (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
@@ -127,6 +128,7 @@ __CODE__
 - **Kubernetes** — https://kubernetes.io/docs/home/ · https://kubernetes.io/docs/tutorials/ · https://helm.sh/docs/
 - **Jenkins** — https://www.jenkins.io/doc/ · https://www.jenkins.io/learn/tutorials/ · https://www.jenkins.io/doc/pipeline/reference/ · https://www.jenkins.io/projects/jcasc/
 - **RabbitMQ** — https://www.rabbitmq.com/docs · https://www.rabbitmq.com/tutorials · https://www.rabbitmq.com/docs/management · https://www.rabbitmq.com/docs/clustering
+- **Grafana k6** — https://grafana.com/docs/k6/latest/ · https://grafana.com/docs/k6/latest/get-started/ · https://grafana.com/docs/k6/latest/javascript-api/ · https://grafana.com/docs/k6/latest/using-k6/scenarios/ · https://grafana.com/docs/grafana-cloud/testing/k6/
 - **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 - **Framework MVC (Lucee CFML)** — https://github.com/pojokcodeid/cfml-mvc-framework · https://commandbox.ortusbooks.com/ · https://docs.lucee.org/index.html
 

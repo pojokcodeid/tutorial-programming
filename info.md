@@ -601,3 +601,50 @@ contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
    - Proyek 1: worker queue sederhana (publisher, antrean durable, worker dengan ACK & prefetch).
    - Proyek 2: publisher-subscriber (fanout) dengan retry & dead letter queue.
    - Proyek 3: graceful shutdown — cancel consumer, selesaikan yang berjalan, tutup channel & koneksi.
+
+## Topik Mengenai Grafana k6 (Performance Testing)
+
+Materi Grafana k6 (performance/load testing). Kebutuhan lengkap ada di `grafana-k6.md` (Roadmap
+Belajar Grafana k6: Dari Nol sampai Mahir); materi disusun 17 pelajaran berbahasa Indonesia
+dengan diagram, contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
+(k6 open source + Docker + Prometheus/Grafana lokal, target uji API milik sendiri atau
+endpoint latihan publik `test.k6.io`, tanpa layanan berbayar).
+
+- Rujukan
+  - https://grafana.com/docs/k6/latest/
+  - https://grafana.com/docs/k6/latest/get-started/
+  - https://grafana.com/docs/k6/latest/javascript-api/
+  - https://grafana.com/docs/k6/latest/using-k6/scenarios/
+  - https://grafana.com/docs/grafana-cloud/testing/k6/
+
+- Materi yang harus ada
+
+1. Fondasi & Tes Pertama (Tahap 0–1)
+   - Konsep performance testing: smoke, load, stress, spike, soak; metrik latency, throughput, error rate, percentile (p50/p90/p95/p99), SLO.
+   - Perbedaan virtual users (VU), iterations, dan requests; etika pengujian (izin, batas beban).
+   - Instalasi k6 (brew/winget/repo/Docker), `k6 version`, smoke test pertama (`k6 run`), membaca ringkasan hasil, exit code.
+2. Menulis Script (Tahap 2)
+   - Lifecycle: init context, `setup()`, VU/default function, `teardown()`; scope variabel dan konteks yang boleh dipakai.
+   - Environment variable `__ENV`, flag `-e`, modularisasi dengan modul lokal (`lib/helpers.js`, `lib/auth.js`), wrapper request & helper.
+   - Keterbatasan runtime JavaScript k6 dibanding Node.js (tanpa npm bebas; ekstensi xk6).
+3. Kualitas & Metrik (Tahap 3)
+   - `check()` vs `thresholds`; ekspresi `p(95)`, `rate`, `avg`; `abortOnFail`, `delayAbortEval`; exit code 99.
+   - Custom metrics: `Counter`, `Gauge`, `Rate`, `Trend`; tagging request & metric, filter threshold per tag, bahaya cardinality.
+4. Skenario Beban (Tahap 4)
+   - `vus` + `duration`, `stages` (ramp-up/hold/ramp-down), objek `scenarios` multi-executor, `startTime`, `gracefulRampDown`.
+   - Executors: `constant-vus`, `ramping-vus`, `constant-arrival-rate`, `ramping-arrival-rate`, `shared-iterations`; closed vs open model; `preAllocatedVUs`/`maxVUs`.
+   - Resep 5 jenis tes (smoke/load/stress/spike/soak) dan anti-pattern pemodelan traffic.
+5. API Testing Lanjutan (Tahap 5)
+   - HTTP methods, header, query, cookies, body JSON/form; `res.timings`, `res.json()`; `group()`, `http.batch()`, timeout & `discardResponseBodies`.
+   - Autentikasi bearer token & session cookie (login di `setup()` vs per VU); correlation mengambil ID/token dari respons; data unik `__VU`/`__ITER`; alur login → transaksi → logout.
+6. Data & Test Suite (Tahap 6)
+   - `setup()`/`teardown()`, `SharedArray`, `open()`; data per VU/iterasi; fixture JSON/CSV; konfigurasi per environment; manajemen secret & struktur repository.
+7. Hasil & Observability (Tahap 7)
+   - Anatomi ringkasan hasil, `handleSummary()`, output JSON, tag `run_id`, artefak baseline.
+   - Integrasi Prometheus remote write (xk6) dan Grafana: data source, dashboard, panel VUs/RPS/p95/error rate, query PromQL, korelasi dengan metrik server (CPU, DB, queue, log), sinkronisasi waktu.
+8. Otomasi & Analisis (Tahap 8–9)
+   - k6 di Docker (pin versi image), CI/CD (GitHub Actions, GitLab CI, Jenkins): smoke test di PR, load test terjadwal, threshold sebagai gate, artefak hasil.
+   - Analisis bottleneck: baseline, pola degradasi, USE method, gejala CPU/DB/pool/queue, load generator sebagai bottleneck, optimasi satu variabel, rekomendasi berbasis data.
+9. Praktik Proyek
+   - Proyek end-to-end: test suite API e-commerce (smoke + load dengan dua executor, checks bisnis, custom metric, thresholds) di repo terstruktur.
+   - Dari baseline ke optimasi: tabel perbandingan sebelum/sesudah, template laporan hasil, checklist kemampuan mahir, prosedur aman (izin, batas beban, rencana berhenti).
