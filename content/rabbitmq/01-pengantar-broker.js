@@ -13,6 +13,7 @@ window.RABBITMQ_LESSONS.push({
   intro: [
     'Bayangkan aplikasi pesan antar kota: pengirim cukup menyerahkan paket ke kantor pos, tidak perlu tahu siapa kurirnya, di mana truknya, atau kapan paket itu berangkat. <b>Message broker</b> bekerja persis seperti kantor pos itu — sebuah perantara yang menerima pesan, menaruhnya di tempat yang tepat, lalu menyerahkannya kepada penerima.',
     'Tanpa broker, dua layanan terikat langsung: layanan pengirim harus tahu alamat penerima, menunggu balasan, dan ikut gagal bila penerima sedang sibuk atau mati. Dengan broker, keduanya hanya perlu berurusan dengan satu pihak yang selalu siap, sehingga sistem jauh lebih tahan banting saat trafik melonjak atau salah satu komponen sedang diperbaiki.',
+    'Satu istilah akan muncul berulang di seluruh materi ini: <b>AMQP</b> (<i>Advanced Message Queuing Protocol</i>), protokol terbuka yang menjadi bahasa utama RabbitMQ. Dengan AMQP, broker dan aplikasimu berbicara dalam aturan yang sama — producer, exchange, queue, dan ACK — sehingga library klien di bahas apa pun (Go, Node.js, Java) memakai konsep yang identik. Bab terakhir membahasnya lebih dalam; di sini cukup hafalkan dulu namanya.',
     'Bab ini membangun fondasi: perbedaan komunikasi sinkron vs asinkron, kapan message broker benar-benar dibutuhkan, perbandingan singkat RabbitMQ dengan Apache Kafka dan Redis Pub/Sub, serta protokol <b>AMQP 0-9-1</b> yang menjadi bahasa utama RabbitMQ.'
   ],
   objectives: [
@@ -83,7 +84,30 @@ kedua layanan wajib sama-sama hidup   keduanya bekerja pada waktunya masing-masi
     },
     {
       type: 'text',
-      html: '<h3>Kapan Message Broker Dibutuhkan?</h3><p>Broker bukan obat untuk semua masalah. Ada tiga alasan yang benar-benar membenarkan pemakaiannya:</p><ul><li><b>Decoupling</b> — memisahkan layanan agar bisa dikembangkan, diperbaiki, dan diskalakan tanpa saling mengganggu. Konfigurasi satu layanan tidak lagi mengguncang layanan lain.</li><li><b>Pemrosesan asinkron</b> — pekerjaan berat (memproses gambar, mengirim notifikasi massal, membuat laporan) dipindahkan dari jalur permintaan pengguna. Permintaan HTTP balas dalam milidetik, pekerjaan berat berjalan di belakang.</li><li><b>Penyeimbangan beban (spike leveling)</b> — saat trafik melonjak sepuluh kali lipat, antrean menampung pesan lebih dahulu lalu dikonsumsi sesuai kapasitas. Penerima bekerja dengan ritme yang stabil alih-alih kewalahan seketika.</li></ul><p>Selain itu broker sering dipakai untuk <b>batas antar layanan</b> (rate limiting), <b>urutan pekerjaan</b> (task queue), dan <b>penyebaran pesan ke banyak pihak</b> (pub/sub).</p>'
+      html: '<h3>Kapan Message Broker Dibutuhkan?</h3><p>Broker bukan obat untuk semua masalah. Pakailah broker ketika setidaknya satu dari tiga kondisi ini benar-benar ada:</p><ul><li><b>Pekerjaan tidak butuh jawaban seketika</b> — pengguna tidak perlu menunggu email terkirim atau video selesai diproses; cukup kembalikan status "sedang diproses" lalu kerjakan di belakang.</li><li><b>Pengirim dan penerima punya ritme berbeda</b> — trafik bisa melonjak sepuluh kali lipat sementara consumer hanya sanggup memproses beberapa pesan per detik; antrean menjembatani keduanya.</li><li><b>Keduanya harus bisa diperbaiki secara terpisah</b> — consumer boleh di-deploy ulang, diskalakan, atau mati sebentar tanpa membuat pengirim ikut gagal.</li></ul><p>Sebaliknya, jangan memakai broker ketika pengguna benar-benar butuh jawaban saat itu juga (cek saldo, validasi token, menampilkan keranjang belanja), atau ketika kamu butuh satu sumber kebenaran yang bisa ditanya dengan banyak cara — untuk itu memang ada database. Rumus singkatnya: <b>HTTP untuk percakapan, broker untuk surat</b>.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Peta Kasus Nyata: Order Management System',
+      lang: 'text',
+      output: false,
+      code: `KASUS DI OMS                            PERAN BROKER
+---------------------------------------  ------------------------------------
+order selesai dibuat di order-service    producer menerbitkan order.created
+                                         ke exchange oms.events
+notification-service mengirim email      consumer mengonsumsi pesan dari
+                                         antrean notifikasi email
+SMTP sedang down, email gagal terkirim   pesan tetap aman di antrean dan
+                                         dicoba ulang sampai berhasil
+promo besar, 100 order per detik masuk  antrean menampung lonjakan, consumer
+                                         memproses dengan ritme stabil
+notification-service akan diperbarui    cukup matikan consumer sebentar;
+                                         pesan menunggu tanpa mengganggu order`,
+      explain: [
+        'Perhatikan tidak ada satu pun baris yang membuat order-service menunggu notification-service — persis manfaat decoupling yang dibahas di bagian sebelumnya.',
+        'Kasus ketiga menunjukkan jaminan yang diberikan broker: pesan yang sudah diterima tidak hilang hanya karena tujuan sedang bermasalah.',
+        'Peta ini akan terwujud nyata di bab-bab berikutnya: order-service sebagai producer dan notification-service sebagai consumer.'
+      ]
     },
     {
       type: 'text',
@@ -116,7 +140,7 @@ AMQP 0-9-1 protokol standar yang dipakai RabbitMQ, port default 5672`,
     {
       type: 'tip',
       title: 'Coba Sendiri Nanti',
-      text: 'Seluruh materi RabbitMQ di situs ini bisa dipraktikkan gratis di laptop sendiri memakai <b>Podman</b> (rootless, tanpa daemon) dan image resmi <code>rabbitmq:3-management</code>. Siapkan satu perintah di bab berikutnya, lalu kamu sudah bisa bermain-main dengan exchange dan queue sungguhan lewat dashboard web.'
+      text: 'Seluruh materi RabbitMQ di situs ini bisa dipraktikkan gratis di laptop sendiri memakai <b>Podman</b> (rootless, tanpa daemon) dan image resmi <code>rabbitmq:3-management</code>. Cukup satu perintah <code>podman run</code> di bab berikutnya, lalu kamu sudah bisa bermain-main dengan exchange dan queue sungguhan lewat dashboard web management di port 15672.'
     },
     {
       type: 'warn',

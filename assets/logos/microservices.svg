@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <g fill="none" stroke="#0EA5E9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- garis penghubung antar service -->
+    <path d="M64 64 26 32M64 64l38-32M64 64 26 96M64 64l38 32" stroke-width="4"/>
+    <!-- service induk (tengah) -->
+    <rect x="48" y="48" width="32" height="32" rx="8" fill="#0EA5E9" stroke="none"/>
+    <!-- service satelit -->
+    <rect x="10" y="16" width="24" height="24" rx="7" fill="var(--card,#fff)"/>
+    <rect x="94" y="16" width="24" height="24" rx="7" fill="var(--card,#fff)"/>
+    <rect x="10" y="88" width="24" height="24" rx="7" fill="var(--card,#fff)"/>
+    <rect x="94" y="88" width="24" height="24" rx="7" fill="var(--card,#fff)"/>
+  </g>
+</svg>

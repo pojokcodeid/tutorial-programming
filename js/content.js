@@ -316,6 +316,25 @@ const CONTENT = (() => {
       ]
     },
 
+    microservice: {
+      id: 'microservice', title: 'Microservices',
+      tagline: 'Arsitektur Layanan Terdistribusi dengan Go',
+      icon: 'assets/logos/microservices.svg',
+      color: '#0EA5E9',
+      desc: 'Belajar membangun microservices dari nol dengan Go: REST API & clean architecture, database per service, komunikasi antar-service (timeout, retry, circuit breaker, idempotency), saga & transactional outbox, keamanan JWT, testing, Docker Compose, observability (Prometheus, Grafana, OpenTelemetry), CI/CD, message broker, Kubernetes, hingga proyek akhir Order Management System.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.MICROSERVICE_LESSONS || []).slice(),
+      quizPool: (window.MICROSERVICE_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Microservices — Martin Fowler', url: 'https://martinfowler.com/articles/microservices.html' },
+        { label: 'Microsoft — Microservices architecture guide', url: 'https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices' },
+        { label: 'The Twelve-Factor App', url: 'https://12factor.net/' },
+        { label: 'Go Documentation', url: 'https://go.dev/doc/' },
+        { label: 'OpenTelemetry Documentation', url: 'https://opentelemetry.io/docs/' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -378,5 +397,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();
