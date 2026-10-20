@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, dan **Microservices dengan Go (16 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (36 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, dan **Contoh Fullstack Microservices (12 pelajaran)**
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
@@ -62,6 +62,8 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/rabbitmq/     # materi tutorial RabbitMQ Message Broker (Bahasa Indonesia)
 ├── content/k6/           # materi tutorial Grafana k6 Performance Testing (Bahasa Indonesia)
 ├── content/microservice/ # materi tutorial Microservices dengan Go (Bahasa Indonesia)
+├── content/fullstack/    # materi tutorial Contoh Fullstack Microservices (Bahasa Indonesia)
+├── examples/fullstack-microservice/ # contoh proyek nyata TokoKita: MariaDB + 3 service Go + Redis + RabbitMQ + React/AntD (dari materi fullstack)
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── content/luceemvc/     # materi tutorial Framework MVC Lucee CFML (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
@@ -131,6 +133,7 @@ __CODE__
 - **RabbitMQ** — https://www.rabbitmq.com/docs · https://www.rabbitmq.com/tutorials · https://www.rabbitmq.com/docs/management · https://www.rabbitmq.com/docs/clustering
 - **Grafana k6** — https://grafana.com/docs/k6/latest/ · https://grafana.com/docs/k6/latest/get-started/ · https://grafana.com/docs/k6/latest/javascript-api/ · https://grafana.com/docs/k6/latest/using-k6/scenarios/ · https://grafana.com/docs/grafana-cloud/testing/k6/
 - **Microservices dengan Go** — https://martinfowler.com/articles/microservices.html · https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices · https://12factor.net/ · https://go.dev/doc/ · https://opentelemetry.io/docs/
+- **Contoh Fullstack Microservices** — https://martinfowler.com/articles/microservices.html · https://12factor.net/ · https://podman.io/docs · https://mariadb.com/kb/en/documentation/ · https://go.dev/doc/ · https://redis.io/docs/latest/ · https://www.rabbitmq.com/docs · https://react.dev/ · https://ant.design/docs/react/introduce · https://vite.dev/guide/
 - **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 - **Framework MVC (Lucee CFML)** — https://github.com/pojokcodeid/cfml-mvc-framework · https://commandbox.ortusbooks.com/ · https://docs.lucee.org/index.html
 

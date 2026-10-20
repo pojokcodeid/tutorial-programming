@@ -354,6 +354,31 @@ const CONTENT = (() => {
       ]
     },
 
+    fullstack: {
+      id: 'fullstack',
+      title: 'Contoh Fullstack Microservices',
+      tagline: 'Proyek Nyata: TokoKita dengan Go, MariaDB, Redis & RabbitMQ',
+      icon: 'assets/logos/microservices.svg',
+      color: '#0EA5E9',
+      desc: 'Belajar membangun proyek fullstack microservices end-to-end lewat contoh nyata TokoKita: arsitektur & keputusan komunikasi, container Podman rootless, MariaDB per service, backend Go tiga service (product, order, notification), cache Redis cache-aside, RabbitMQ publisher & konsumer idempoten, frontend React + Ant Design di balik proxy nginx, integrasi polling & uji end-to-end, hingga containerisasi multi-stage dan rilis tujuh container.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.FULLSTACK_LESSONS || []).slice(),
+      quizPool: (window.FULLSTACK_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Microservices — Martin Fowler', url: 'https://martinfowler.com/articles/microservices.html' },
+        { label: 'The Twelve-Factor App', url: 'https://12factor.net/' },
+        { label: 'Podman Documentation', url: 'https://podman.io/docs' },
+        { label: 'MariaDB Server Documentation', url: 'https://mariadb.com/kb/en/documentation/' },
+        { label: 'Go Documentation', url: 'https://go.dev/doc/' },
+        { label: 'Redis Documentation', url: 'https://redis.io/docs/latest/' },
+        { label: 'RabbitMQ Documentation', url: 'https://www.rabbitmq.com/docs' },
+        { label: 'React Documentation', url: 'https://react.dev/' },
+        { label: 'Ant Design Documentation', url: 'https://ant.design/docs/react/introduce' },
+        { label: 'Vite Documentation', url: 'https://vite.dev/guide/' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -416,5 +441,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

@@ -1,0 +1,6 @@
+# File sampah macOS (AppleDouble) & Git — jangan ikut ke context build
+._*
+.DS_Store
+.git
+**/node_modules
+frontend/dist

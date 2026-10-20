@@ -1,0 +1,135 @@
+# ============================================================
+# TokoKita — stack fullstack microservices dengan Podman.
+#
+# Jalankan dengan salah satu:
+#   podman compose up --build        (Podman ≥ 4.7, butuh podman-compose
+#                                     atau docker-compose sebagai provider)
+#   podman-compose up --build        (podman-compose klasik)
+#
+# Yang akan berjalan:
+#   mariadb:3306           database (product_db, order_db, notification_db)
+#   redis:6379             cache product-service
+#   rabbitmq:5672          broker pesan + dashboard 15672
+#   product-service:8081   katalog produk (Go + MariaDB + Redis)
+#   order-service:8082     pembuatan pesanan (Go + RabbitMQ publisher)
+#   notification-service:8083 konsumen event + panel notifikasi (Go)
+#   frontend:8080→80       React + Ant Design di balik nginx
+# ============================================================
+name: tokokita
+
+services:
+  # ---------- basis data ----------
+  mariadb:
+    image: docker.io/library/mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: root-local
+    volumes:
+      - db-data:/var/lib/mysql
+      # Skema & pengguna per service dijalankan otomatis saat pertama boot
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    ports:
+      - "3306:3306"
+
+  # ---------- cache ----------
+  redis:
+    image: docker.io/library/redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    ports:
+      - "6379:6379"
+
+  # ---------- message broker ----------
+  rabbitmq:
+    image: docker.io/library/rabbitmq:3.13-management-alpine
+    # Jalankan sebagai user non-root (rabbitmq). Jika berjalan sebagai root,
+    # healthcheck ikut sebagai root dan bisa membuat .erlang.cookie milik
+    # root lebih dulu, sehingga proses broker (user rabbitmq) gagal membacanya.
+    user: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: tokokita
+      RABBITMQ_DEFAULT_PASS: tokokita-local
+    volumes:
+      - mq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # dashboard manajemen
+
+  # ---------- service Go ----------
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: product }
+    environment:
+      PORT: "8081"
+      DB_DSN: "product_svc:product-local@tcp(mariadb:3306)/product_db?parseTime=true&charset=utf8mb4"
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      mariadb: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    ports:
+      - "8081:8081"
+
+  order-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: order }
+    environment:
+      PORT: "8082"
+      DB_DSN: "order_svc:order-local@tcp(mariadb:3306)/order_db?parseTime=true&charset=utf8mb4"
+      CATALOG_URL: "http://product-service:8081"
+      AMQP_URL: "amqp://tokokita:tokokita-local@rabbitmq:5672/"
+    depends_on:
+      mariadb: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+      product-service: { condition: service_started }
+    ports:
+      - "8082:8082"
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args: { SERVICE: notification }
+    environment:
+      PORT: "8083"
+      DB_DSN: "notification_svc:notification-local@tcp(mariadb:3306)/notification_db?parseTime=true&charset=utf8mb4"
+      AMQP_URL: "amqp://tokokita:tokokita-local@rabbitmq:5672/"
+    depends_on:
+      mariadb: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    ports:
+      - "8083:8083"
+
+  # ---------- frontend ----------
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - product-service
+      - order-service
+      - notification-service
+    ports:
+      - "8080:80"   # host non-root hanya boleh >=1024; container tetap :80
+
+volumes:
+  db-data:
+  redis-data:
+  mq-data:

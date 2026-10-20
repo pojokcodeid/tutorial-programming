@@ -1,0 +1,6 @@
+# File sampah macOS (AppleDouble), Git, dan artefak build
+._*
+.DS_Store
+.git
+node_modules
+dist

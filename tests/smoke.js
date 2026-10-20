@@ -239,6 +239,19 @@ async function main() {
     'content/redis/14-docker-cicd.js',
     'content/redis/15-microservices.js',
     'content/redis/16-praktik-proyek.js',
+    'content/fullstack/quiz-questions.js',
+    'content/fullstack/01-pengenalan-arsitektur.js',
+    'content/fullstack/02-setup-podman.js',
+    'content/fullstack/03-database-mariadb.js',
+    'content/fullstack/04-backend-go-fondasi.js',
+    'content/fullstack/05-product-service-crud.js',
+    'content/fullstack/06-cache-redis.js',
+    'content/fullstack/07-order-service.js',
+    'content/fullstack/08-rabbitmq-publisher.js',
+    'content/fullstack/09-notification-service.js',
+    'content/fullstack/10-frontend-react.js',
+    'content/fullstack/11-integrasi-frontend.js',
+    'content/fullstack/12-containerisasi-rilis.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -681,6 +694,58 @@ async function main() {
     ['https://redis.io/docs/latest/', 'https://redis.io/docs/latest/commands/',
      'https://github.com/redis/go-redis', 'https://hub.docker.com/_/redis']
       .every(u => rdRefs.includes(u)));
+
+  // 4l) konten fullstack: 12 pelajaran contoh proyek TokoKita + 40 soal kuis
+  const fsC = CONTENT.get('fullstack');
+  check('fullstack terdaftar & status ready', !!fsC && fsC.status === 'ready');
+  check('12 pelajaran fullstack', fsC.lessons.length === 12);
+  const fsIds = fsC.lessons.map(l => l.id);
+  check('id pelajaran fullstack unik', new Set(fsIds).size === fsIds.length);
+  check('judul, durasi, bab, intro, objectives & recap fullstack terisi',
+    fsC.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length >= 4 &&
+      Array.isArray(l.recap) && l.recap.length >= 4));
+  let fsBadSection = 0, fsFig = 0;
+  for (const l of fsC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) fsBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) fsFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) fsBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) fsBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) fsBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) fsBadSection++;
+      }
+      if (s.type === 'live') fsBadSection++;                     // bab fullstack tanpa latihan live
+    }
+  }
+  check('struktur section pelajaran fullstack valid', fsBadSection === 0);
+  check('tiap pelajaran fullstack memuat figur ilustrasi (12/12)', fsFig === 12);
+  check('marker figur fullstack unik per pelajaran (mk-fs01..12)',
+    fsC.lessons.every((l, i) => {
+      const fig = l.sections.map(s => s.html || '').find(h => h.includes('<figure class="fig">')) || '';
+      return fig.includes('mk-fs' + String(i + 1).padStart(2, '0') + '-1');
+    }));
+  check('40 soal kuis fullstack lengkap (4 opsi, jawaban & penjelasan) & id unik fsNN',
+    fsC.quizPool.length === 40 &&
+    new Set(fsC.quizPool.map(q => q.id)).size === fsC.quizPool.length &&
+    fsC.quizPool.every(q => /^fs\d{2}$/.test(q.id)) &&
+    !fsC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const fsRefs = (fsC.refs || []).map(r => r.url);
+  check('rujukan fullstack (Martin Fowler, 12factor, podman, rabbitmq, react)',
+    ['https://martinfowler.com/articles/microservices.html', 'https://12factor.net/',
+     'https://podman.io/docs', 'https://www.rabbitmq.com/docs', 'https://react.dev/']
+      .every(u => fsRefs.includes(u)));
+  check('proyek contoh examples/fullstack-microservice tersedia (compose + 3 service + frontend)',
+    fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/compose.yaml')) &&
+    fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/product/cmd/main.go')) &&
+    fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/order/cmd/main.go')) &&
+    fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/notification/cmd/main.go')) &&
+    fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/frontend/src/App.jsx')));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

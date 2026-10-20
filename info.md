@@ -680,3 +680,48 @@ Materi Redis (database in-memory untuk cache & data store serbaguna). Kebutuhan 
    - Docker Compose (healthcheck, volume, network internal, resource limit), Dockerfile aplikasi Go multi-stage, CI/CD GitHub Actions dengan services Redis untuk integration test.
    - Redis di microservices: idempotency key (SET NX), rate limit terdistribusi, dukungan saga, pub/sub notifikasi ringan — serta anti-pattern shared database antar service (namespace/ACL per service, degradasi terkendali).
    - Proyek akhir: REST API produk Go + MariaDB + Redis (cache-aside, invalidation, rate limiting per API key, blacklist token) plus checklist rilis produksi dan ide belajar mahir.
+
+## Topik Contoh Fullstack Project Microservices
+
+Materi **Contoh Fullstack Project Microservices** — satu proyek nyata bernama **TokoKita** (toko daring) dibangun end-to-end lalu diuraikan menjadi 12 pelajaran berbahasa Indonesia lengkap dengan figur diagram, contoh kode, dan kuis 40 soal. Seluruh komponen yang wajib ada dipakai sungguhan dan bisa dijalankan mandiri serta **gratis**: kontainer **Podman** (rootless), **MariaDB** (satu database per service), backend **Go** tiga service (product, order, notification), cache **Redis** (pola cache-aside), **RabbitMQ** (publisher + konsumer idempoten), serta frontend **React JS + Ant Design** di balik proxy **nginx**. Kode proyek contoh tersedia di `examples/fullstack-microservice/` dan teruji berjalan (tujuh container sehat dalam satu perintah `podman-compose up -d --build`).
+
+- Rujukan
+  - https://martinfowler.com/articles/microservices.html
+  - https://12factor.net/
+  - https://podman.io/docs
+  - https://mariadb.com/kb/en/documentation/
+  - https://go.dev/doc/
+  - https://redis.io/docs/latest/
+  - https://www.rabbitmq.com/docs
+  - https://react.dev/
+  - https://ant.design/docs/react/introduce
+  - https://vite.dev/guide/
+
+- Materi yang harus ada
+
+1. Pengenalan Arsitektur
+   - Mengapa microservices, batas service & database-per-service, keputusan komunikasi sinkron (HTTP) vs asinkron (pesan), peta arsitektur TokoKita (browser → nginx → tiga service → MariaDB/Redis/RabbitMQ).
+   - Kontrak antar service, snapshot data pesanan, degradasi terkendali, dan batas-batas yang sengaja dibuat ketat lewat izin database.
+2. Setup Podman (Container)
+   - Podman rootless vs Docker, podman machine di macOS, bind mount & virtualisasi volume, image, container, jaringan, dan siklus perintah sehari-hari (run/ps/logs/exec/rm).
+   - Tiga prinsip container di proyek nyata: proses sebagai non-root, healthcheck, dan konfigurasi lewat environment (12-factor).
+3. MariaDB Multi-Database
+   - Satu instance tiga database (product_db, order_db, notification_db), satu pengguna per service dengan GRANT sempit, skema idempoten dari folder migrations, ukuran kolom (VARCHAR vs TEXT), index, TIMESTAMP, dan pemeriksaan setelah boot.
+4. Backend Go — Fondasi Service
+   - Pola main.go (konfigurasi env → waitForDB → wiring → server → shutdown), net/http Go 1.22+ (method + path), context & timeout berlapis, kode status HTTP, penanganan galat terstruktur (problem+JSON), dan struktur lapisan handler/store.
+5. Product Service — REST API CRUD
+   - Model produk sebagai kontrak JSON, repository dengan parameterized query, endpoint CRUD lengkap, kode status 200/201/204/400/404/422/500, validasi input, serta uji curl pertama.
+6. Redis Cache di Depan Database
+   - Pola cache-aside (baca HIT/MISS, invalidasi setelah tulis), TTL 30 detik, header X-Cache, degradasi saat Redis mati, dan pengukuran hit rate.
+7. Order Service — Bisnis & Idempotensi
+   - Validasi produk ke katalog (HTTP timeout), total dihitung di server, snapshot pesanan, kunci idempotensi (header + UNIQUE), dan konsekuensi kegagalan antar-service.
+8. RabbitMQ — Sisi Penerbit
+   - Topologi (exchange topic tokokita.events, routing key order.* , binding, queue durable), pesan persistent, timeout publish, dan keputusan melanjutkan pesanan vs membatalkan saat broker bermasalah.
+9. RabbitMQ — Sisi Konsumer (Notification Service)
+   - Deklarasi topologi dari konsumen, autoAck=false & ACK/NACK manual, prefetch (QoS), deduplikasi event_id, reconnect loop tanpa batas, dan API notifikasi (list + tandai baca + hitungan unread).
+10. Frontend React & Ant Design
+   - Kerangka aplikasi (main.jsx → App.jsx → AppShell → halaman), pola halaman konsisten (state, muat, cleanup), lapisan API axios (baseURL /api), komponen Ant Design (Table, Form, Modal, Badge), dan fan-in Promise.all di dashboard.
+11. Integrasi Frontend ↔ Backend
+   - nginx location tanpa garis miring + proxy_pass ber-URI, proxy Vite mode dev yang identik, satu origin tanpa CORS, polling lonceng tiap 5 detik dengan cleanup, dan checklist uji end-to-end (browser + curl).
+12. Containerisasi & Rilis
+   - Dockerfile multi-stage (satu resep tiga service lewat ARG), lapisan cache build, compose.yaml (healthcheck, depends_on service_healthy, volume, port rootless 8080:80), siklus operasional, dan checklist verifikasi lima lapis.

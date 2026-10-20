@@ -1,0 +1,11 @@
+# Hasil build frontend
+frontend/dist/
+frontend/node_modules/
+
+# Berkas lokal
+.env
+*.log
+
+# File sampah macOS (volume exFAT membuat file AppleDouble ini otomatis)
+._*
+.DS_Store
