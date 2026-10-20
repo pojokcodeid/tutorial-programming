@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!-- Logo Redis versi sederhana (tumpukan piringan) buatan sendiri -->
+<svg width="800px" height="800px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
+  <!-- lapisan bawah -->
+  <path d="M32 140 L100 164 L168 140 L168 152 L100 176 L32 152 Z" fill="#A41E11"/>
+  <path d="M100 116 L168 140 L100 164 L32 140 Z" fill="#DC382D"/>
+  <!-- lapisan tengah -->
+  <path d="M32 108 L100 132 L168 108 L168 120 L100 144 L32 120 Z" fill="#A41E11"/>
+  <path d="M100 84 L168 108 L100 132 L32 108 Z" fill="#DC382D"/>
+  <!-- lapisan atas -->
+  <path d="M32 76 L100 100 L168 76 L168 88 L100 112 L32 88 Z" fill="#A41E11"/>
+  <path d="M100 52 L168 76 L100 100 L32 76 Z" fill="#DC382D"/>
+</svg>

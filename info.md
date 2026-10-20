@@ -648,3 +648,35 @@ endpoint latihan publik `test.k6.io`, tanpa layanan berbayar).
 9. Praktik Proyek
    - Proyek end-to-end: test suite API e-commerce (smoke + load dengan dua executor, checks bisnis, custom metric, thresholds) di repo terstruktur.
    - Dari baseline ke optimasi: tabel perbandingan sebelum/sesudah, template laporan hasil, checklist kemampuan mahir, prosedur aman (izin, batas beban, rencana berhenti).
+
+## Topik Mengenai Redis
+
+Materi Redis (database in-memory untuk cache & data store serbaguna). Kebutuhan lengkap ada di `redis.md` (Roadmap Belajar Redis dari 0 sampai Mahir); materi disusun 16 pelajaran berbahasa Indonesia dengan diagram, contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis** (Docker + image `redis:7-alpine`, Go dengan go-redis, MariaDB, serta Prometheus + Grafana lokal).
+
+- Rujukan
+  - https://redis.io/docs/latest/
+  - https://redis.io/docs/latest/commands/
+  - https://github.com/redis/go-redis
+  - https://hub.docker.com/_/redis
+
+- Materi yang harus ada
+
+1. Fondasi & Setup (Tahap 0–1)
+   - Apa itu Redis: in-memory key-value store, cara kerja single-threaded event loop, perbandingan dengan MariaDB/PostgreSQL & Memcached, kelebihan-kekurangan, use case (cache, session, counter, rate limiter, pub/sub, job queue, leaderboard, lock), kapan Redis cocok dan kapan tidak.
+   - Instalasi dengan Docker (`redis:7-alpine`), `redis-cli`, PING/INFO/DBSIZE, port 6379, logical database 0–15, konfigurasi dasar (redis.conf, password), FLUSHDB/FLUSHALL.
+2. Struktur Data & Key (Tahap 2–3)
+   - Delapan tipe data (String, List, Set, Sorted Set, Hash, Bitmap, HyperLogLog, Geospatial) dengan perintah & pemetaan use case, plus pengantar Stream.
+   - EXPIRE/SET dengan EX/PX, TTL/PTTL, lazy vs active expiration, pola key design (pemisah, panjang, cardinalitas), MEMORY USAGE, SCAN vs KEYS *.
+3. Cache, Integrasi Go & Transaksi (Tahap 4–6)
+   - Pola cache (cache-aside, read/write-through, write-behind), invalidation, masalah stampede/avalanche/penetration/hot key, integrasi dengan MariaDB.
+   - go-redis v9 (client, context timeout, connection pool, pipeline, serialisasi struct), MULTI/EXEC/DISCARD, WATCH optimistic locking, Lua scripting (EVAL KEYS/ARGV), Redlock ringkas.
+4. Fitur Lanjutan (Tahap 7–8)
+   - Pub/Sub fire-and-forget, Redis Streams dengan consumer group (XADD/XREADGROUP/XACK, PENDING/lag), distributed locking (SET NX PX + unlock dengan Lua, perpanjangan otomatis).
+   - Session store di Redis (TTL & logout), rate limiting (fixed window, sliding window ZSET, token bucket Lua), keamanan: ACL vs requirepass, bind/protected-mode, jaringan internal, TLS, membatasi perintah berbahaya.
+5. Operasional (Tahap 9–12)
+   - Persistence RDB (BGSAVE) & AOF (appendfsync, rewrite, hibrida rdb-preamble), backup & restore, disaster recovery.
+   - maxmemory & kebijakan eviction, hit rate, bigkeys, SLOWLOG, pipeline & benchmark; replikasi async, Redis Sentinel, Redis Cluster (16384 hash slot, hash tag, MOVED/ASK); observability: INFO, redis_exporter, Prometheus, Grafana, alert.
+6. DevOps, Microservices & Proyek (Tahap 13–15)
+   - Docker Compose (healthcheck, volume, network internal, resource limit), Dockerfile aplikasi Go multi-stage, CI/CD GitHub Actions dengan services Redis untuk integration test.
+   - Redis di microservices: idempotency key (SET NX), rate limit terdistribusi, dukungan saga, pub/sub notifikasi ringan — serta anti-pattern shared database antar service (namespace/ACL per service, degradasi terkendali).
+   - Proyek akhir: REST API produk Go + MariaDB + Redis (cache-aside, invalidation, rate limiting per API key, blacklist token) plus checklist rilis produksi dan ide belajar mahir.

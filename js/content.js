@@ -335,6 +335,25 @@ const CONTENT = (() => {
       ]
     },
 
+    redis: {
+      id: 'redis',
+      title: 'Redis',
+      tagline: 'Database In-Memory Cepat untuk Cache & Data',
+      icon: 'assets/logos/redis.svg',
+      color: '#DC382D',
+      desc: 'Belajar Redis dari nol hingga mahir dengan Docker dan Go: fondasi in-memory database & key-value store, redis-cli, struktur data, expiration & key design, pola cache di depan database, integrasi go-redis, transaksi & Lua scripting, pub/sub, streams & distributed locking, session store & rate limiting, persistence, manajemen memori, high availability (sentinel & cluster), monitoring Prometheus + Grafana, Docker & CI/CD, peran Redis di microservices, hingga proyek akhir API produk yang cepat.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.REDIS_LESSONS || []).slice(),
+      quizPool: (window.REDIS_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Redis', url: 'https://redis.io/docs/latest/' },
+        { label: 'Redis Commands Reference', url: 'https://redis.io/docs/latest/commands/' },
+        { label: 'go-redis (GitHub redis/go-redis)', url: 'https://github.com/redis/go-redis' },
+        { label: 'Redis on Docker Hub', url: 'https://hub.docker.com/_/redis' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -397,5 +416,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

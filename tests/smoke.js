@@ -222,6 +222,23 @@ async function main() {
     'content/rabbitmq/18-monitoring-prometheus.js',
     'content/rabbitmq/19-tuning-production.js',
     'content/rabbitmq/20-praktik-proyek.js',
+    'content/redis/quiz-questions.js',
+    'content/redis/01-fondasi-redis.js',
+    'content/redis/02-instalasi-cli.js',
+    'content/redis/03-struktur-data.js',
+    'content/redis/04-expiration-ttl-keydesign.js',
+    'content/redis/05-cache-database.js',
+    'content/redis/06-integrasi-go.js',
+    'content/redis/07-transaksi-atomik.js',
+    'content/redis/08-pubsub-streams-lock.js',
+    'content/redis/09-session-ratelimit-keamanan.js',
+    'content/redis/10-persistence-recovery.js',
+    'content/redis/11-memory-performa.js',
+    'content/redis/12-high-availability.js',
+    'content/redis/13-observability-monitoring.js',
+    'content/redis/14-docker-cicd.js',
+    'content/redis/15-microservices.js',
+    'content/redis/16-praktik-proyek.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -622,6 +639,48 @@ async function main() {
     ['https://www.rabbitmq.com/docs', 'https://www.rabbitmq.com/tutorials',
      'https://www.rabbitmq.com/docs/management', 'https://www.rabbitmq.com/docs/clustering']
       .every(u => rqRefs.includes(u)));
+
+  // 4k) konten Redis: 16 pelajaran sesuai kurikulum redis.md + 40 soal kuis
+  const rd = CONTENT.get('redis');
+  check('Redis terdaftar & status ready', !!rd && rd.status === 'ready');
+  check('16 pelajaran Redis', rd.lessons.length === 16);
+  const rdIds = rd.lessons.map(l => l.id);
+  check('id pelajaran Redis unik', new Set(rdIds).size === rdIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Redis terisi',
+    rd.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  let rdBadSection = 0, rdFig = 0;
+  for (const l of rd.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) rdBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) rdFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) rdBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) rdBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) rdBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) rdBadSection++;
+        if ((s.code || '').includes('`')) rdBadSection++;        // kode contoh bebas backtick
+      }
+      if (s.type === 'live') rdBadSection++;                     // bab Redis tanpa latihan live
+    }
+  }
+  check('struktur section pelajaran Redis valid', rdBadSection === 0);
+  check('tiap pelajaran Redis memuat figur ilustrasi (16/16)', rdFig === 16);
+  check('40 soal kuis Redis lengkap (4 opsi, jawaban & penjelasan) & id unik rdNN',
+    rd.quizPool.length === 40 &&
+    new Set(rd.quizPool.map(q => q.id)).size === rd.quizPool.length &&
+    rd.quizPool.every(q => /^rd\d{2}$/.test(q.id)) &&
+    !rd.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const rdRefs = (rd.refs || []).map(r => r.url);
+  check('rujukan Redis (redis.io docs & commands, go-redis, docker hub)',
+    ['https://redis.io/docs/latest/', 'https://redis.io/docs/latest/commands/',
+     'https://github.com/redis/go-redis', 'https://hub.docker.com/_/redis']
+      .every(u => rdRefs.includes(u)));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',
