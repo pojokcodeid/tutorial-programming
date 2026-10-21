@@ -19,6 +19,8 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY services/ services/
+# Paket bersama ketiga service (mis. internal/logx untuk logging JSON)
+COPY internal/ internal/
 
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath \
     -ldflags="-s -w" \

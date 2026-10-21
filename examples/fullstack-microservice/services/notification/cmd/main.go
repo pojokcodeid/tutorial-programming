@@ -6,6 +6,11 @@ Data  : notification_db (MariaDB)
 Peran : mendengarkan exchange tokokita.events, menyimpan notifikasi,
 
 	dan menyajikannya ke frontend (yang polling tiap beberapa detik).
+
+Logging : JSON terstruktur (internal/logx) — nasib SETIAP pesan broker
+
+	(diterima, duplikat, rusak, gagal simpan, tersimpan) tercatat
+	dengan event_id sebagai benang penelusurnya.
 */
 package main
 
@@ -13,7 +18,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -22,6 +27,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
+	"example.com/tokokita/internal/logx"
 	"example.com/tokokita/services/notification/internal/consumer"
 	"example.com/tokokita/services/notification/internal/httpapi"
 	"example.com/tokokita/services/notification/internal/store"
@@ -39,12 +45,14 @@ func main() {
 	dsn := env("DB_DSN", "notification_svc:notification-local@tcp(localhost:3306)/notification_db?parseTime=true&charset=utf8mb4")
 	amqpURL := env("AMQP_URL", "amqp://guest:guest@localhost:5672/")
 
-	db, err := waitForDB(dsn, 30, 2*time.Second)
+	log := logx.New("notification-service")
+
+	db, err := waitForDB(log, dsn, 30, 2*time.Second)
 	if err != nil {
-		log.Fatalf("database tidak pernah siap: %v", err)
+		logx.Fatal(log, "database tidak pernah siap", "galat", err)
 	}
 	defer db.Close()
-	log.Println("terhubung ke MariaDB (notification_db)")
+	log.Info("terhubung ke MariaDB", "database", "notification_db")
 
 	st := store.New(db)
 
@@ -53,12 +61,12 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	go func() {
-		if err := consumer.Run(ctx, amqpURL, st); err != nil && !errors.Is(err, context.Canceled) {
-			log.Printf("konsumer berhenti: %v", err)
+		if err := consumer.Run(ctx, amqpURL, st, log); err != nil && !errors.Is(err, context.Canceled) {
+			log.Error("konsumer berhenti", "galat", err)
 		}
 	}()
 
-	api := httpapi.New(st)
+	api := httpapi.New(st, log)
 	srv := &http.Server{
 		Addr:              ":" + port,
 		Handler:           api.Router(),
@@ -66,22 +74,23 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("notification-service berjalan di http://localhost:%s", port)
+		log.Info("notification-service berjalan", "port", port)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("server gagal: %v", err)
+			logx.Fatal(log, "server gagal", "galat", err)
 		}
 	}()
 
 	<-ctx.Done()
+	log.Info("sinyal berhenti diterima — mengakhiri dengan bersih")
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {
-		log.Printf("gagal shutdown bersih: %v", err)
+		log.Warn("gagal shutdown bersih", "galat", err)
 	}
-	log.Println("notification-service berhenti")
+	log.Info("notification-service berhenti")
 }
 
-func waitForDB(dsn string, attempts int, delay time.Duration) (*sql.DB, error) {
+func waitForDB(log *slog.Logger, dsn string, attempts int, delay time.Duration) (*sql.DB, error) {
 	var db *sql.DB
 	var err error
 	for i := 0; i < attempts; i++ {
@@ -97,7 +106,7 @@ func waitForDB(dsn string, attempts int, delay time.Duration) (*sql.DB, error) {
 				return db, nil
 			}
 		}
-		log.Printf("database belum siap (percobaan %d/%d): %v", i+1, attempts, err)
+		log.Info("database belum siap", "percobaan", i+1, "maks", attempts, "galat", err)
 		time.Sleep(delay)
 	}
 	return nil, err

@@ -74,14 +74,20 @@ Aturan topic binding:
 
 // New menyiapkan channel sekaligus mendeklarasikan exchange (idempoten:
 // deklarasi yang sama berkali-kali aman).
-func New(conn *amqp.Connection) *Publisher {
+//
+// Kegagalan di sini dianggap FATAL: tanpa channel AMQP, order-service tidak
+// pernah bisa menerbitkan event. Kegagalan dicatat sebagai log JSON lalu
+// proses keluar — keputusan yang sama dengan ketika RabbitMQ tak pernah siap.
+func New(conn *amqp.Connection, log *slog.Logger) *Publisher {
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("gagal membuka channel AMQP: %v", err)
+		logx.Fatal(log, "gagal membuka channel AMQP", "galat", err)
 	}
 	if err := ch.ExchangeDeclare(ExchangeName, "topic", true, false, false, false, nil); err != nil {
-		log.Fatalf("gagal mendeklarasikan exchange: %v", err)
+		logx.Fatal(log, "gagal mendeklarasikan exchange", "galat", err)
 	}
+	log.Info("exchange deklarasi", "exchange", ExchangeName, "tipe", "topic",
+		"routing_key", RoutingKey)
 	return &Publisher{ch: ch}
 }
 
@@ -101,6 +107,7 @@ func (p *Publisher) Publish(ctx context.Context, ev Event) error {
 }`,
       explain: [
         'Urutan argumen <code>ExchangeDeclare</code>: nama, tipe "topic", durable=true (topologi selamat restart broker), autoDelete=false, internal=false, noWait=false, args=nil. <b>Durable=true pada exchange</b> berpasangan dengan Persistent pada pesan — keduanya harus sama-sama benar agar pesan bertahan restart.',
+        'Logger disuntikkan seperti lapisan lain (<code>log *slog.Logger</code>), dan kegagalan memakai <code>logx.Fatal</code> karena <code>slog</code> tidak memiliki <code>Fatalf</code>: baris ERROR tercatat lebih dulu, baru proses keluar dengan kode 1.',
         '<code>PublishWithContext</code> mengikat penerbitan pada context: bila request sudah dibatalkan klien, event ikut batal — tidak ada event yatim untuk pesanan yang bahkan tidak dilihat lagi.',
         '<code>MessageId</code> diisi event_id: konsumen nanti memakainya untuk dedup, dan operator bisa mencari pesan tertentu di dashboard berdasar ID ini.'
       ]
@@ -188,10 +195,12 @@ Urutan pemeriksaan saat pesan "hilang":
 	CreatedAt: saved.CreatedAt,
 }
 if err := a.publisher.Publish(r.Context(), ev); err != nil {
-	log.Printf("PERINGATAN: event order.created gagal diterbitkan untuk order %d: %v",
-		saved.ID, err)
+	a.log.Warn("event gagal diterbitkan — notifikasi tertunda",
+		"event", publisher.RoutingKey, "event_id", ev.EventID,
+		"order_id", saved.ID, "galat", err)
 } else {
-	log.Printf("event order.created diterbitkan untuk order %d", saved.ID)
+	a.log.Info("event diterbitkan",
+		"event", publisher.RoutingKey, "event_id", ev.EventID, "order_id", saved.ID)
 }
 
 writeJSON(w, http.StatusCreated, saved)
@@ -208,7 +217,8 @@ writeJSON(w, http.StatusCreated, saved)
     Untuk skala TokoKita, B dipilih — dan KEJUJURANNYA ditulis di log,
     sehingga kegagalan tetap terlihat oleh operator.                  */`,
       explain: [
-        'Kata "PERINGATAN" pada log bukan hiasan: ia membuat kejadian bisa dicari dengan grep di antara ribuan baris log normal — pencatatan yang jujur adalah setengah dari pilihan B yang bertanggung jawab.',
+        'Level <code>WARN</code> (bukan ERROR) bukan hiasan: pesanan memang berhasil, hanya efek sampingnya yang tertunda. Filter <code>podman compose logs --no-log-prefix order-service | jq \'select(.level=="WARN" or .level=="ERROR")\'</code> (jq opsional — pasang lebih dulu; flag --no-log-prefix membersihkan awalan provider supaya tiap baris murni JSON dan bisa dibaca jq) langsung menyisakan kejadian yang layak ditinjau di antara ribuan baris INFO — kejujuran inilah setengah dari pilihan B yang bertanggung jawab.',
+        'Atribut <code>event_id</code> membuat kegagalan ini bisa dicocokkan langsung dengan baris konsumen nanti: satu ID yang sama menghubungkan dua service yang tidak pernah saling mengenal.',
         'Pilihan A (transactional outbox) adalah jawaban benar untuk sistem keuangan; ia bukan sekadar "menyimpan di tabel lalu mengirim", tetapi memerlukan relay yang menjamin pengiriman.',
         'Yang menjadikan pilihan B dapat diterima: jangka waktunya TERBATAS — begitu broker pulih, konsumen menyusul; sementara pada pilihan A kegagalan apapun ikut menahan bisnis proses.'
       ]
@@ -252,8 +262,11 @@ curl -si -X POST localhost:8082/orders \\
   -H 'Content-Type: application/json' \\
   -H 'Idempotency-Key: mq-001' \\
   -d '{"product_id":1,"qty":2,"customer":"Budi"}'
-# perhatikan log order-service:
-#   "event order.created diterbitkan untuk order N"
+# perhatikan log order-service — SATU baris JSON per kejadian:
+#   {"level":"INFO","msg":"event diterbitkan","service":"order-service",
+#    "event":"order.created","event_id":"ord-N-xxxxxxx","order_id":N}
+# saring kalau lognya penuh (butuh jq; --no-log-prefix = baris murni JSON):
+podman compose logs --no-log-prefix order-service | jq 'select(.msg=="event diterbitkan")'
 
 # 2) Lihat dari dashboard manajemen — buka browser:
 #    http://localhost:15672   (tokokita / tokokita-local)
@@ -262,19 +275,19 @@ curl -si -X POST localhost:8082/orders \\
 #    - Tab "Queues" → "Get messages" → baca isi pesan langsung
 #      (centang "Ack mode: Nack requeue true" agar pesan TIDAK hilang!)
 
-# 3) Atau dari CLI tanpa browser:
-podman exec -it tokokita_rabbitmq_1 \\
-  rabbitmqadmin list exchanges name type
-podman exec -it tokokita_rabbitmq_1 \\
-  rabbitmqadmin get queue=notification.orders count=1 ackmode=reject_requeue_true
+# 3) Atau dari CLI tanpa browser — perintah memakai NAMA SERVICE sehingga
+#    berlaku sama pada podman compose maupun podman-compose:
+podman compose exec rabbitmq rabbitmqctl list_exchanges name type | grep tokokita
+podman compose exec rabbitmq rabbitmqctl list_queues name messages
 
-# 4) Lihat pola routing yang terpasang:
-podman exec -it tokokita_rabbitmq_1 \\
-  rabbitmqctl list_bindings tokokita.events`,
+# 4) Lihat pola routing yang terpasang — catatan: list_bindings memakai
+#    flag --vhost ("/"), bukan argumen posisional maupun nama exchange:
+podman compose exec rabbitmq rabbitmqctl --no-table-headers list_bindings --vhost / | grep tokokita`,
       explain: [
         'Ack mode <b>reject_requeue_true</b> pada langkah 2 sangat penting: mengambil pesan dengan ack otomatis akan MEMBUANGNYA dari queue (dan konsumen tak pernah melihatnya) — siluman paling umum saat bereksperimen.',
-        'Langkah 4 menampilkan binding nyata "tokokita.events → notification.orders" dengan routing key order.created — bukti topologi tersusun persis seperti rancangan.',
-        'Bila langkah 3 belum menampilkan apa pun tetapi log penerbit menyatakan sukses, periksa urutan: kemungkinan konsumen sudah mengambilnya (bab 9) — dan itu justru berarti seluruh rangkaian bekerja.'
+        'Langkah 4 menampilkan binding nyata <code>tokokita.events → notification.orders</code> dengan routing key order.created — bukti topologi tersusun persis seperti rancangan. Dua kesalahan yang sering terjadi: mengoper nama exchange ke <code>list_bindings</code> (itu nama vhost) lalu heran hasilnya kosong; serta menulis <code>list_bindings /</code> tanpa flag — RabbitMQ 3.13 menolaknya dengan usage error, vhost harus lewat <code>--vhost /</code>.',
+        'Baris log di langkah 1 bisa dicari kembali kapan pun lewat <code>event_id</code> yang sama — di log notification-service baris konsumennya memakai ID identik.',
+        'Bila langkah 3 menunjukkan pesan menunggu tetapi log penerbit menyatakan sukses, periksa urutan: kemungkinan konsumen sudah mengambilnya (bab 9) — dan itu justru berarti seluruh rangkaian bekerja.'
       ]
     },
     {
@@ -305,7 +318,7 @@ podman exec -it tokokita_rabbitmq_1 \\
     'Penerbit melempar ke EXCHANGE (bukan langsung ke queue): tokokita.events bertipe topic dengan routing key order.created.',
     'Topologi dideklarasikan idempoten oleh penerbit maupun konsumen sehingga urutan start container tidak lagi menentukan keberhasilan.',
     'Ketahanan pesan membutuhkan empat lapisan bersama: exchange durable, queue durable, pesan persistent, dan ACK setelah tersimpan di konsumen.',
-    'Kegagalan penerbitan TIDAK membatalkan pesanan (pilihan sadar) — dicatat sebagai PERINGATAN di log; transactional outbox adalah jalur upgrade bila kehilangan notifikasi tak bisa ditolerir.',
+    'Kegagalan penerbitan TIDAK membatalkan pesanan (pilihan sadar) — dicatat sebagai baris WARN pada log JSON; transactional outbox adalah jalur upgrade bila kehilangan notifikasi tak bisa ditolerir.',
     'Event adalah kontrak publik: bawa data cukup untuk konsumen mandiri, sertakan timestamp RFC 3339, dan hanya boleh menambah field — tidak pernah mengubah yang sudah ada.'
   ]
 });

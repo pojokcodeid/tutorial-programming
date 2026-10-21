@@ -83,6 +83,13 @@ services:
     depends_on:
       mariadb: { condition: service_healthy }
       redis: { condition: service_healthy }
+    healthcheck:
+      # /healthz sengaja TIDAK dicatat service (lihat logx.Middleware) —
+      # healthcheck berjalan tiap 10 detik dan hanya membanjiri log.
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
     ports:
       - "8081:8081"
 
@@ -100,6 +107,11 @@ services:
       mariadb: { condition: service_healthy }
       rabbitmq: { condition: service_healthy }
       product-service: { condition: service_started }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8082/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
     ports:
       - "8082:8082"
 
@@ -115,6 +127,11 @@ services:
     depends_on:
       mariadb: { condition: service_healthy }
       rabbitmq: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8083/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
     ports:
       - "8083:8083"
 

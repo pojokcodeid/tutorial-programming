@@ -13,7 +13,7 @@ window.FULLSTACK_LESSONS.push({
   intro: [
     'Semua bagian sudah berdiri: backend, cache, broker, dan antarmuka. Bab ini adalah bab <b>perangkaian</b> — kita pasang dua wajah proxy (Vite saat pengembangan, nginx saat produksi), aktifkan lonceng notifikasi yang memeriksa dirinya sendiri tiap lima detik, lalu menguji satu rantai penuh dari klik tombol sampai angka di lonceng berubah.',
     'Inti teknis bab ini adalah satu detail yang sangat sering salah: bagaimana <code>/api/products</code> diterjemahkan menjadi <code>/products</code> di service tujuan. Konsepnya sederhana — hapus awalan <code>/api</code> — tetapi cara melakukannya di nginx punya jebakan sintaks yang membuat setiap permintaan diam-diam berpindah ke rute SPA dan membalas HTML kosong alih-alih data.',
-    'Di akhir bab kamu punya checklist uji end-to-end yang bisa diulang kapan pun: buka browser, buat pesanan, dan amati seluruh rantai — nginx, dua service Go, dua database, Redis, RabbitMQ, konsumer, sampai lonceng — bekerja serentak di balik SATU alamat.'
+    'Di akhir bab kamu punya checklist uji end-to-end yang bisa diulang kapan pun: buka browser, buat pesanan, dan amati seluruh rantai — nginx, tiga service Go, tiga database, Redis, RabbitMQ, konsumer, sampai lonceng — bekerja serentak di balik SATU alamat.'
   ],
   objectives: [
     'Menerjemahkan jalur /api/* ke tiga service lewat location nginx dengan sintaks proxy_pass yang benar',
@@ -70,10 +70,13 @@ window.FULLSTACK_LESSONS.push({
       title: 'nginx.conf: tiga location, tiga service',
       lang: 'text',
       output: false,
-      code: `#   /            → file hasil build React (SPA)
-#   /api/products/*      → product-service:8081
-#   /api/orders/*        → order-service:8082
-#   /api/notifications/* → notification-service:8083
+      code: `# Konfigurasi nginx untuk frontend:
+#   /            → file hasil build React (SPA)
+#   /api/products/*         → product-service:8081
+#   /api/orders/*           → order-service:8082
+#   /api/notifications/*    → notification-service:8083
+# Dengan begini browser hanya bicara ke SATU alamat (origin yang sama)
+# dan CORS tidak perlu dipusingkan.
 server {
     listen 80;
     server_name _;
@@ -81,10 +84,17 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    # location TANPA garis miring + proxy_pass ber-URI:
-    # bagian yang cocok (/api/products) diganti oleh URI proxy (/products).
-    #   /api/products   → /products
-    #   /api/products/1 → /products/1
+    # Akses log ditulis ke stdout/stderr container sehingga ikut terbaca
+    # oleh podman compose logs frontend — arus pengunjung (jalur mana,
+    # status berapa, berapa milidetik) tidak perlu dibuka lewat exec.
+    access_log /dev/stdout;
+    error_log /dev/stderr warn;
+
+    # --- proxy ke product-service ---
+    # location TANPA garis miring + proxy_pass ber-URI: bagian yang cocok
+    # diganti oleh URI proxy — tanpa ini /api/products jatuh ke rute SPA.
+    #   /api/products     → /products
+    #   /api/products/1   → /products/1
     location /api/products {
         proxy_pass http://product-service:8081/products;
         proxy_set_header Host $host;
@@ -93,26 +103,43 @@ server {
         proxy_read_timeout 10s;
     }
 
+    # --- proxy ke order-service ---
+    #   /api/orders → /orders ; /api/orders/1 → /orders/1
     location /api/orders {
         proxy_pass http://order-service:8082/orders;
         proxy_set_header Host $host;
-        # header khusus (Idempotency-Key) ikut diteruskan secara bawaan
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 10s;
     }
 
+    # --- proxy ke notification-service ---
+    #   /api/notifications → /notifications ; .../5/read → /notifications/5/read
     location /api/notifications {
         proxy_pass http://notification-service:8083/notifications;
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 10s;
     }
 
-    # rute SPA: semua URL yang bukan berkas nyata dibalas index.html
+    # --- SPA React: semua rute lain diteruskan ke index.html ---
     location / {
         try_files $uri $uri/ /index.html;
+    }
+
+    # Aset ber-hash boleh di-cache lama oleh browser; index.html jangan.
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
     }
 }`,
       explain: [
         'Di dalam jaringan compose, nama container = nama host: <code>product-service</code> langsung teresolusi oleh nginx tanpa IP apa pun — layanan yang berpindah port cukup diubah di satu tempat.',
         '<code>try_files ... /index.html</code> adalah janji SPA: mengakses <code>/products</code> langsung (tanpa lewat tombol menu) tetap menghasilkan aplikasi, bukan 404 — seluruh routing selesai ditangani React Router di sisi klien.',
-        'Timeout pendek (<code>connect 2s</code>) membatasi kerusakan bila service tujuan sedang mati: pengguna cepat melihat galat, nginx tidak menumpuk koneksi.'
+        'Timeout pendek (<code>connect 2s</code>) membatasi kerusakan bila service tujuan sedang mati: pengguna cepat melihat galat, nginx tidak menumpuk koneksi.',
+        '<code>access_log /dev/stdout</code> dan <code>error_log /dev/stderr warn</code> mengalirkan jejak nginx ke log container, sehingga arus pengunjung — jalur mana, status berapa, berapa milidetik — terbaca lewat <code>podman compose logs frontend</code> tanpa perlu exec ke dalam container mencari berkas log.',
+        'Lokasi <code>/assets/</code> diberi <code>expires 30d</code> karena berkas hasil build Vite selalu ber-hash (misalnya <code>index-DhK3x9.js</code>): isi berubah = nama ikut berubah, jadi "immutable" aman. Lokasi ini juga menang lebih panjang daripada <code>location /</code>, jadi aset disajikan sebagai berkas sungguhan — bukan jatuh ke fallback SPA — sementara <code>index.html</code> tetap tanpa cache agar rilis baru langsung terbaca browser.'
       ]
     },
     {
@@ -239,14 +266,17 @@ sleep 2
 curl -si http://localhost:8080/api/notifications | grep -iE 'HTTP|x-unread'
 
 # 4) Tandai dibaca → 204, lalu hitungan berkurang
-curl -si -X PATCH http://localhost:8080/api/notifications/1/read | head -1
+#    id diambil dari daftar yang ada sekarang, bukan ditulis mati
+ID=$(curl -s http://localhost:8080/api/notifications | sed -E 's/.*"id":([0-9]+).*/\\1/;q')
+curl -si -X PATCH http://localhost:8080/api/notifications/$ID/read | head -1
 
 # 5) Deteksi kesalahan tersembunyi: balasan HARUS application/json
 curl -sI http://localhost:8080/api/products | grep -i content-type`,
       explain: [
         'Tanda pertama integrasi rusak adalah <code>Content-Type: text/html</code> pada jalur /api — artinya permintaan jatuh ke rute SPA (<code>try_files</code>) karena location tidak cocok.',
         '<code>301</code> pada <code>/api/products</code> hampir selalu berarti location ditulis dengan garis miring di akhir — diagnosis sesaat untuk kesalahan paling umum di bab ini.',
-        'Langkah 3 mengecek dua hal sekaligus: rantai RabbitMQ bekerja (isi JSON) dan perhitungan belum-dibaca hidup (header).'
+        'Langkah 3 mengecek dua hal sekaligus: rantai RabbitMQ bekerja (isi JSON) dan perhitungan belum-dibaca hidup (header).',
+        'Langkah 4 mengambil id dari respons daftar saat itu juga, bukan menulis <code>/notifications/1/read</code> secara mati: id adalah milik data, bukan milik tebakan kita — bila satu-satunya notifikasi berid 7, atau langkah sebelumnya dilewat sehingga id 1 tidak pernah ada, perintah lama membalas 404 yang menyesatkan. Yang dihindari memang ketergantungan pada satu nomor id tertentu; langkah ini sendiri tetap mengandaikan langkah 2-3 berjalan sehingga daftar berisi, lalu 204 pada baris pertama berarti baris yang benar-benar ada itu berhasil ditandai dibaca.'
       ]
     },
     {

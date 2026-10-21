@@ -13,14 +13,15 @@ window.FULLSTACK_LESSONS.push({
   intro: [
     'Sampai di sini, ketiga bagian sistem belum pernah bicara satu sama lain: product-service menjual katalog, frontend menampilkan halaman, RabbitMQ berdiri menunggu. Bab ini menyambungkan sisi pertama: <b>order-service memanggil product-service lewat HTTP</b> — komunikasi sinkron, tempat satu service benar-benar menunggu jawaban service lain sebelum melangkah.',
     'Tiga persoalan nyata akan kita hadapi: bagaimana memanggil service lain <b>dengan timeout yang benar</b> agar tidak menggantung, bagaimana menjaga pesanan tetap sah <b>tanpa JOIN lintas database</b> (ingat: order-service tidak boleh menyentuh product_db), dan bagaimana mencegah pesanan ganda ketika klien mengulang request yang sama — lewat <b>kunci idempotensi</b> yang disimpan sebagai UNIQUE di database.',
-    'Di akhir bab alur pembuatan pesanan akan tersambung penuh: validasi katalog → simpan pesanan → terbitkan event ke RabbitMQ (bab berikutnya) — sambil frontend menunggu hanya satu balasan.'
+    'Di akhir bab alur pembuatan pesanan sudah tersambung sampai penyimpanan: validasi katalog → hitung total → simpan pesanan. Langkah terakhirnya — menerbitkan event ke RabbitMQ — kodenya baru ditulis di bab berikutnya; di sini kita hanya menyiapkan tempatnya (field publisher pada API) sambil frontend tetap menunggu satu balasan.'
   ],
   objectives: [
     'Memanggil endpoint service lain dengan http.Client berbatas waktu dan penanganan galat bertingkat',
     'Menjelaskan mengapa order-service menyimpan snapshot nama dan harga, bukan hanya product_id',
     'Mengimplementasikan idempotency key dengan UNIQUE constraint di MariaDB dan penanganan duplikat',
     'Memilih kode status 422 vs 502 vs 500 untuk situasi kegagalan lintas service',
-    'Menyusun alur create pesanan lengkap: validasi → hitung → simpan → terbitkan event'
+    'Menyusun alur create pesanan: validasi body → panggil katalog → hitung total → simpan, termasuk keputusan kode status tiap cabangnya',
+    'Menyiapkan titik penerbitan event (field publisher) yang diwujudkan penuh pada bab 8'
   ],
   sections: [
     {
@@ -98,7 +99,8 @@ window.FULLSTACK_LESSONS.push({
       title: 'HTTP client berbatas waktu',
       lang: 'go',
       output: false,
-      code: `func New(s *store.Store, catalogURL string, pub *publisher.Publisher) *API {
+      code: `func New(s *store.Store, catalogURL string, pub *publisher.Publisher,
+	log *slog.Logger) *API {
 	return &API{
 		store:      s,
 		catalogURL: strings.TrimRight(catalogURL, "/"),
@@ -106,6 +108,7 @@ window.FULLSTACK_LESSONS.push({
 		// mencakup dial + kirim + tunggu + baca seluruh body
 		catalogHTTP: &http.Client{Timeout: 2 * time.Second},
 		publisher:   pub,
+		log:         log, // logger disuntikkan dari main(), bukan variabel global
 	}
 }
 
@@ -154,7 +157,20 @@ func (a *API) ambilProduk(ctx context.Context, id int64) (produk, error) {
       title: 'Struct pesanan lengkap dengan snapshot',
       lang: 'go',
       output: false,
-      code: `order := store.Order{
+      code: `// store — satu baris pesanan, lengkap dengan snapshot saat transaksi.
+type Order struct {
+	ID        int64     \`json:"id"\`
+	ProductID int64     \`json:"product_id"\`
+	Product   string    \`json:"product"\`     // SNAPSHOT nama saat transaksi
+	Qty       int       \`json:"qty"\`
+	UnitPrice int       \`json:"unit_price"\`  // SNAPSHOT harga saat transaksi
+	Total     int       \`json:"total"\`
+	Customer  string    \`json:"customer"\`
+	Status    string    \`json:"status"\`
+	CreatedAt time.Time \`json:"created_at"\`
+}
+
+order := store.Order{
 	ProductID: prod.ID,        // rujukan — untuk telusur ke katalog bila perlu
 	Product:   prod.Name,      // SNAPSHOT nama saat transaksi
 	Qty:       req.Qty,
@@ -164,6 +180,7 @@ func (a *API) ambilProduk(ctx context.Context, id int64) (produk, error) {
 	Status:    "confirmed",
 }`,
       explain: [
+        'Nama kolom tabel memakai <code>product_name</code> dan <code>unit_price</code>, sedangkan JSON memakai <code>product</code>/<code>unit_price</code> — perbedaan itu sengaja: nama kolom dibaca manusia lewat SQL, nama field dibaca frontend. Tag <code>json</code> adalah jembatannya.',
         'Empat kolom snapshot (product_name, unit_price, total) membuat riwayat pesanan tidak pernah berubah setelah terjadi — persis seperti nota belanja fisik yang tetap sama walau harga di rak naik.',
         'Pertimbangkan skenario nyata: bulan depan harga Kopi naik dari 85.000 ke 95.000. Tanpa snapshot, laporan pendapatan Januari ikut "berubah" — laporan keuangan jadi tidak bisa dipercaya.',
         'Nilai <code>ProductID</code> tetap disimpan (meski tidak wajib untuk tampilan) agar pesanan bisa disilangkan dengan katalog ketika dibutuhkan oleh fitur mendatang — memakai API, bukan JOIN.'
@@ -219,13 +236,21 @@ func isDup(err error) bool {
 var dup *store.DupKeyError
 if errors.As(err, &dup) {
 	// Request ulang: balas dengan pesanan lama, bukan membuat baru.
+	// Kejadian ini dicatat karena pola retry klien yang berulang-lalu
+	// sering menjadi petunjuk pertama saat ada masalah di jaringan.
+	a.log.Info("pesanan ulang — idempotensi aktif",
+		"order_id", dup.Existing.ID, "kunci", idemKey)
 	writeJSON(w, http.StatusOK, dup.Existing)
 	return
 }
 if err != nil {
+	a.log.Error("gagal menyimpan pesanan", "kunci", idemKey, "galat", err)
 	writeError(w, http.StatusInternalServerError, "gagal menyimpan pesanan")
 	return
 }
+a.log.Info("pesanan dibuat",
+	"order_id", saved.ID, "produk", saved.Product,
+	"qty", saved.Qty, "total", saved.Total)
 
 /*  Sisi klien (frontend):
 
@@ -240,6 +265,7 @@ if err != nil {
     server mengenali dan membalas pesanan lama → tidak ada duplikat.   */`,
       explain: [
         'Duplikat dijawab 200 (bukan 201 Created) karena pesanan TIDAK baru dibuat — kode status menceritakan apa yang sebenarnya terjadi pada resource.',
+        'Dua kejadian bisnis ikut dicatat sebagai log JSON: <code>pesanan dibuat</code> (dengan order_id, qty, total) dan <code>pesanan ulang — idempotensi aktif</code>. Ketika pengguna berkata "pesanan saya hilang", baris inilah tempat pertama mencarinya.',
         'Kunci dibuat di klien sebelum kirim, artinya satu "tekan tombol" = satu kunci = boleh diulang sepuasnya tanpa dampak. Ini persis definisi idempotensi.',
         'Pola ini dipakai luas di produksi: gateway pembayaran (Stripe) menjadikan Idempotency-Key sebagai bagian resmi API-nya — bukan sekadar trik tutorial.'
       ]
@@ -283,7 +309,11 @@ Aturan pemilihan:
       title: 'Menguji alur lengkap dengan curl',
       lang: 'bash',
       output: false,
-      code: `# 1) Buat pesanan normal
+      code: `# Prasyarat: seluruh stack berjalan (podman compose up -d --build)
+# Perintah memakai NAMA SERVICE, jadi sama persis di podman compose
+# maupun podman-compose — tanpa perlu menghafal nama container.
+
+# 1) Buat pesanan normal
 curl -si -X POST localhost:8082/orders \\
   -H 'Content-Type: application/json' \\
   -H 'Idempotency-Key: uji-abc-123' \\
@@ -307,18 +337,19 @@ curl -si -X POST localhost:8082/orders -H 'Content-Type: application/json' \\
   -d '{"product_id":9999,"qty":1,"customer":"X"}'
 
 # 5) product-service dimatikan → 502 (uji timeout lintas service!)
-podman stop tokokita_product-service_1
+podman compose stop product-service
 curl -si -X POST localhost:8082/orders -H 'Content-Type: application/json' \\
   -H 'Idempotency-Key: uji-mati' \\
   -d '{"product_id":1,"qty":1,"customer":"X"}'
 # → 502 "katalog produk tidak tersedia" dalam ±2 detik (bukan menggantung!)
-podman start tokokita_product-service_1
+podman compose start product-service
 
 # 6) Pastikan tidak ada pesanan ganda
 curl -s localhost:8082/orders | grep -c '"customer":"Budi Santoso"'   # → 1`,
       explain: [
-        'Uji 5 adalah yang paling penting secara edukatif: ia membuktikan timeout bekerja — respon 502 datang dalam hitungan detik, bukan menggantung selamanya menunggu lawan yang mati.',
+        'Uji 5 adalah yang paling penting secara edukatif: ia membuktikan timeout bekerja — respon 502 datang dalam hitungan detik, bukan menggantung selamanya menunggu lawan yang mati. Perintah <code>compose stop/start product-service</code> memakai nama service sehingga berlaku sama pada podman compose maupun podman-compose.',
         'Uji 6 mengonfirmasi klaim utama idempotensi dengan angka: satu pelanggan, dua kirim, tetap satu baris di database.',
+        'Bila dikerjakan tanpa komposer penuh, pastikan mariadb, rabbitmq, product-service, dan order-service semuanya hidup (<code>go run ./cmd</code> di dua folder service); 422 pada uji 4 membutuhkan katalog hidup, sedangkan 502 pada uji 5 membutuhkannya mati.',
         'Simpan seluruh rangkaian ini sebagai skenario regresi; ketika kamu kelak menambah lapisan (misal otentikasi), jalankan ulang semuanya untuk memastikan tidak ada yang terpecah.'
       ]
     },
@@ -351,6 +382,6 @@ curl -s localhost:8082/orders | grep -c '"customer":"Budi Santoso"'   # → 1`,
     'Tiga kegagalan dipisahkan: produk tidak ada (422), katalog tak terjangkau/timeout (502), server gagal simpan (500) — masing-masing menunjuk pihak yang perlu diperiksa.',
     'Snapshot nama, harga, dan total ikut tersimpan di tabel pesanan sehingga riwayat tetap akurat walau katalog berubah — konsekuensi langsung database-per-service.',
     'Idempotency key + UNIQUE constraint (MySQL 1062) membuat request ulang dijawab dengan pesanan lama (200) alih-alih membuat duplikat (201).',
-    'Kegagalan penerbitan event hanya dicatat di log — pesanan tetap 201, karena notifikasi boleh tertunda tetapi pesanan tidak boleh gagal.'
+    'Keputusan penerbitan event: kegagalannya hanya dicatat di log, pesanan tetap 201 — notifikasi boleh tertunda, pesanan tidak boleh gagal (kodenya menyusul di bab 8).'
   ]
 });

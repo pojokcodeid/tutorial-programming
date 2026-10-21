@@ -161,6 +161,49 @@ cd services/notification && go run ./cmd       # :8083
 cd frontend && npm install && npm run dev      # :5173 (proxy otomatis)
 ```
 
+## Logging Terstruktur (satu baris JSON per kejadian)
+
+Ketiga service Go menulis log lewat paket bersama `internal/logx`
+(`log/slog` bawaan Go, format JSON) ke stdout container — tanpa berkas log
+yang harus dibuka lewat `exec`:
+
+```json
+{"time":"2026-10-20T10:15:04.123Z","level":"INFO","msg":"http_request",
+ "service":"order-service","method":"POST","path":"/orders","status":201,
+ "durasi_ms":1.234,"remote":"10.88.0.5:52344"}
+{"time":"2026-10-20T10:15:04.130Z","level":"INFO","msg":"event diterbitkan",
+ "service":"order-service","event":"order.created","event_id":"ord-7-a1b2c3d4","order_id":7}
+{"time":"2026-10-20T10:15:04.201Z","level":"INFO","msg":"notifikasi tersimpan",
+ "service":"notification-service","event":"order.created","event_id":"ord-7-a1b2c3d4","order_id":7}
+```
+
+Yang dicatat:
+
+| Peristiwa | Service | Level |
+| --- | --- | --- |
+| Setiap permintaan HTTP (method, path, status, durasi, `remote`; di product-service ikut `x_cache` HIT/MISS) | ketiganya | INFO |
+| Galat internal di balas 500/502 (penyebab aslinya, bukan hanya pesan klien) | ketiganya | ERROR |
+| Koneksi DB/RabbitMQ yang belum siap, Redis mati (degradasi terkendali) | ketiganya | INFO/WARN |
+| Pesanan dibuat, idempotensi terpicu, event terbit/gagal | order | INFO/WARN |
+| Nasib tiap pesan broker: diterima, duplikat, rusak, gagal simpan | notification | INFO/WARN/ERROR |
+| Permintaan `/healthz` | — | sengaja TIDAK dicatat (healthcheck tiap 10 detik hanya menambah baris mati) |
+
+`event_id` adalah benang penelusur lintas service: satu pesanan yang sama
+terlihat di log order-service (diterbitkan) dan notification-service
+(diterima/disimpan).
+
+```bash
+# Ikuti log satu service
+podman compose logs -f order-service
+
+# Saring peristiwa penting (butuh jq)
+podman compose logs --no-log-prefix --since 5m notification-service | jq 'select(.level=="WARN" or .level=="ERROR")'
+podman compose logs --no-log-prefix order-service | jq 'select(.msg=="event gagal diterbitkan — notifikasi tertunda")'
+
+# Log frontend: arus pengunjung nginx (akses log ke stdout container)
+podman compose logs frontend | tail -20
+```
+
 ## Konfigurasi (variabel lingkungan)
 
 | Service | Variabel | Bawaan |

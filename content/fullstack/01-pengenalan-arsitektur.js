@@ -11,7 +11,7 @@ window.FULLSTACK_LESSONS.push({
   chapter: 'Fondasi',
   duration: '14 menit',
   intro: [
-    'Selama ini kamu belajar teknologi satu per satu: Go, MariaDB, Redis, RabbitMQ, React. Sekarang kita <b>merangkainya menjadi satu aplikasi nyata</b> bernama <b>TokoKita</b> — aplikasi toko daring sederhana yang dibangun dari tiga microservice Go, satu MariaDB dengan tiga database terpisah, Redis sebagai cache katalog, RabbitMQ sebagai pengumuman antar service, dan frontend React dengan Ant Design. Seluruhnya berjalan di container Podman dan bisa dinyalakan dengan <b>satu perintah</b>.',
+    'Selama ini kamu belajar teknologi satu per satu: Go, MariaDB, Redis, RabbitMQ, React. Sekarang kita <b>merangkainya menjadi satu aplikasi nyata</b> bernama <b>TokoKita</b> — aplikasi toko daring sederhana yang dibangun dari tiga microservice Go, satu MariaDB dengan tiga database terpisah, Redis sebagai cache katalog, RabbitMQ sebagai pengumuman antar service, dan frontend React dengan Ant Design. Seluruhnya berjalan di container Podman dan bisa dinyalakan dengan <b>satu perintah</b>. Kode lengkap hasil akhir seluruh bab sudah tersedia di folder contoh <code>examples/fullstack-microservice/</code> — masuk ke folder itu lalu jalankan <code>podman compose up --build</code>, dan seluruh TokoKita menyala: buka <code>http://localhost:8080</code>.',
     'Bab ini menyiapkan cara berpikirmu sebelum menulis kode: apa saja yang akan dibangun, mengapa komponennya dipisah menjadi beberapa service, bagaimana data mengalir dari klik tombol di browser sampai tersimpan di database dan kembali sebagai notifikasi, serta bagaimana susunan folder monorepo yang memuat semuanya. Tanpa peta ini, pelajaran berikutnya akan terasa seperti potongan-potongan yang saling bertabrakan.',
     'Setelah bab ini kamu akan tahu peran masing-masing container, alur lengkap sebuah pesanan lintas service, dan keputusan desain penting seperti mengapa setiap service punya database sendiri dan mengapa notifikasi tidak disatukan dengan pembuatan pesanan.'
   ],
@@ -45,8 +45,9 @@ Penyimpanan & pesan
                    + dashboard manajemen :15672
 
 Antarmuka
-  React + Ant Design  :80   halaman Produk, Pesanan, Notifikasi, Dashboard
-                            di balik nginx yang meneruskan /api ke service`,
+  React + Ant Design  :8080  halaman Produk, Pesanan, Notifikasi, Dashboard
+                             (port host :8080 → port container :80) di balik
+                             nginx yang meneruskan /api ke tiga service`,
       explain: [
         'Setiap service Go berdiri sendiri dengan biner, log, dan portnya sendiri — inilah cirri microservice yang membedakannya dari modular monolith.',
         'Tiga database berada pada SATU instance MariaDB demi ringkasnya komposer lokal; yang penting adalah <b>tiap service hanya mengenal database miliknya sendiri</b>. Prinsip ini tetap berlaku penuh walau nanti database-nya dipisah ke mesin berbeda.',
@@ -119,6 +120,8 @@ Asinkron (event RabbitMQ) — dipakai KETIKA efek samping boleh tertunda
       code: `fullstack-microservice/
 ├── compose.yaml                 # seluruh stack: 7 container, satu perintah
 ├── Dockerfile                   # image Go bersama (parameter SERVICE=...)
+├── internal/
+│   └── logx/                    # logger JSON bersama ketiga service (slog)
 ├── migrations/
 │   ├── 001_product.sql          # product_db + pengguna product_svc
 │   ├── 002_order.sql            # order_db + pengguna order_svc
@@ -153,14 +156,15 @@ Asinkron (event RabbitMQ) — dipakai KETIKA efek samping boleh tertunda
         └── pages/               # Dashboard, Products, Orders, Notifications`,
       explain: [
         'Satu module Go (<code>example.com/tokokita</code>) untuk ketiga service: berbagi proses build dan versi dependensi, tetapi tiap service tetap punya folder sendiri yang bisa dilepas menjadi repository terpisah kapan saja.',
-        'Folder <code>internal/</code> memakai fitur bawaan Go: paket di dalamnya tidak bisa diimpor dari luar module — batas antar service dipertegas oleh kompiler, bukan sekadar kesepakatan tim.',
+        'Folder <code>internal/</code> di bawah tiap service memakai fitur bawaan Go: paket di dalamnya tidak bisa diimpor dari luar module — batas antar service dipertegas oleh kompiler, bukan sekadar kesepakatan tim.',
+        'Folder <code>internal/logx/</code> di tingkat root adalah satu-satunya pengecualian yang disengaja: paket logging bersama (slog JSON) yang boleh diimpor ketiga service, ikut dibangun oleh Dockerfile bersama.',
         'Migrasi ditempatkan di tingkat atas karena dijalankan oleh container MariaDB saat pertama boot, bukan oleh satu service tertentu.'
       ]
     },
     {
       type: 'tip',
       title: 'Bila Proyek Ini Terasa Terlalu Besar',
-      text: 'Tidak apa-apa. Materi ini memang disusun bertahap: bab 2–3 menyiapkan Podman dan database, bab 4–7 membangun service Go satu per sisi, bab 8–9 menyambungkan RabbitMQ, dan bab 10–11 memasang frontend. Kamu selalu bisa berhenti di bab 7 dan tetap punya REST API lengkap yang berjalan — frontend hanya lapisan penutup yang menyatukannya.'
+      text: 'Tidak apa-apa. Materi ini memang disusun bertahap: bab 2–3 menyiapkan Podman dan database, bab 4–7 membangun service Go satu per sisi (catatan untuk bab 7: RabbitMQ harus sudah menyala karena order-service menunggu broker lalu berhenti fatal bila broker tidak pernah siap), bab 8–9 menyambungkan RabbitMQ lewat penerbit event dan notification-service, bab 10–11 memasang serta mengintegrasikan frontend React, dan bab 12 menutup dengan containerisasi dan rilis seluruh stack. Kamu selalu bisa berhenti di bab 7 dan tetap punya REST API pesanan yang berjalan — frontend hanya lapisan penutup yang menyatukannya.'
     },
     {
       type: 'warn',

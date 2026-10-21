@@ -180,6 +180,7 @@ func (c *Cache) Invalidate(ctx context.Context, id int64) {
 	return
 }
 a.cache.Invalidate(r.Context(), id) // ← SETELAH database sukses
+a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10), "produk_id", id, "aksi", "ubah")
 writeJSON(w, http.StatusOK, p)
 
 /*  Urutan yang benar vs salah:
@@ -193,7 +194,8 @@ writeJSON(w, http.StatusOK, p)
       explain: [
         'Celah pada urutan yang salah disebut <b>race condition klasik cache</b>: bukan karena lupa menghapus, tapi karena menghapus di waktu yang keliru.',
         'Kegagalan setelah database sukses (misal Redis mati saat invalidate) tetap aman: kunci lama akan kadaluarsa sendiri oleh TTL dalam 30 detik — inilah fungsi TTL sebagai jaring pengaman kedua.',
-        'Pada kasus <code>create</code>, ID produk belum diketahui sebelum insert; tetap memanggil Invalidate dengan ID baru tidak merugikan apa pun (kunci memang belum ada), dan yang terpenting <code>product:list</code> ikut dibuang.'
+        'Pada kasus <code>create</code>, ID produk belum diketahui sebelum insert; tetap memanggil Invalidate dengan ID baru tidak merugikan apa pun (kunci memang belum ada), dan yang terpenting <code>product:list</code> ikut dibuang.',
+        'Baris <code>a.log.Info("cache diinvalidasi", ...)</code> membuat setiap pembuangan cache terlihat di log JSON service; atribut <code>aksi</code> membedakan "ubah" dari "hapus" sehingga riwayat perubahan cache bisa ditelusuri tanpa menebak.'
       ]
     },
     {
@@ -217,25 +219,34 @@ HTTP/1.1 200 OK
 X-Cache: HIT
 Content-Type: application/json; charset=utf-8
 
-# Buktikan dari sisi Redis langsung:
-$ podman exec -it <container-redis> redis-cli GET "product:list"   # isi blob JSON
-$ podman exec -it <container-redis> redis-cli TTL "product:list"   # sisa umur (dtk)
-$ podman exec -it <container-redis> redis-cli DBSIZE               # jumlah kunci
+# Buktikan dari sisi Redis langsung (compose menamai container sesuai service):
+$ podman compose exec redis redis-cli GET "product:list"   # isi blob JSON
+$ podman compose exec redis redis-cli TTL "product:list"   # sisa umur (dtk)
+$ podman compose exec redis redis-cli DBSIZE               # jumlah kunci
 
 # Setelah UPDATE produk, kunci harus HILANG (invalidasi bekerja):
 $ curl -X PUT localhost:8081/products/1 -H 'Content-Type: application/json' \\
     -d '{"name":"Kopi Arabika Gayo","category":"minuman","price":95000,"stock":40}'
-$ podman exec -it <container-redis> redis-cli DBSIZE               # lebih kecil
+$ podman compose exec redis redis-cli DBSIZE               # lebih kecil
 
-# Matikan Redis dan UJI DEGRADASI — service harus tetap melayani:
-$ podman stop <container-redis>
-$ curl -si localhost:8081/products | grep -E 'HTTP|X-Cache'         # tetap 200!
-$ podman logs <product-service> | tail -2                           # PERINGATAN Redis
-$ podman start <container-redis>`,
+# Matikan Redis lalu RESTART product-service untuk UJI DEGRADASI.
+# Peringatan "Redis tidak tersedia" hanya dicatat saat STARTUP — tanpa
+# restart, menghentikan Redis tidak menghasilkan log apa pun:
+$ podman compose stop redis
+$ podman compose restart product-service
+$ podman compose logs product-service | grep -i redis   # PERINGATAN: berjalan tanpa cache
+$ curl -si localhost:8081/products | grep -E 'HTTP|X-Cache'        # tetap 200, tanpa HIT!
+
+# Nyalakan Redis lagi lalu restart service agar cache kembali bekerja:
+$ podman compose start redis
+$ podman compose restart product-service
+$ curl -si localhost:8081/products | grep -E 'HTTP|X-Cache'        # MISS (isi ulang)
+$ curl -si localhost:8081/products | grep -E 'HTTP|X-Cache'        # HIT — normal kembali`,
       explain: [
         'Tiga uji berurutan memverifikasi tiga klaim terpisah: cache terisi (HIT), invalidasi jalan (DBSIZE turun), dan degradasi bekerja (200 meski Redis mati). Setiap klaim punya buktinya sendiri.',
         'Uji "matikan Redis" adalah yang paling berharga: ia membuktikan asumsi desain bahwa cache bukan syarat hidup — diuji dengan menghilangkan komponennya, bukan dengan membaca kode.',
-        'Perintah <code>redis-cli TTL</code> menunjukkan sisa umur kunci; angka yang menurun membuktikan TTL aktif bekerja, bukan sekadar deklarasi.'
+        'Perintah <code>redis-cli TTL</code> menunjukkan sisa umur kunci; angka yang menurun membuktikan TTL aktif bekerja, bukan sekadar deklarasi.',
+        'Peringatan "Redis tidak tersedia" dicatat <b>sekali saat startup</b> product-service; menghentikan Redis sesudah service berjalan tidak menghasilkan log apa pun karena setiap kegagalan cache berubah menjadi miss diam-diam. Karena itu langkah bukti memakai <code>podman compose restart product-service</code> — memaksa pemeriksaan Redis dijalankan ulang, baru peringatan muncul di log — lalu <code>curl</code> menunjukkan respons 200 tanpa HIT.'
       ]
     },
     {
@@ -295,7 +306,7 @@ YANG TERBUKTI BERMANFAAT DI TOKOKITA:
     'Cache-aside: baca Redis lebih dulu; miss (atau Redis mati) → baca MariaDB lalu isi cache; tulis selalu ke database disertai invalidasi.',
     'TTL 30 detik dipakai untuk daftar dan detail sebagai jaring pengaman kedua — pengganti invalidasi yang TIDAK boleh dilakukan.',
     'Invalidate membuang kunci produk DAN kunci daftar sekaligus, dipanggil SETELAH database sukses untuk menutup celah race condition.',
-    'Kegagalan Redis didekorasi menjadi miss di dalam lapisan cache: service tetap melayani 200 dari MariaDB (degradasi terkendali), dibuktikan dengan menghentikan container Redis.',
+    'Kegagalan Redis didekorasi menjadi miss di dalam lapisan cache: service tetap melayani 200 dari MariaDB (degradasi terkendali), dibuktikan dengan menghentikan Redis lalu me-restart service dan memeriksa log serta header X-Cache.',
     'Header X-Cache HIT|MISS membuat cache bisa dibuktikan dengan curl; manfaat terbesarnya bagi TokoKita adalah melindungi MariaDB saat beban puncak.'
   ]
 });

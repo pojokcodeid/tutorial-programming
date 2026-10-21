@@ -9,10 +9,10 @@ window.FULLSTACK_LESSONS.push({
   id: 'fs-product-crud',
   title: 'Product Service: REST API CRUD dengan net/http',
   chapter: 'Backend Go',
-  duration: '16 menit',
+  duration: '18 menit',
   intro: [
     'Sekarang kita membangun tulang punggung katalog: <b>product-service</b> — REST API penuh (Create, Read, Update, Delete) dengan pola lapisan yang rapi: <code>httpapi</code> (handler) → <code>store</code> (akses MariaDB) → <code>cache</code> (Redis, dibahas di bab berikutnya). Semuanya memakai <code>net/http</code> standar Go 1.22+ yang sudah mendukung pola method + path tanpa framework tambahan.',
-    'Kita akan menyusun model produk sebagai kontrak JSON, menulis repository dengan parameterized query (menentang SQL injection), membangun handler dengan kode status HTTP yang tepat, sampai validasi input dan middleware logging sederhana. Setiap keputusan kecil — kenapa 404, kenapa 422, kenapa selalu balas array kosong <code>[]</code> — dibahas alasannya, bukan sekadar ditulis.',
+    'Kita akan menyusun model produk sebagai kontrak JSON, menulis repository dengan parameterized query (menentang SQL injection), membangun handler dengan kode status HTTP yang tepat, sampai validasi input dan middleware logging terstruktur (satu baris JSON per permintaan). Setiap keputusan kecil — kenapa 404, kenapa 422, kenapa selalu balas array kosong <code>[]</code> — dibahas alasannya, bukan sekadar ditulis.',
     'Di akhir bab product-service sudah bisa diuji langsung dengan curl: membuat, membaca, mengubah, dan menghapus produk, lengkap dengan header <code>X-Cache</code> yang akan menyala di bab 6.'
   ],
   objectives: [
@@ -51,6 +51,50 @@ Kontrak respons galat (SATU pola untuk seluruh endpoint):
     },
     {
       type: 'text',
+      html: '<h3>Model dan Konstruktor: Asal-Usul Segala Sesuatu yang Dipakai Handler</h3><p>Handler menyebut <code>store.Product</code>, <code>a.store</code>, <code>a.cache</code>, dan <code>a.log</code> — empat nama yang kini harus dinyatakan lebih dulu. Dua catatan penting: model sekaligus kontrak JSON ditulis di lapisan <code>store</code> (bukan di handler), dan <b>logger tidak pernah dibuat di dalam handler</b> — ia dibuat sekali di <code>cmd/main.go</code> lalu diteruskan lewat konstruktor, supaya ketergantungan tiap lapisan terlihat eksplisit dan mudah diganti saat pengujian.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Model produk, konstruktor lapisan, dan asal logger',
+      lang: 'go',
+      output: false,
+      code: `// store — kontrak JSON sekaligus representasi baris tabel products.
+type Product struct {
+	ID        int64     \`json:"id"\`
+	Name      string    \`json:"name"\`
+	Category  string    \`json:"category"\`
+	Price     int       \`json:"price"\`
+	Stock     int       \`json:"stock"\`
+	CreatedAt time.Time \`json:"created_at"\`
+}
+
+type Store struct{ db *sql.DB }
+
+func New(db *sql.DB) *Store { return &Store{db: db} }
+
+// httpapi — seluruh dependensi disuntikkan lewat konstruktor.
+type API struct {
+	store    *store.Store
+	cache    *cache.Cache
+	cacheTTL time.Duration
+	log      *slog.Logger
+}
+
+func New(s *store.Store, c *cache.Cache, ttl time.Duration, log *slog.Logger) *API {
+	return &API{store: s, cache: c, cacheTTL: ttl, log: log}
+}
+
+// cmd/main.go — logger dibuat SEKALI lalu diteruskan, bukan variabel global.
+log := logx.New("product-service")
+api := httpapi.New(store.New(db), cache.New(rdb), cacheTTL, log)`,
+      explain: [
+        'Tag <code>json:"..."</code> menentukan nama field pada respons — tanpanya frontend akan menerima <code>CreatedAt</code> (huruf besar) dan harus menyesuaikan diri. Satu sumber kebenaran untuk kontrak: model.',
+        'Setiap <code>New(...)</code> menerima dependensinya sebagai argumen — pola ini diulang di order- dan notification-service, dan menjadi alasan logger bisa diteruskan sampai ke lapisan paling dalam tanpa variabel global.',
+        '<code>logx.New("product-service")</code> menempelkan atribut <code>service</code> pada semua baris berikutnya, sehingga ketiga service bercampur dalam satu <code>podman compose logs -f</code> pun tetap mudah dipisah.'
+      ]
+    },
+    {
+      type: 'text',
       html: '<h3>Routing net/http Gaya Baru</h3><p>Sejak Go 1.22, <code>net/http</code> memahami pola <code>METHOD /path/{parameter}</code>. Ini menghapus kebutuhan framework routing ringan untuk proyek seukuran TokoKita: pencocokan metode (405 otomatis), parameter path dengan <code>r.PathValue()</code>, semuanya bawaan.</p>'
     },
     {
@@ -68,7 +112,7 @@ func (a *API) Router() http.Handler {
 	mux.HandleFunc("GET /products/{id}", a.get)
 	mux.HandleFunc("PUT /products/{id}", a.update)
 	mux.HandleFunc("DELETE /products/{id}", a.delete)
-	return logRequests(mux)
+	return logx.Middleware(a.log, "/healthz")(mux)
 }
 
 func (a *API) healthz(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +121,7 @@ func (a *API) healthz(w http.ResponseWriter, r *http.Request) {
       explain: [
         'Pola <code>"DELETE /products/{id}"</code> membatasi metode otomatis: mengirim POST ke /products/{id} akan dijawab 405 Method Not Allowed tanpa kode pengecekan apa pun di handler.',
         '<code>r.PathValue("id")</code> mengambil isi parameter {id} dari URL — menggantikan pemotongan string manual yang rawan salah.',
-        'Router dibungkus <code>logRequests</code> agar semua permintaan tercatat metode, path, dan durasinya — log pertama yang kamu buka ketika ada yang aneh.'
+        'Router dibungkus <code>logx.Middleware(a.log, "/healthz")</code> agar setiap permintaan tercatat satu baris JSON (metode, path, status, durasi). Path <code>/healthz</code> dilewati karena dipantau compose tiap beberapa detik — kalau ikut dicatat, log dibanjiri baris mati.'
       ]
     },
     {
@@ -166,6 +210,69 @@ func (s *Store) Create(ctx context.Context, p Product) (int64, error) {
       ]
     },
     {
+      type: 'example',
+      title: 'Store: daftar, ubah, dan hapus',
+      lang: 'go',
+      output: false,
+      code: `// List mengembalikan seluruh produk (urut ID) untuk tabel & dropdown.
+func (s *Store) List(ctx context.Context) ([]Product, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT "+kolom+" FROM products ORDER BY id")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Product
+	for rows.Next() {
+		var p Product
+		if err := rows.Scan(&p.ID, &p.Name, &p.Category, &p.Price, &p.Stock, &p.CreatedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, p)
+	}
+	return out, rows.Err()
+}
+
+// Update menimpa data produk; RowsAffected 0 berarti produk tidak ada.
+func (s *Store) Update(ctx context.Context, p Product) error {
+	res, err := s.db.ExecContext(ctx,
+		"UPDATE products SET name = ?, category = ?, price = ?, stock = ? WHERE id = ?",
+		p.Name, p.Category, p.Price, p.Stock, p.ID)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return ErrNotFound
+	}
+	return nil
+}
+
+// Delete menghapus produk.
+func (s *Store) Delete(ctx context.Context, id int64) error {
+	res, err := s.db.ExecContext(ctx, "DELETE FROM products WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return ErrNotFound
+	}
+	return nil
+}`,
+      explain: [
+        'UPDATE dan DELETE tidak pernah menghasilkan <code>sql.ErrNoRows</code> — mereka sukses walau nol baris tersentuh. <code>RowsAffected()</code> adalah satu-satunya cara mengetahui bahwa ID yang diminta tidak ada, sehingga keputusan 404 tetap bisa diambil.',
+        '<code>defer rows.Close()</code> menutup kursor begitu fungsi selesai; lupa satu baris ini membuat koneksi pool terkuras pelan-pelan ketika halaman tabel dibuka seratus kali.',
+        '<code>rows.Err()</code> diperiksa SETELAH loop: galat yang terjadi di tengah iterasi (misal koneksi putus) tidak muncul sebagai error pada QueryContext, melainkan di sini.'
+      ]
+    },
+    {
       type: 'text',
       html: '<h3>Handler: Menerjemahkan HTTP ke Store dan Kembali</h3><p>Handler memegang tiga tanggung jawab: mem-parsing permintaan, memvalidasi, lalu memilih kode status yang jujur. Bagian terakhir ini yang paling sering diremehkan — frontend dan order-service mengambil keputusan berdasarkan kode status yang kamu kirim, jadi keliru memilihnya berarti menyebarkan kekeliruan ke seluruh sistem.</p>'
     },
@@ -186,16 +293,21 @@ func (s *Store) Create(ctx context.Context, p Product) (int64, error) {
 	}
 	id, err := a.store.Create(r.Context(), p)
 	if err != nil {
+		// Galat database dicatat BERSAMA pesan untuk klien: klien hanya
+		// melihat "gagal menyimpan produk", penyebab sebenarnya ada di log.
+		a.log.Error("gagal menyimpan produk", "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal menyimpan produk")
 		return
 	}
 	p.ID = id
 	a.cache.Invalidate(r.Context(), id) // buang cache basi
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10), "produk_id", id)
 	writeJSON(w, http.StatusCreated, p)
 }`,
       explain: [
         'Empat cabang galat dengan empat kode berbeda: 400 (permintaan tidak bisa dibaca), 422 (terbaca tetapi isinya ditolak), 500 (server bermasalah), 201 (berhasil membuat). Setiap kasus memberi tahu klien jenis masalah yang berbeda.',
-        'Panggilan <code>a.cache.Invalidate</code> sudah terpasang sejak awal — di bab 6 kita lihat apa yang terjadi tanpanya.',
+        'Pesan ke klien sengaja umum, tetapi <b>penyebabnya tetap tercatat</b> lewat <code>a.log.Error(..., "galat", err)</code> — respons HTTP jujur kepada pengguna, log jujur kepada operator. Tanpa baris ini, 500 hanya mengatakan "ada yang salah" tanpa pernah menjelaskan apa.',
+        'Panggilan <code>a.cache.Invalidate</code> sudah terpasang sejak awal — di bab 6 kita lihat apa yang terjadi tanpanya; kejadiannya dicatat agar pembuktian lewat log bisa dilakukan.',
         '<code>r.Context()</code> dipakai agar operasi database ikut batal ketika koneksi klien putus; tanpa itu, database tetap mengerjakan tulisan yang sudah tidak ada yang menunggunya.'
       ]
     },
@@ -224,12 +336,99 @@ func validasi(p store.Product) string {
       ]
     },
     {
+      type: 'example',
+      title: 'Handler baca, ubah, dan hapus: 200, 404, 204',
+      lang: 'go',
+      output: false,
+      code: `func (a *API) get(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "id tidak valid")
+		return
+	}
+	if p, ok := a.cache.GetProduk(r.Context(), id); ok {
+		w.Header().Set("X-Cache", "HIT") // isi cache bab berikutnya
+		writeJSON(w, http.StatusOK, p)
+		return
+	}
+	p, err := a.store.Get(r.Context(), id)
+	if errors.Is(err, store.ErrNotFound) {
+		writeError(w, http.StatusNotFound, "produk tidak ditemukan")
+		return
+	}
+	if err != nil {
+		a.log.Error("gagal membaca produk", "produk_id", id, "galat", err)
+		writeError(w, http.StatusInternalServerError, "gagal membaca produk")
+		return
+	}
+	a.cache.SetProduk(r.Context(), p, a.cacheTTL)
+	w.Header().Set("X-Cache", "MISS")
+	writeJSON(w, http.StatusOK, p)
+}
+
+func (a *API) update(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "id tidak valid")
+		return
+	}
+	var p store.Product
+	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		writeError(w, http.StatusBadRequest, "body JSON tidak valid")
+		return
+	}
+	p.ID = id
+	if msg := validasi(p); msg != "" {
+		writeError(w, http.StatusUnprocessableEntity, msg)
+		return
+	}
+	if err := a.store.Update(r.Context(), p); errors.Is(err, store.ErrNotFound) {
+		writeError(w, http.StatusNotFound, "produk tidak ditemukan")
+		return
+	} else if err != nil {
+		a.log.Error("gagal mengubah produk", "produk_id", id, "galat", err)
+		writeError(w, http.StatusInternalServerError, "gagal mengubah produk")
+		return
+	}
+	a.cache.Invalidate(r.Context(), id)
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10),
+		"produk_id", id, "aksi", "ubah")
+	writeJSON(w, http.StatusOK, p)
+}
+
+func (a *API) delete(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "id tidak valid")
+		return
+	}
+	if err := a.store.Delete(r.Context(), id); errors.Is(err, store.ErrNotFound) {
+		writeError(w, http.StatusNotFound, "produk tidak ditemukan")
+		return
+	} else if err != nil {
+		a.log.Error("gagal menghapus produk", "produk_id", id, "galat", err)
+		writeError(w, http.StatusInternalServerError, "gagal menghapus produk")
+		return
+	}
+	a.cache.Invalidate(r.Context(), id)
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10),
+		"produk_id", id, "aksi", "hapus")
+	w.WriteHeader(http.StatusNoContent)
+}`,
+      explain: [
+        'Urutan cabang di update/delete sama: 400 (id bukan angka) → 422 (isi body melanggar aturan) → 404 (baris tidak ada) → 500 (galat nyata) → 200/204. Cabang memakai <code>errors.Is</code> karena store sudah menerjemahkan "baris tidak ada" menjadi <code>ErrNotFound</code>.',
+        'Galat 500 selalu disertai <code>a.log.Error(..., "galat", err)</code>: pengguna cukup melihat pesan umum, operator mendapat penyebab lengkapnya di log — inilah konsekuensi langsung dari warn "jangan bocorkan detail internal".',
+        'Panggilan cache pada handler get (HIT/MISS) dan invalidate (setelah tulis) baru dijelaskan mekanismenya di bab 6; di sini ia sudah terpasang supaya kontrak header <code>X-Cache</code> tidak berubah-ubah antar bab.',
+        'Delete membalas <b>204 tanpa body</b>: tidak ada yang perlu dikembalikan, dan frontend cukup menghapus barisnya dari tabel. Menyematkan <code>{"message":"ok"}</code> justru memaksa klien mengurai JSON yang tidak pernah dibacanya.'
+      ]
+    },
+    {
       type: 'text',
       html: '<h3>Pembungkus JSON: Konsistensi dalam 15 Baris</h3><p>Setiap handler menulis JSON dengan cara yang sama. Alih-alih mengulang tiga baris yang sama belasan kali (dan berisiko lupa satu), kita bungkus dalam dua fungsi kecil. Konsistensi di sini bukan selera — ini kontrak yang diandalkan frontend.</p>'
     },
     {
       type: 'example',
-      title: 'writeJSON dan writeError',
+      title: 'writeJSON, writeError, dan middleware logging JSON',
       lang: 'go',
       output: false,
       code: `func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -242,18 +441,62 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"message": msg})
 }
 
-// logRequests adalah middleware logging sederhana: metode, path, durasi.
-func logRequests(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		next.ServeHTTP(w, r)
-		log.Printf("%s %s (%s)", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
-	})
+// internal/logx — satu baris JSON per permintaan. Path yang masuk daftar
+// skip (mis. /healthz, dipantau compose tiap 10 detik) tetap dilayani
+// tetapi TIDAK dicatat, agar log tidak dibanjiri baris yang tidak memberi
+// informasi baru.
+func Middleware(log *slog.Logger, skip ...string) func(http.Handler) http.Handler {
+	lewat := make(map[string]bool, len(skip))
+	for _, p := range skip {
+		lewat[p] = true
+	}
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if lewat[r.URL.Path] {
+				next.ServeHTTP(w, r)
+				return
+			}
+			start := time.Now()
+			sw := &statusWriter{ResponseWriter: w, status: http.StatusOK}
+			next.ServeHTTP(sw, r)
+
+			// Header khusus (mis. X-Cache HIT/MISS) ikut disalin ke log
+			// supaya riwayat cache terbaca dari SATU baris tanpa menebak.
+			args := []any{
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.Path),
+				slog.Int("status", sw.status),
+				slog.Float64("durasi_ms", float64(time.Since(start).Microseconds())/1000),
+				slog.String("remote", r.RemoteAddr),
+			}
+			if c := sw.Header().Get("X-Cache"); c != "" {
+				args = append(args, slog.String("x_cache", c))
+			}
+			log.Info("http_request", args...)
+		})
+	}
+}
+
+// statusWriter mengingat kode status yang ditulis handler (tulisan pertama
+// yang menang) agar middleware ikut bisa mencatatnya.
+type statusWriter struct {
+	http.ResponseWriter
+	status      int
+	wroteHeader bool
+}
+
+func (w *statusWriter) WriteHeader(status int) {
+	if !w.wroteHeader {
+		w.status = status
+		w.wroteHeader = true
+	}
+	w.ResponseWriter.WriteHeader(status)
 }`,
       explain: [
         '<b>Header harus ditulis SEBELUM WriteHeader</b> — itulah urutan yang dipakai writeJSON; membaliknya membuat Content-Type terlewat diam-diam dan peringatan bawaan muncul di log.',
-        'Middleware hanyalah fungsi yang menerima handler berikutnya dan mengembalikan handler baru — pola ini dipakai ulang untuk logging, CORS, maupun otentikasi bila kamu menambahkannya.',
-        '<code>Round(time.Millisecond)</code> membuat log ringkas (2ms, bukan 2.481763ms) — lebih mudah dipindai ketika mencari permintaan yang lambat.'
+        'Middleware hanyalah fungsi yang menerima handler berikutnya dan mengembalikan handler baru — pola ini dipakai ulang untuk logging, CORS, maupun otentikasi bila kamu menambahkannya. <code>skip ...string</code> membuatnya tetap generik: cukup sebutkan path yang tidak ingin dicatat.',
+        'Logger memakai <code>log/slog</code> bawaan Go dalam format JSON, jadi setiap baris berdiri sendiri dan bisa dicari dengan atribut bernama: <code>{"level":"INFO","msg":"http_request","service":"product-service","method":"GET","path":"/products/1","status":200,"durasi_ms":1.234}</code>.',
+        '<code>statusWriter</code> dibutuhkan agar kode status yang ditulis handler tetap bisa dicatat (tulisan pertama yang menang) — tanpanya semua baris log akan berstatus 200 palsu, termasuk kegagalan 500 yang justru paling dicari.'
       ]
     },
     {
@@ -261,7 +504,11 @@ func logRequests(next http.Handler) http.Handler {
       title: 'Menguji seluruh endpoint dengan curl',
       lang: 'bash',
       output: false,
-      code: `# 1) Daftar produk (pertama MISS, ulangi untuk HIT — inti bab berikutnya)
+      code: `# Prasyarat: MariaDB + Redis sudah jalan dan product-service dijalankan
+# (podman compose up -d mariadb redis, lalu go run ./cmd — lihat bab 4)
+# Bila memakai komposer penuh, portnya sama: localhost:8081
+
+# 1) Daftar produk (pertama MISS, ulangi untuk HIT — inti bab berikutnya)
 curl -si localhost:8081/products | grep -E 'HTTP|X-Cache'
 curl -si localhost:8081/products | grep X-Cache        # → X-Cache: HIT
 

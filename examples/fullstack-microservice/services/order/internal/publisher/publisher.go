@@ -10,10 +10,12 @@ package publisher
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"log/slog"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+
+	"example.com/tokokita/internal/logx"
 )
 
 const (
@@ -39,14 +41,20 @@ type Publisher struct {
 
 // New menyiapkan channel sekaligus mendeklarasikan exchange (idempoten:
 // deklarasi yang sama berkali-kali aman).
-func New(conn *amqp.Connection) *Publisher {
+//
+// Kegagalan di sini dianggap FATAL: tanpa channel AMQP, order-service tidak
+// pernah bisa menerbitkan event, dan pesanan akan tersimpan tanpa efek
+// samping apa pun. Kegagalan dicatat sebagai log JSON lalu proses keluar —
+// keputusan yang sama dengan ketika koneksi RabbitMQ tidak pernah siap.
+func New(conn *amqp.Connection, log *slog.Logger) *Publisher {
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("gagal membuka channel AMQP: %v", err)
+		logx.Fatal(log, "gagal membuka channel AMQP", "galat", err)
 	}
 	if err := ch.ExchangeDeclare(ExchangeName, "topic", true, false, false, false, nil); err != nil {
-		log.Fatalf("gagal mendeklarasikan exchange: %v", err)
+		logx.Fatal(log, "gagal mendeklarasikan exchange", "galat", err)
 	}
+	log.Info("exchange deklarasi", "exchange", ExchangeName, "tipe", "topic", "routing_key", RoutingKey)
 	return &Publisher{ch: ch}
 }
 

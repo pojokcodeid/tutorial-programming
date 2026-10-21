@@ -68,12 +68,14 @@ ARG SERVICE
 
 WORKDIR /src
 
-# Salin berkas modul dulu agar lapisan cache tetap terpakai
+# Salin berkas modul dulu agar lapisan cache Docker tetap terpakai
 # selama go.sum tidak berubah (build ulang jadi jauh lebih cepat).
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY services/ services/
+# Paket bersama ketiga service (mis. internal/logx untuk logging JSON)
+COPY internal/ internal/
 
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath \\
     -ldflags="-s -w" \\
@@ -93,7 +95,8 @@ ENTRYPOINT ["/usr/local/bin/app"]`,
         '<code>CGO_ENABLED=0</code> menghasilkan biner statis — biner berjalan di image alpine tanpa pustaka C apa pun, dan <code>-ldflags="-s -w"</code> membuang tabel simbol debugger sehingga ukuran mengecil tanpa memengaruhi fungsi.',
         '<code>adduser -D -u 10001 app</code> lalu <code>USER app</code>: proses berjalan sebagai non-root dengan UID tetap — meski ada kelemahan di aplikasi, penyerah tidak memulai dari kepemilikan root.',
         'Compose memakai resep ini tiga kali lewat <code>args: { SERVICE: product }</code> — lapisan cache modul juga dipakai bersama karena konteks build dan go.sum-nya sama.',
-        '<code>ca-certificates</code> ikut disalin karena order-service perlu memercayai sertifikat TLS ketika katalog dipindahkan ke HTTPS; <code>tzdata</code> menyiapkan zona waktu untuk TIMESTAMP database.'
+        '<code>ca-certificates</code> ikut disalin karena order-service perlu memercayai sertifikat TLS ketika katalog dipindahkan ke HTTPS; <code>tzdata</code> menyiapkan zona waktu untuk TIMESTAMP database.',
+        '<code>COPY internal/ internal/</code> menyalin paket bersama ketiga service — misal <code>internal/logx</code> untuk logging JSON bab 4. Semua kode yang dibangun harus berada di dalam konteks; satu folder terlewat = kegagalan <code>go build</code> yang jelas di tahap build, bukan di produksi.'
       ]
     },
     {
@@ -156,6 +159,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: tokokita
       RABBITMQ_DEFAULT_PASS: tokokita-local
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 12
 
   product-service:
     build:
@@ -169,6 +177,13 @@ services:
     depends_on:
       mariadb: { condition: service_healthy }
       redis: { condition: service_healthy }
+    healthcheck:
+      # /healthz sengaja TIDAK dicatat service (lihat logx.Middleware) —
+      # healthcheck berjalan tiap 10 detik dan hanya membanjiri log.
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
 
   frontend:
     build: { context: ./frontend }
@@ -183,7 +198,8 @@ volumes:
         'Bind mount <code>./migrations</code> ke <code>/docker-entrypoint-initdb.d</code> membuat MariaDB menjalankan ketiga berkas SQL otomatis pada volume KOSONG — skema tidak pernah diketik manual maupun lupa.',
         '<code>user: rabbitmq</code> bukan sentuhan kosmetik: healthcheck yang berjalan sebagai root bisa membuat <code>.erlang.cookie</code> milik root lebih dulu, dan proses broker lalu menolak membacanya (EACCES) — mengganti seluruh proses menjadi non-root membuat kepemilikan konsisten sejak awal.',
         'Port <code>8080:80</code> adalah penyesuaian rootless: podman tanpa root tidak boleh membuka port host di bawah 1024, tetapi container tetap bebas memakai :80 di jaringannya sendiri.',
-        'Nama-nama service menjadi nama host di dalam jaringan compose: <code>tcp(mariadb:3306)</code> dan <code>http://product-service:8081</code> langsung teresolusi — itulah mengapa tidak ada satu pun IP yang tertulis di mana pun.'
+        'Nama-nama service menjadi nama host di dalam jaringan compose: <code>tcp(mariadb:3306)</code> dan <code>http://product-service:8081</code> langsung teresolusi — itulah mengapa tidak ada satu pun IP yang tertulis di mana pun.',
+        'Healthcheck juga dipasang pada service Go lewat <code>wget -qO- http://localhost:8081/healthz</code> (tersedia di image alpine). Dua catatan: pertama, <code>/healthz</code> sengaja di-skip dari log service (lihat <code>logx.Middleware</code> bab 4) agar tidak membanjiri log tiap 10 detik; kedua, <code>compose.yaml</code> lengkap berisi juga <code>redis</code>, <code>order-service</code>, dan <code>notification-service</code> — di sini hanya dipotong agar contoh tetap ringkas.'
       ]
     },
     {
@@ -237,29 +253,39 @@ volumes:
       code: `cd examples/fullstack-microservice
 
 # Hidupkan seluruh stack (bangun image bila kode berubah)
-podman-compose up -d --build
+podman compose up -d --build     # podman-compose up -d --build juga valid
 
-# Periksa: tujuh container, tiga di antaranya sehat
+# Periksa: tujuh container, enam di antaranya sehat (frontend tanpa healthcheck)
 podman ps --format '{{.Names}}\\t{{.Status}}'
 
-# Amati log satu service (berhenti dengan Ctrl+C; container tetap jalan)
-podman logs -f tokokita_order-service_1
+# Amati log satu service (berhenti dengan Ctrl+C; container tetap jalan).
+# Perintah memakai NAMA SERVICE — sama di podman compose & podman-compose,
+# tanpa perlu menghafal nama container (tokokita-order-service-1 vs
+# tokokita_order-service_1 — beda provider, beda tanda pemisah).
+podman compose logs -f order-service
 
 # Masuk ke dalam container yang sedang berjalan (misal untuk pemeriksaan)
-podman exec -it tokokita_mariadb_1 mysql -uroot -proot-local order_db
+podman compose exec mariadb mysql -uroot -proot-local order_db
 
 # Hidupkan ulang SATU service setelah memperbaruinya
-podman-compose up -d --build order-service
+podman compose up -d --build order-service
+
+# Bila service yang dimulai ulang diuji lewat frontend (:8080), restart
+# frontend juga — nginx membaca DNS sekali saat start, sedangkan container
+# yang di-start ulang mendapat IP baru (tanpa ini :8080 menjawab 504):
+podman compose restart frontend
 
 # Matikan seluruh stack TANPA menghapus data (volume tetap ada)
-podman-compose down
+podman compose down
 
 # Matikan sekaligus menghapus data: SEMUA PESANAN, PRODUK & NOTIFIKASI HILANG
-podman-compose down -v        # gunakan hanya bila ingin mulai dari nol`,
+podman compose down -v          # gunakan hanya bila ingin mulai dari nol`,
       explain: [
         '<code>down</code> biasa aman untuk sehari-hari: container dan jaringan dibuang, tetapi volume <code>db-data</code>, <code>redis-data</code>, dan <code>mq-data</code> bertahan — data pesanan nyata tidak ikut hilang karena kamu mematikan server.',
-        '<code>exec ... mysql</code> membuka sesi SQL langsung di database — pemeriksaan tercepat saat ada yang janggal dengan isi tabel, tanpa memasang klien SQL di komputer sendiri.',
-        'Memperbarui satu service cukup <code>up -d --build SERVICE</code>; compose membuang container lama dan menyusun ulang hanya yang terpengaruh — dependensi turunannya tetap jalan.'
+        '<code>compose exec mariadb mysql</code> membuka sesi SQL langsung di database — pemeriksaan tercepat saat ada yang janggal dengan isi tabel, tanpa memasang klien SQL di komputer sendiri.',
+        'Memperbarui satu service cukup <code>compose up -d --build SERVICE</code>; compose membuang container lama dan menyusun ulang hanya yang terpengaruh — dependensi turunannya tetap jalan.',
+        'Semua perintah di atas menamai SERVICE, bukan container: nama container berbeda antara podman-compose (tanda hubung) dan podman compose provider (tanda bawah), sedangkan nama service hanya ada di compose.yaml dan tidak berubah.',
+        'Satu jebakan operasional yang diabadikan di blok ini: nginx membaca hasil DNS SAAT IA START. Container yang di-start ulang mendapat IP baru, dan nginx terus menunjuk alamat lama — gejalanya 504 dari :8080 padahal <code>curl localhost:8083/healthz</code> menjawab normal. Solusinya satu baris: <code>compose restart frontend</code>.',
       ]
     },
     {
@@ -289,11 +315,20 @@ curl -si localhost:8083/notifications | grep -i x-unread
 
 #5) Frontend menyalakan aplikasi dan meneruskan API
 curl -s localhost:8080/ | grep -o '<title>[^<]*</title>'
-curl -si localhost:8080/api/products | grep HTTP`,
+curl -si localhost:8080/api/products | grep HTTP
+
+#6) Logging terstruktur: tiap kejadian SATU baris JSON di stdout
+podman compose logs order-service --since 2m | grep http_request | tail -2
+# → {"time":"...","level":"INFO","msg":"http_request","service":"order-service",
+#    "method":"POST","path":"/orders","status":201,"durasi_ms":1.2,...}
+podman compose logs order-service 2>/dev/null | grep 'order.created' | tail -1
+# → baris "event diterbitkan" dengan atribut event_id — benang penelusur
+#   antar service (event_id di log konsumen nilainya sama persis)`,
       explain: [
-        'Checklist berlapis: bila langkah 1 gagal, masalahnya di orkestrasi; langkah 2 gagal → koneksi/database; langkah 3 → cache; langkah 4 → broker/konsumen; langkah 5 → proxy/frontend. diagnosis bergerak dari luar ke dalam tanpa menebak.',
+        'Checklist berlapis: bila langkah 1 gagal, masalahnya di orkestrasi; langkah 2 gagal → koneksi/database; langkah 3 → cache; langkah 4 → broker/konsumen; langkah 5 → proxy/frontend; langkah 6 → observability. diagnosis bergerak dari luar ke dalam tanpa menebak.',
         'Sleep dua detik di langkah 4 bukan sihir — itu memberi waktu konsumer memproses event; bila notifikasi belum datang setelahnya, buka dashboard RabbitMQ :15672 dan periksa apakah pesan berada di queue (Ready) atau hilang dari tangan (Unacked).',
-        'Seluruh checklist juga bisa dijalankan lewat <code>localhost:8080/api/*</code> — jalur produksi yang sebenarnya — sehingga pengujian ikut memvalidasi nginx, bukan hanya service secara langsung.'
+        'Seluruh checklist juga bisa dijalankan lewat <code>localhost:8080/api/*</code> — jalur produksi yang sebenarnya — sehingga pengujian ikut memvalidasi nginx, bukan hanya service secara langsung.',
+        'Langkah 6 memeriksa BENTUK log, bukan isinya: satu baris JSON per kejadian dengan atribut bernama (order_id, event_id, durasi_ms). Bila yang muncul teks bebas seperti "Pesanan #3 dibuat", berarti logger belum diganti logx (bab 4) — checklist gagal pada lapis observability, bukan pada fungsionalitas.'
       ]
     },
     {
@@ -327,6 +362,6 @@ curl -si localhost:8080/api/products | grep HTTP`,
     'Kunci build cepat: modul/dependensi diunduh SEBELUM kode disalin agar lapisan cache tidak terbuang tiap perubahan kode.',
     'compose.yaml mendeklarasikan tujuh container: healthcheck di komponen data, depends_on service_healthy di service Go, environment untuk seluruh konfigurasi.',
     'Pelajaran nyata dari proyek: user non-root pada RabbitMQ (kepemilikan cookie konsisten) dan port frontend 8080 (batasan rootless) — dua penyesuaian kecil yang menentukan stack benar-benar hidup.',
-    'Siklus operasional: up -d --build, ps/logs/exec, restart per service, down tanpa -v untuk keseharian, down -v hanya untuk memulai dari nol — ditutup checklist verifikasi lima lapis.'
+    'Siklus operasional: up -d --build, ps/logs/exec, restart per service, down tanpa -v untuk keseharian, down -v hanya untuk memulai dari nol — ditutup checklist verifikasi enam lapis — termasuk bentuk log JSON terstruktur.'
   ]
 });

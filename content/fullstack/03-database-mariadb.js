@@ -178,19 +178,23 @@ CREATE TABLE IF NOT EXISTS orders (
 
 podman-compose up -d mariadb
 
-# Tunggu sampai sehat, lalu periksa hasilnya
-podman exec -it <container-mariadb> \\
+# Tunggu sampai sehat, lalu periksa hasilnya.
+# "exec mariadb" menunjuk nama SERVICE di compose.yaml — compose
+# menamai container sesuai service, jadi exec <nama-service> selalu
+# benar tanpa perlu menghafal nama container.
+podman-compose exec mariadb \\
   mariadb -uroot -proot-local -e "SHOW DATABASES;"
 
 # Harus muncul: product_db, order_db, notification_db (+ db bawaan)
 # Periksa tabel & data contoh
-podman exec -it <container-mariadb> \\
+podman-compose exec mariadb \\
   mariadb -uroot -proot-local product_db \\
   -e "SELECT id, name, price, stock FROM products;"`,
       explain: [
         'Mount memakai <code>:ro</code> (read-only): container MariaDB hanya membaca migrasi, tidak pernah mengubah berkas di host — kebersihan yang layak dibiasakan.',
         'Folder init hanya diproses saat data diri-simpan masih kosong. Setelah perubahan migrasi, kamu perlu <code>down -v</code> (menghapus volume) agar migrasi dijalankan ulang dari nol.',
-        'Perintah <code>-e</code> pada mariadb client mengeksekusi query langsung dari terminal — memeriksa isi database tanpa memasang tool GUI tambahan.'
+        'Perintah <code>-e</code> pada mariadb client mengeksekusi query langsung dari terminal — memeriksa isi database tanpa memasang tool GUI tambahan.',
+        'Perintah <code>exec mariadb</code> menunjuk nama SERVICE di compose.yaml, bukan nama container — compose menamai container sesuai service, jadi exec &lt;nama-service&gt; selalu benar tanpa perlu menghafal nama container.'
       ]
     },
     {
@@ -230,7 +234,7 @@ DB_DSN=notification_svc:notification-local@tcp(mariadb:3306)/notification_db?par
       lang: 'bash',
       output: false,
       code: `# Masuk sebagai root untuk pemeriksaan (di produksi: hindari root!)
-podman exec -it <container-mariadb> \\
+podman-compose exec mariadb \\
   mariadb -uroot -proot-local
 
 -- dalam mariadb client:
@@ -241,7 +245,7 @@ SHOW GRANTS FOR 'order_svc'@'%';
 -- buktikan order_svc TIDAK bisa membaca product_db:
 EXIT;
 
-podman exec -it <container-mariadb> \\
+podman-compose exec mariadb \\
   mariadb -uorder_svc -porder-local product_db \\
   -e "SELECT COUNT(*) FROM products;"
 -- → ERROR 1044: Access denied (bukan miliknya!)`,
@@ -254,7 +258,7 @@ podman exec -it <container-mariadb> \\
     {
       type: 'tip',
       title: 'Satu Instance MariaDB, Tiga Langkah Backup',
-      text: 'Karena ketiga database berada pada satu instance, backup harian cukup satu perintah: <code>podman exec &lt;container&gt; mariadb-dump -uroot -p... --all-databases</code>. Namun ingat konsekuensinya: backup terpadu juga berarti <b>kegagalan instance mengenai ketiga service sekaligus</b> — di produksi nyata, itulah alasan utama akhirnya tiap service digeser ke instance terpisah.'
+      text: 'Karena ketiga database berada pada satu instance, backup harian cukup satu perintah: <code>podman-compose exec mariadb mariadb-dump -uroot -proot-local --all-databases &gt; tokokita-backup.sql</code>. Namun ingat konsekuensinya: backup terpadu juga berarti <b>kegagalan instance mengenai ketiga service sekaligus</b> — di produksi nyata, itulah alasan utama akhirnya tiap service digeser ke instance terpisah.'
     },
     {
       type: 'warn',

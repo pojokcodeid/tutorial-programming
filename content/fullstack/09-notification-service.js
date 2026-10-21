@@ -12,7 +12,7 @@ window.FULLSTACK_LESSONS.push({
   duration: '16 menit',
   intro: [
     'Bab ini menutup lingkaran event TokoKita: <b>notification-service</b> mendengarkan <code>order.created</code> dari RabbitMQ, menyimpannya sebagai notifikasi di <code>notification_db</code>, lalu menyajikannya ke frontend lewat API polling. Inilah konsumen tunggal yang membuat order-service boleh "melempar dan lupa" tanpa mengorbankan informasi ke pengguna.',
-    'Tiga persoalan inti akan kita bahas: bagaimana konsumen menangani pesan dengan <b>ACK manual</b> agar tidak pernah kehilangan data di tengah jalan, mengapa pemrosesan <b>at-least-once</b> justru aman ketika disandingkan dengan deduplikasi <code>event_id</code> UNIQUE, dan bagaimana konsumen bangkit sendiri ketika koneksi broker putus — perbedaan mendasar dari sisi penerbit yang kita pelajari di bab sebelumnya.',
+    'Tiga persoalan inti akan kita bahas: bagaimana konsumen menangani pesan dengan <b>ACK manual</b> agar tidak pernah kehilangan data di tengah jalan, mengapa pemrosesan <b>at-least-once</b> justru aman ketika disandingkan dengan deduplikasi <code>event_id</code> UNIQUE, dan bagaimana konsumen bangkit sendiri ketika koneksi broker putus — sikap yang berbeda dari sisi penerbit di bab sebelumnya, yang menyerah (fatal) setelah 30 percobaan.',
     'Di akhir bab seluruh rantai akan teruji: pesanan dibuat → event mengalir → notifikasi tersimpan → API siap dilirik lonceng di bab frontend.'
   ],
   objectives: [
@@ -26,7 +26,7 @@ window.FULLSTACK_LESSONS.push({
   sections: [
     {
       type: 'text',
-      html: '<h3>Peta Posisi Konsumen</h3><p>notification-service adalah service paling sederhana dari segi bisnis (ia hanya mencatat), tetapi paling kaya pelajaran dari segi operasional. Ia menjalankan dua peran sekaligus: <b>pekerja latar</b> yang mendengarkan queue tanpa henti, dan <b>pelayan API</b> yang menyajikan daftar notifikasi untuk polling frontend.</p><p>Perhatikan perbedaan filosofis dengan bab 8: order-service (penerbit) memperlakukan kegagalan broker sebagai <b>fatal</b> — tanpa broker, pesanan tidak utuh. notification-service (konsumer) memperlakukan kegagalan broker sebagai <b>hal rutin</b> — selama pesan belum ada yang mengambilnya, queue akan menahannya. Karena itu konsumen tidak pernah menyerah: ia memutar ulang koneksi sampai berhasil.</p>'
+      html: '<h3>Peta Posisi Konsumen</h3><p>notification-service adalah service paling sederhana dari segi bisnis (ia hanya mencatat), tetapi paling kaya pelajaran dari segi operasional. Ia menjalankan dua peran sekaligus: <b>pekerja latar</b> yang mendengarkan queue tanpa henti, dan <b>pelayan API</b> yang menyajikan daftar notifikasi untuk polling frontend.</p><p>Perhatikan perbedaan filosofis dengan bab 8: order-service (penerbit) mencoba broker <b>30 kali dengan jeda 2 detik</b> saat start, lalu menganggapnya <b>fatal</b> — tanpa broker, event tidak akan pernah terbit. notification-service (konsumer) memperlakukan kegagalan broker sebagai <b>hal rutin tanpa batas</b> — selama pesan belum ada yang mengambilnya, queue akan menahannya. Karena itu konsumen tidak pernah menyerah: ia memutar ulang koneksi selama service hidup.</p>'
     },
     {
       type: 'example',
@@ -76,7 +76,7 @@ Langkah hidup pesan di konsumen:
 
 // once menjalankan SATU sesi koneksi. Bila fungsi ini kembali (putus),
 // pemanggil (Run) akan mencoba menghubungkan ulang.
-func once(ctx context.Context, url string, st *store.Store) error {
+func once(ctx context.Context, url string, st *store.Store, log *slog.Logger) error {
 \tconn, err := amqp.Dial(url)
 \tif err != nil {
 \t\treturn err
@@ -109,7 +109,7 @@ func once(ctx context.Context, url string, st *store.Store) error {
 \tif err != nil {
 \t\treturn err
 \t}
-\tlog.Println("mendengarkan event pada queue " + QueueName)
+\tlog.Info("mendengarkan event", "queue", QueueName, "binding", BindingKey)
 \t// ... loop deliveries di contoh berikutnya
 \t_ = deliveries
 \treturn nil
@@ -185,7 +185,7 @@ func once(ctx context.Context, url string, st *store.Store) error {
 \t}
 \tvar ev storeEvent
 \tif err := json.Unmarshal(d.Body, &ev); err != nil {
-\t\tlog.Printf("pesan rusak, dibuang: %v", err)
+\t\tlog.Warn("pesan rusak — dibuang", "delivery_tag", d.DeliveryTag, "galat", err)
 \t\td.Ack(false) // tanpa ACK pesan ini berputar selamanya
 \t\tcontinue
 \t}
@@ -194,17 +194,21 @@ func once(ctx context.Context, url string, st *store.Store) error {
 \tif err := st.Save(ctx, ev.EventID, ev.OrderID, ev.Customer, msg); err != nil {
 \t\tif errors.Is(err, store.ErrDuplicate) {
 \t\t\t// Sudah pernah diproses (misal pesan dikirim ulang) → ACK saja.
+\t\t\tlog.Info("event duplikat — dilewati",
+\t\t\t\t"event", BindingKey, "event_id", ev.EventID, "order_id", ev.OrderID)
 \t\t\td.Ack(false)
 \t\t\tcontinue
 \t\t}
 \t\t// Galat database nyata: NACK tanpa requeue agar tidak loop,
 \t\t// tapi pesan sudah dicatat broker untuk ditinjau.
-\t\tlog.Printf("gagal menyimpan notifikasi: %v", err)
+\t\tlog.Error("gagal menyimpan notifikasi",
+\t\t\t"event_id", ev.EventID, "order_id", ev.OrderID, "galat", err)
 \t\td.Nack(false, false)
 \t\tcontinue
 \t}
 \td.Ack(false)
-\tlog.Printf("notifikasi order %d tersimpan", ev.OrderID)
+\tlog.Info("notifikasi tersimpan",
+\t\t"event", BindingKey, "event_id", ev.EventID, "order_id", ev.OrderID)
 }`,
       explain: [
         '<b>Jalur 1 — berhenti (ctx batal)</b>: tanpa ACK, broker menganggap pesan belum diterima dan mengirim ulang setelah konsumen hidup lagi. Tidak ada pekerjaan yang hilang saat shutdown.',
@@ -242,7 +246,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     },
     {
       type: 'text',
-      html: '<h3>Loop Reconnect: Konsumen yang Tidak Pernah Menyerah</h3><p>Bedakan dua sikap terhadap kegagalan broker: penerbit (bab 8) memilih <code>Fatalf</code> — tanpa broker, pesanan tidak utuh. Konsumen memilih <b>memutar ulang</b> — pekerjaannya adalah MENUNGGU, dan queue menahan pesan selama ia pergi. Selama broker pulih dalam hitungan menit (kasus umum restart terjadwal), tidak ada satu pun pesan yang hilang.</p>'
+      html: '<h3>Loop Reconnect: Konsumen yang Tidak Pernah Menyerah</h3><p>Bedakan dua sikap terhadap kegagalan broker: penerbit (bab 8) mencoba <code>waitForAMQP</code> 30 kali dengan jeda 2 detik, lalu memilih <code>logx.Fatal</code> — tanpa broker, event tidak akan pernah terbit. Konsumen memilih <b>memutar ulang tanpa batas</b> — pekerjaannya adalah MENUNGGU, dan queue menahan pesan selama ia pergi. Selama broker pulih dalam hitungan menit (kasus umum restart terjadwal), tidak ada satu pun pesan yang hilang.</p>'
     },
     {
       type: 'example',
@@ -251,17 +255,17 @@ CREATE TABLE IF NOT EXISTS notifications (
       output: false,
       code: `// Run menjalankan siklus: hubungkan → deklarasikan topologi → konsumsi.
 // Selama ctx belum batal, setiap putus dicoba hubungkan ulang.
-func Run(ctx context.Context, url string, st *store.Store) error {
+func Run(ctx context.Context, url string, st *store.Store, log *slog.Logger) error {
 \tfor attempt := 1; ; attempt++ {
 \t\tif ctx.Err() != nil {
 \t\t\treturn ctx.Err()
 \t\t}
-\t\terr := once(ctx, url, st)
+\t\terr := once(ctx, url, st, log)
 \t\tif ctx.Err() != nil {
 \t\t\treturn ctx.Err()
 \t\t}
-\t\tlog.Printf("koneksi AMQP putus (percobaan %d): %v — mencoba ulang dalam 3 detik",
-\t\t\tattempt, err)
+\t\tlog.Warn("koneksi AMQP putus — mencoba ulang dalam 3 detik",
+\t\t\t"percobaan", attempt, "galat", err)
 \t\tselect {
 \t\tcase <-ctx.Done():
 \t\t\treturn ctx.Err()
@@ -272,12 +276,12 @@ func Run(ctx context.Context, url string, st *store.Store) error {
 
 // di main.go — konsumer berjalan di goroutine terpisah:
 go func() {
-\tif err := consumer.Run(ctx, amqpURL, st); err != nil && !errors.Is(err, context.Canceled) {
-\t\tlog.Printf("konsumer berhenti: %v", err)
+\tif err := consumer.Run(ctx, amqpURL, st, log); err != nil && !errors.Is(err, context.Canceled) {
+\t\tlog.Error("konsumer berhenti", "galat", err)
 \t}
 }()`,
       explain: [
-        'Retry di sini TANPA batas — berbeda dengan <code>waitForDB</code> (30 percobaan). Perbedaan itu sah: konsumen memang dirancang hidup selama service hidup, dan tiap kegagalan dicatat berurutan sehingga operator tetap melihat masalahnya.',
+        'Retry di sini TANPA batas — berbeda dengan <code>waitForDB</code>/<code>waitForAMQP</code> di bab 8 (30 percobaan lalu fatal). Perbedaan itu sah: konsumen memang dirancang hidup selama service hidup, dan tiap kegagalan dicatat berurutan sehingga operator tetap melihat masalahnya.',
         'Percobaan di-reset tiap <code>once</code> kembali SUKSES — bila koneksi bertahan lama, angka percobaan tidak lagi membengkak di log.',
         'Mengapa 3 detik, bukan backoff eksponensial? Karena antrian menumpuk selama mati; jeda tetap kecil membuat konsumen kembali mengejar antrean secepat mungkin tanpa menumpuk penalti ganda.'
       ]
@@ -293,29 +297,41 @@ go func() {
       output: false,
       code: `func (a *API) Router() http.Handler {
 \tmux := http.NewServeMux()
-\tmux.HandleFunc("GET /healthz", a.healthz)
+\tmux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+\t\twriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+\t})
 \tmux.HandleFunc("GET /notifications", a.list)
 \tmux.HandleFunc("PATCH /notifications/{id}/read", a.markRead)
-\treturn logRequests(mux)
+\t// Middleware logx (bab 4) mencatat tiap request sebagai satu baris JSON;
+\t// /healthz di-skip karena dipantau compose tiap 10 detik.
+\treturn logx.Middleware(a.log, "/healthz")(mux)
 }
 
 func (a *API) list(w http.ResponseWriter, r *http.Request) {
 \tlist, err := a.store.List(r.Context())
 \tif err != nil {
+\t\ta.log.Error("gagal membaca daftar notifikasi", "galat", err)
 \t\twriteError(w, http.StatusInternalServerError, "gagal membaca notifikasi")
 \t\treturn
 \t}
 \tif list == nil {
 \t\tlist = []store.Notification{} // selalu array, bukan null
 \t}
-\tunread, _ := a.store.UnreadCount(r.Context())
+\tunread, err := a.store.UnreadCount(r.Context())
+\tif err != nil {
+\t\t// Bukan kegagalan fatal: daftar tetap dikirim, hanya angka badge
+\t\t// lonceng yang awalnya 0. Tetap dicatat agar tidak diam-diam.
+\t\ta.log.Warn("gagal membaca jumlah notifikasi belum dibaca", "galat", err)
+\t\tunread = 0
+\t}
 \tw.Header().Set("X-Unread-Count", strconv.Itoa(unread))
 \twriteJSON(w, http.StatusOK, list)
 }`,
       explain: [
         'Endpoint memakai pola metode+path Go1.22: <code>PATCH /notifications/{id}/read</code> — metode PATCH dipilih karena perubahan hanya sebagian (satu kolom <code>is_read</code>), bukan penggantian objek penuh (PUT).',
         'Header diisi SEBELUM WriteHeader dipanggil writeJSON — urutan yang sama kritisnya seperti bab 5.',
-        'Balasan tandai-baca memakai <code>204 No Content</code>: permintaan berhasil tetapi tidak ada isi yang layak dibalas — frontend cukup menyegarkan daftarnya.'
+        'Balasan tandai-baca memakai <code>204 No Content</code>: permintaan berhasil tetapi tidak ada isi yang layak dibalas — frontend cukup menyegarkan daftarnya.',
+        'Kegagalan menghitung unread bukan alasan menolak seluruh daftar: badge lonceng boleh awalnya 0, TETAPI kegagalan itu tetap dicatat (log.Warn) — keheningan pada log adalah awal dari hilangnya kepercayaan pada sistem observability.'
       ]
     },
     {
@@ -323,7 +339,10 @@ func (a *API) list(w http.ResponseWriter, r *http.Request) {
       title: 'Uji end-to-end: dari pesanan sampai notifikasi',
       lang: 'bash',
       output: false,
-      code: `# 1) Buat pesanan — event harus mengalir dalam hitungan milidetik
+      code: `# Prasyarat: seluruh stack berjalan (podman compose up -d --build).
+# Perintah memakai NAMA SERVICE — sama di podman compose & podman-compose.
+
+# 1) Buat pesanan — event harus mengalir dalam hitungan milidetik
 curl -s -X POST localhost:8082/orders \\
   -H 'Content-Type: application/json' \\
   -H 'Idempotency-Key: uji-notif-1' \\
@@ -334,27 +353,39 @@ sleep 2
 curl -si localhost:8083/notifications | head -3
 curl -s localhost:8083/notifications | head -c 300
 
-# 3) Tandai dibaca → 204, lalu jumlah unread berkurang
-curl -si -X PATCH localhost:8083/notifications/1/read | grep HTTP
+# 3) Tandai dibaca → 204, lalu jumlah unread berkurang.
+#    Id tidak ditulis mati: ambil dari daftar saat itu juga.
+ID=$(curl -s localhost:8083/notifications | grep -o '"id":[0-9]*' | head -1 | cut -d: -f2)
+curl -si -X PATCH localhost:8083/notifications/$ID/read | grep HTTP
 curl -si localhost:8083/notifications | grep -i x-unread
 
 # 4) Uji KETAHANAN: matikan konsumer saat ada pesan menunggu
-podman stop tokokita_notification-service_1
+podman compose stop notification-service
 curl -s -X POST localhost:8082/orders \\
   -H 'Content-Type: application/json' \\
   -H 'Idempotency-Key: uji-notif-2' \\
   -d '{"product_id":2,"qty":1,"customer":"Siti"}'
-podman start tokokita_notification-service_1
+podman compose start notification-service
+# nginx (frontend) mengingat IP lama container — bila selanjutnya diuji
+# lewat localhost:8080, restart frontend sekali agar resolve ulang:
+podman compose restart frontend
 sleep 3
 # → notifikasi Siti muncul: pesan DITAHAN queue selama konsumen mati
 curl -s localhost:8083/notifications | grep -c Siti     # → 1 (tidak ganda)
 
-# 5) Lihat antrian dari dashboard (port 15672 → tab Queues)
+# 5) Jejak log konsumen — nasib tiap pesan sebagai JSON per baris:
+podman compose logs notification-service | grep event_id | tail -3
+# → "event":"order.created","event_id":"...","order_id":2 — benang penelusur
+
+# 6) Lihat antrian dari dashboard (port 15672 → tab Queues)
 #    notification.orders  Ready: 0, Unacked: 0 — bukti semua beres`,
       explain: [
         'Uji 4 adalah pembuktian paling penting: queue benar-benar MENAHAN pesan selama konsumer berhenti — inilah asinkronisme yang dijanjikan di bab 1, dirasakan langsung dengan menghilangkan satu komponen.',
         'Baris <code>grep -c Siti</code> =1 memastikan pengulangan tidak menghasilkan notifikasi ganda walaupun ada kemungkinan pengiriman ulang.',
-        'Header <code>X-Unread-Count</code> berkurang setelah PATCH membuktikan hitungan dihitung dari database (sumber kebenaran), bukan dari state sementara frontend.'
+        'Header <code>X-Unread-Count</code> berkurang setelah PATCH membuktikan hitungan dihitung dari database (sumber kebenaran), bukan dari state sementara frontend.',
+        'Id notifikasi diambil dari respons daftar saat itu juga (grep/cut) — menulisnya mati akan membuat langkah 3 rapuh terhadap isi database pembaca.',
+        'Uji 5 menyandingkan bukti log dengan bukti data: <code>event_id</code> di baris log konsumen adalah benang yang sama dengan event yang diterbitkan bab 8 — satu kejadian, dua jejak yang bisa dicocokkan.',
+        'Nuansa operasional yang mudah membuat panik: <code>compose start</code> memberi container IP BARU, sedangkan nginx membaca DNS sekali saat ia sendiri start — akibatnya localhost:8080 menjawab 504 padahal service di port aslinya sehat. <code>compose restart frontend</code> memaksa nginx resolve ulang; uji langsung ke :8081–:8083 (seperti blok ini) tidak terpengaruh.'
       ]
     },
     {
@@ -386,7 +417,7 @@ curl -s localhost:8083/notifications | grep -c Siti     # → 1 (tidak ganda)
     'Konsumen mendeklarasikan exchange + queue + binding secara idempoten, lalu konsumsi dengan autoAck=false dan Qos(prefetch=10).',
     'Urutan wajib: persist ke database dulu, ACK kemudian; galat permanen (pesan rusak/duplikat) di-ACK, galat sementara di-NACK requeue.',
     'Deduplikasi event_id UNIQUE (MySQL 1062 → ErrDuplicate) membuat pengiriman ulang broker aman: efeknya tetap tersimpan sekali.',
-    'Konsumen memakai loop reconnect tanpa batas (3 detik) — berbeda dengan penerbit yang memilih fatal — karena antrian menahan pesan selama konsumen pergi.',
+    'Konsumen memakai loop reconnect tanpa batas (3 detik) — berbeda dengan penerbit yang menyerah (fatal) setelah 30 percobaan — karena antrian menahan pesan selama konsumen pergi.',
     'API notifikasi hanya GET /notifications (dengan header X-Unread-Count) dan PATCH /notifications/{id}/read — bahan siap pakai untuk lonceng frontend.'
   ]
 });

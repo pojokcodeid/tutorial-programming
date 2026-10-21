@@ -16,7 +16,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"log"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -44,16 +44,19 @@ type storeEvent struct {
 
 // Run menjalankan siklus: hubungkan → deklarasikan topologi → konsumsi.
 // Selama ctx belum batal, setiap putus dicoba hubungkan ulang.
-func Run(ctx context.Context, url string, st *store.Store) error {
+// Nasib setiap pesan dicatat sebagai satu baris log JSON dengan event_id
+// sebagai benang penelusur (bisa dicocokkan dengan log order-service).
+func Run(ctx context.Context, url string, st *store.Store, log *slog.Logger) error {
 	for attempt := 1; ; attempt++ {
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		err := once(ctx, url, st)
+		err := once(ctx, url, st, log)
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
-		log.Printf("koneksi AMQP putus (percobaan %d): %v — mencoba ulang dalam 3 detik", attempt, err)
+		log.Warn("koneksi AMQP putus — mencoba ulang dalam 3 detik",
+			"percobaan", attempt, "galat", err)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -62,7 +65,7 @@ func Run(ctx context.Context, url string, st *store.Store) error {
 	}
 }
 
-func once(ctx context.Context, url string, st *store.Store) error {
+func once(ctx context.Context, url string, st *store.Store, log *slog.Logger) error {
 	conn, err := amqp.Dial(url)
 	if err != nil {
 		return err
@@ -95,7 +98,7 @@ func once(ctx context.Context, url string, st *store.Store) error {
 	if err != nil {
 		return err
 	}
-	log.Println("mendengarkan event pada queue " + QueueName)
+	log.Info("mendengarkan event", "queue", QueueName, "binding", BindingKey)
 
 	for d := range deliveries {
 		if ctx.Err() != nil {
@@ -104,8 +107,10 @@ func once(ctx context.Context, url string, st *store.Store) error {
 		}
 		var ev storeEvent
 		if err := json.Unmarshal(d.Body, &ev); err != nil {
-			log.Printf("pesan rusak, dibuang: %v", err)
-			d.Ack(false) // tanpa ACK pesan ini akan berputar selamanya
+			// Pesan rusak: ACK agar tidak berputar selamanya, tetapi
+			// dicatat lengkap dengan pengenal pesan broker (delivery tag).
+			log.Warn("pesan rusak — dibuang", "delivery_tag", d.DeliveryTag, "galat", err)
+			d.Ack(false)
 			continue
 		}
 		msg := "Pesanan #" + strconv.FormatInt(ev.OrderID, 10) + " untuk " + ev.Customer +
@@ -113,17 +118,21 @@ func once(ctx context.Context, url string, st *store.Store) error {
 		if err := st.Save(ctx, ev.EventID, ev.OrderID, ev.Customer, msg); err != nil {
 			if errors.Is(err, store.ErrDuplicate) {
 				// Sudah pernah diproses (misal pesan dikirim ulang) → ACK saja.
+				log.Info("event duplikat — dilewati",
+					"event", BindingKey, "event_id", ev.EventID, "order_id", ev.OrderID)
 				d.Ack(false)
 				continue
 			}
 			// Galat database nyata: NACK tanpa requeue agar tidak loop,
 			// tapi pesan sudah dicatat broker untuk ditinjau.
-			log.Printf("gagal menyimpan notifikasi: %v", err)
+			log.Error("gagal menyimpan notifikasi",
+				"event_id", ev.EventID, "order_id", ev.OrderID, "galat", err)
 			d.Nack(false, false)
 			continue
 		}
 		d.Ack(false)
-		log.Printf("notifikasi order %d tersimpan", ev.OrderID)
+		log.Info("notifikasi tersimpan",
+			"event", BindingKey, "event_id", ev.EventID, "order_id", ev.OrderID)
 	}
 	return errors.New("aliran pesan berakhir")
 }

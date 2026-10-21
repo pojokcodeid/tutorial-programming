@@ -9,12 +9,13 @@ package httpapi
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"example.com/tokokita/internal/logx"
 	"example.com/tokokita/services/product/internal/cache"
 	"example.com/tokokita/services/product/internal/store"
 )
@@ -23,14 +24,16 @@ type API struct {
 	store    *store.Store
 	cache    *cache.Cache
 	cacheTTL time.Duration
+	log      *slog.Logger
 }
 
-func New(s *store.Store, c *cache.Cache, ttl time.Duration) *API {
-	return &API{store: s, cache: c, cacheTTL: ttl}
+func New(s *store.Store, c *cache.Cache, ttl time.Duration, log *slog.Logger) *API {
+	return &API{store: s, cache: c, cacheTTL: ttl, log: log}
 }
 
 // Router memakai pola method + path dari net/http Go 1.22+ —
-// tanpa framework routing tambahan.
+// tanpa framework routing tambahan. /healthz tidak dicatat (healthcheck
+// berjalan tiap beberapa detik dan hanya menambah baris mati di log).
 func (a *API) Router() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.healthz)
@@ -39,7 +42,7 @@ func (a *API) Router() http.Handler {
 	mux.HandleFunc("GET /products/{id}", a.get)
 	mux.HandleFunc("PUT /products/{id}", a.update)
 	mux.HandleFunc("DELETE /products/{id}", a.delete)
-	return logRequests(mux)
+	return logx.Middleware(a.log, "/healthz")(mux)
 }
 
 func (a *API) healthz(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +59,9 @@ func (a *API) list(w http.ResponseWriter, r *http.Request) {
 	}
 	list, err := a.store.List(r.Context())
 	if err != nil {
+		// Galat database dicatat BERSAMA pesan untuk klien: klien hanya
+		// melihat "gagal membaca produk", penyebab sebenarnya ada di log.
+		a.log.Error("gagal membaca daftar produk", "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal membaca produk")
 		return
 	}
@@ -84,6 +90,7 @@ func (a *API) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
+		a.log.Error("gagal membaca produk", "produk_id", id, "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal membaca produk")
 		return
 	}
@@ -104,11 +111,13 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 	}
 	id, err := a.store.Create(r.Context(), p)
 	if err != nil {
+		a.log.Error("gagal menyimpan produk", "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal menyimpan produk")
 		return
 	}
 	p.ID = id
 	a.cache.Invalidate(r.Context(), id) // buang cache basi
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10), "produk_id", id)
 	writeJSON(w, http.StatusCreated, p)
 }
 
@@ -132,10 +141,12 @@ func (a *API) update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "produk tidak ditemukan")
 		return
 	} else if err != nil {
+		a.log.Error("gagal mengubah produk", "produk_id", id, "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal mengubah produk")
 		return
 	}
 	a.cache.Invalidate(r.Context(), id)
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10), "produk_id", id, "aksi", "ubah")
 	writeJSON(w, http.StatusOK, p)
 }
 
@@ -149,10 +160,12 @@ func (a *API) delete(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "produk tidak ditemukan")
 		return
 	} else if err != nil {
+		a.log.Error("gagal menghapus produk", "produk_id", id, "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal menghapus produk")
 		return
 	}
 	a.cache.Invalidate(r.Context(), id)
+	a.log.Info("cache diinvalidasi", "kunci", "product:"+strconv.FormatInt(id, 10), "produk_id", id, "aksi", "hapus")
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -180,13 +193,4 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"message": msg})
-}
-
-// logRequests adalah middleware logging sederhana: metode, path, durasi.
-func logRequests(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		next.ServeHTTP(w, r)
-		log.Printf("%s %s (%s)", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
-	})
 }

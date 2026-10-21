@@ -278,21 +278,36 @@ useEffect(() => {
       title: 'Menjalankan frontend dalam dua mode',
       lang: 'bash',
       output: false,
-      code: `# Mode pengembangan — Vite + hot reload, proxy diatur di vite.config.js
-cd examples/fullstack-microservice/frontend
+      code: `# PRASYARAT — backend dinyalakan lebih dulu. Vite hanya meneruskan
+# /api ke localhost:8081-8083 (aturan proxy di vite.config.js), jadi
+# tanpa tiga service Go setiap halaman justru penuh galat jaringan.
+cd examples/fullstack-microservice
+podman compose up -d        # mariadb + redis + rabbitmq + tiga service Go
+# (juga menyalakan frontend :8080 — nanti tetap berdampingan dengan :5173)
+# tunggu sampai log "product-service berjalan" dsb. muncul
+# alternatif tanpa container (ikuti "Mode Pengembangan" di README):
+# mariadb/redis/rabbitmq lewat podman run, lalu go run ./cmd
+# di tiap services/product, services/order, services/notification
+
+# Mode pengembangan — Vite + hot reload, proxy diatur di vite.config.js
+cd frontend
 npm install
 npm run dev          # buka http://localhost:5173
 
 # Mode produksi — hasil build disajikan nginx di dalam container
 npm run build        # menghasilkan folder dist/
 # (build image lewat compose dari folder induk: podman-compose up --build)
+# varian berspasi: podman compose up --build juga valid; hanya gaya
+# penamaan container yang berbeda: tokokita-frontend-1 vs tokokita_frontend_1
 
 # Periksa hasil build
 ls dist/             # index.html + aset-aset ter-hash`,
       explain: [
+        'Prasyarat di baris pertama bukan formalitas: <code>vite.config.js</code> meneruskan <code>/api</code> ke <code>localhost:8081</code>, <code>8082</code>, dan <code>8083</code>, sehingga bila infrastruktur (mariadb/redis/rabbitmq) plus tiga service Go belum berjalan, seluruh halaman — dashboard, produk, pesanan, notifikasi — gagal dengan galat jaringan yang membingungkan. Nyalakan dulu backendnya, baru <code>npm run dev</code> di port <b>5173</b>.',
         'Saat pengembangan, perubahan kode terlihat dalam hitungan milidetik tanpa build ulang — Vite menyajikan modul ES langsung dari memori.',
         'Folder <code>dist/</code> hanya berisi file statis siap saji; di produksi tidak ada Node.js yang berjalan sama sekali, hanya nginx — attack surface lebih kecil.',
-        '<code>npm install</code> mengunci versi dari <code>package-lock.json</code>; di image Docker perintah ini dijalankan terpisah sebelum menyalin kode agar lapisan cache modul tidak terbuang setiap kali kode berubah.'
+        '<code>npm install</code> mengunci versi dari <code>package-lock.json</code>; di image Docker perintah ini dijalankan terpisah sebelum menyalin kode agar lapisan cache modul tidak terbuang setiap kali kode berubah.',
+        'Perintah compose punya dua wajah yang sama-sama sah membaca <code>compose.yaml</code>: <code>podman compose up --build</code> (berspasi, memakai podman compose bawaan Podman ≥ 4.7) dan <code>podman-compose up --build</code> (bertanda hubung, klasik Python). Yang berbeda hanya gaya penamaan container — misalnya <code>tokokita-frontend-1</code> dengan tanda hubung versus <code>tokokita_frontend_1</code> dengan garis bawah — jadi sesuaikan saat menulis <code>podman ps</code> atau <code>podman compose logs</code>.'
       ]
     },
     {

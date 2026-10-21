@@ -18,12 +18,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
+	"example.com/tokokita/internal/logx"
 	"example.com/tokokita/services/order/internal/publisher"
 	"example.com/tokokita/services/order/internal/store"
 )
@@ -33,17 +34,21 @@ type API struct {
 	catalogURL  string
 	catalogHTTP *http.Client // timeout terpasang di sini, bukan per-request
 	publisher   *publisher.Publisher
+	log         *slog.Logger
 }
 
-func New(s *store.Store, catalogURL string, pub *publisher.Publisher) *API {
+func New(s *store.Store, catalogURL string, pub *publisher.Publisher, log *slog.Logger) *API {
 	return &API{
 		store:       s,
 		catalogURL:  strings.TrimRight(catalogURL, "/"),
 		catalogHTTP: &http.Client{Timeout: 2 * time.Second},
 		publisher:   pub,
+		log:         log,
 	}
 }
 
+// Router memakai pola method + path net/http Go 1.22+; /healthz tidak
+// dicatat agar log tidak dibanjiri baris healthcheck compose.
 func (a *API) Router() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +56,7 @@ func (a *API) Router() http.Handler {
 	})
 	mux.HandleFunc("GET /orders", a.list)
 	mux.HandleFunc("POST /orders", a.create)
-	return logRequests(mux)
+	return logx.Middleware(a.log, "/healthz")(mux)
 }
 
 type buatOrderRequest struct {
@@ -84,6 +89,10 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		// Downstream sedang bermasalah → jawab 502, jangan menebak harga.
+		// Penyebabnya dicatat lengkap (galat jaringan/galat katalog) karena
+		// status 502 saja tidak memberi tahu apa yang sebenarnya rusak.
+		a.log.Error("panggilan katalog produk gagal",
+			"produk_id", req.ProductID, "galat", err)
 		writeError(w, http.StatusBadGateway, "katalog produk tidak tersedia")
 		return
 	}
@@ -112,13 +121,21 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 	var dup *store.DupKeyError
 	if errors.As(err, &dup) {
 		// Request ulang: balas dengan pesanan lama, bukan membuat baru.
+		// Kejadian ini dicatat karena pola retry klien yang berulang-lalu
+		// sering menjadi petunjuk pertama saat ada masalah di jaringan.
+		a.log.Info("pesanan ulang — idempotensi aktif",
+			"order_id", dup.Existing.ID, "kunci", idemKey)
 		writeJSON(w, http.StatusOK, dup.Existing)
 		return
 	}
 	if err != nil {
+		a.log.Error("gagal menyimpan pesanan", "kunci", idemKey, "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal menyimpan pesanan")
 		return
 	}
+	a.log.Info("pesanan dibuat",
+		"order_id", saved.ID, "produk", saved.Product,
+		"qty", saved.Qty, "total", saved.Total)
 
 	// 3) Terbitkan event secara ASINKRON dari sudut pandang klien:
 	//    kalau RabbitMQ sedang bermasalah, pesanan tetap sah — hanya
@@ -133,9 +150,12 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: saved.CreatedAt,
 	}
 	if err := a.publisher.Publish(r.Context(), ev); err != nil {
-		log.Printf("PERINGATAN: event order.created gagal diterbitkan untuk order %d: %v", saved.ID, err)
+		a.log.Warn("event gagal diterbitkan — notifikasi tertunda",
+			"event", publisher.RoutingKey, "event_id", ev.EventID,
+			"order_id", saved.ID, "galat", err)
 	} else {
-		log.Printf("event order.created diterbitkan untuk order %d", saved.ID)
+		a.log.Info("event diterbitkan",
+			"event", publisher.RoutingKey, "event_id", ev.EventID, "order_id", saved.ID)
 	}
 
 	writeJSON(w, http.StatusCreated, saved)
@@ -144,6 +164,7 @@ func (a *API) create(w http.ResponseWriter, r *http.Request) {
 func (a *API) list(w http.ResponseWriter, r *http.Request) {
 	list, err := a.store.List(r.Context())
 	if err != nil {
+		a.log.Error("gagal membaca daftar pesanan", "galat", err)
 		writeError(w, http.StatusInternalServerError, "gagal membaca pesanan")
 		return
 	}
@@ -215,12 +236,4 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"message": msg})
-}
-
-func logRequests(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		next.ServeHTTP(w, r)
-		log.Printf("%s %s (%s)", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
-	})
 }
