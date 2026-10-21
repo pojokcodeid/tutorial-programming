@@ -133,6 +133,7 @@ img { max-width: 100%; }
   background: var(--card);
   border: 1px solid var(--border);
   cursor: pointer; font-weight: 700; font-size: 13.5px; color: var(--text);
+  text-align: left; /* teks judul panjang yang turun baris harus rata kiri seperti judul lain */
   transition: background .15s ease, border-color .15s ease;
 }
 .tut-head:hover { background: var(--accent-soft); border-color: var(--accent); }
@@ -848,6 +849,11 @@ body.pg-noscroll { overflow: hidden; }
 /* Elemen dasar diagram (dipakai lewat atribut class di SVG) */
 .uml-fig .u-box,   .fig .u-box   { fill: var(--card); stroke: var(--text-2); stroke-width: 1.3; }
 .uml-fig .u-hd,    .fig .u-hd    { fill: var(--accent-soft); stroke: var(--text-2); stroke-width: 1.3; }
+/* .u-hl = kotak sorotan/penekanan (materi Redis & Contoh Fullstack Microservices).
+   Tanpa aturan ini kotaknya jatuh ke fill hitam bawaan SVG, sehingga tulisan di
+   dalamnya nyaris tak terlihat saat tema terang. Pakai rona aksen supaya kontras
+   di kedua tema. */
+.uml-fig .u-hl,    .fig .u-hl    { fill: color-mix(in srgb, var(--accent) 16%, var(--card)); stroke: var(--accent); stroke-width: 1.4; }
 .uml-fig .u-title, .fig .u-title { fill: var(--text); font: 700 13px var(--font); text-anchor: middle; }
 .uml-fig .u-text,  .fig .u-text  { fill: var(--text-2); font: 12px var(--mono); }
 .uml-fig .u-lbl,   .fig .u-lbl   { fill: var(--muted); font: 11px var(--font); }
