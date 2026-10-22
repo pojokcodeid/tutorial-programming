@@ -1,0 +1,23 @@
+/* Semua gaya berawalan .hd- dan memakai token milik shell dengan cadangan. */
+.hd {
+  background: var(--card, #fff);
+  border-bottom: 1px solid var(--border, #e3e8f0);
+  position: sticky; top: 0; z-index: 50;
+}
+.hd-inner {
+  max-width: 960px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.hd-brand { font-size: 17px; font-weight: 800; color: var(--text, #1c2333); }
+.hd-nav { display: flex; gap: 6px; }
+.hd-nav a {
+  padding: 7px 12px; border-radius: 9px; font-size: 14px; font-weight: 600;
+  color: var(--text-2, #525a6b);
+}
+.hd-nav a:hover { background: var(--accent-soft, #eef2ff); text-decoration: none; }
+.hd-nav a.is-active { background: var(--accent-soft, #eef2ff); color: var(--accent, #4f46e5); }
+.hd-badge {
+  display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px;
+  border-radius: 99px; background: var(--accent, #4f46e5); color: #fff;
+  font-size: 11px; font-weight: 800; text-align: center; line-height: 18px;
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@tokomicro/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "State keranjang & utilitas yang dipakai bersama seluruh micro-frontend TokoMicro.",
+  "main": "./index.js",
+  "exports": "./index.js"
+}

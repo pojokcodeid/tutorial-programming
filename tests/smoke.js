@@ -252,6 +252,17 @@ async function main() {
     'content/fullstack/10-frontend-react.js',
     'content/fullstack/11-integrasi-frontend.js',
     'content/fullstack/12-containerisasi-rilis.js',
+    'content/micro-frontend/quiz-questions.js',
+    'content/micro-frontend/01-pengenalan.js',
+    'content/micro-frontend/02-anatomi-komposisi.js',
+    'content/micro-frontend/03-shell-routing.js',
+    'content/micro-frontend/04-komunikasi-state.js',
+    'content/micro-frontend/05-isolasi-gaya.js',
+    'content/micro-frontend/06-data-api-auth.js',
+    'content/micro-frontend/07-build-deploy.js',
+    'content/micro-frontend/08-pengujian-observability.js',
+    'content/micro-frontend/09-tim-cicd.js',
+    'content/micro-frontend/10-proyek-tokomicro.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -746,6 +757,60 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/order/cmd/main.go')) &&
     fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/notification/cmd/main.go')) &&
     fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/frontend/src/App.jsx')));
+
+  // 4m) konten micro-frontend: 10 pelajaran + 30 soal kuis
+  const mfC = CONTENT.get('microfrontend');
+  check('microfrontend terdaftar & status ready', !!mfC && mfC.status === 'ready');
+  check('10 pelajaran micro-frontend', mfC.lessons.length === 10);
+  const mfIds = mfC.lessons.map(l => l.id);
+  check('id pelajaran micro-frontend unik', new Set(mfIds).size === mfIds.length);
+  check('judul, durasi, bab, intro, objectives & recap micro-frontend terisi',
+    mfC.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
+      Array.isArray(l.objectives) && l.objectives.length >= 4 &&
+      Array.isArray(l.recap) && l.recap.length >= 4));
+  let mfBadSection = 0, mfFig = 0, mfLive = 0;
+  for (const l of mfC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) mfBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) mfFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) mfBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) mfBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) mfBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) mfBadSection++;
+      }
+      if (s.type === 'live') mfLive++;
+    }
+  }
+  check('struktur section pelajaran micro-frontend valid', mfBadSection === 0);
+  check('tiap pelajaran micro-frontend memuat figur ilustrasi (10/10)', mfFig === 10);
+  check('latihan live tersedia di pelajaran micro-frontend', mfLive >= 6);
+  check('30 soal kuis micro-frontend lengkap (4 opsi, jawaban & penjelasan) & id unik mfNN',
+    mfC.quizPool.length === 30 &&
+    new Set(mfC.quizPool.map(q => q.id)).size === mfC.quizPool.length &&
+    mfC.quizPool.every(q => /^mf\d{2}$/.test(q.id)) &&
+    !mfC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const mfRefs = (mfC.refs || []).map(r => r.url);
+  check('rujukan micro-frontend (Martin Fowler, module federation, MDN)',
+    ['https://martinfowler.com/articles/micro-frontends.html',
+     'https://webpack.js.org/concepts/module-federation/',
+     'https://developer.mozilla.org/en-US/docs/Web/API/Web_components']
+      .every(u => mfRefs.includes(u)));
+  check('proyek contoh examples/micro-frontend tersedia (server + shell + 3 remote + shared)',
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/server.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shell/shell.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shared/bus.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shared/store.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/header/header.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/products/products.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/cart/cart.js')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/microfrontend.svg')));
+  check('logo microfrontend.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/microfrontend.svg'), 'utf8').includes('<svg'));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

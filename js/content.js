@@ -379,6 +379,27 @@ const CONTENT = (() => {
       ]
     },
 
+    microfrontend: {
+      id: 'microfrontend',
+      title: 'Micro-Frontend',
+      tagline: 'Frontend Banyak Tim, Satu Aplikasi',
+      icon: 'assets/logos/microfrontend.svg',
+      color: '#6366F1',
+      desc: 'Belajar arsitektur micro-frontend dari nol hingga proyek nyata: konsep & teknik komposisi, shell dengan routing dan lazy loading, event bus serta shared state, isolasi gaya dengan design tokens, data/API/BFF/autentikasi, build monorepo & Module Federation, pengujian dan error boundary, tim CI/CD dengan migrasi strangler fig, ditutup proyek contoh TokoMicro yang bisa langsung dijalankan.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.MICROFRONTEND_LESSONS || []).slice(),
+      quizPool: (window.MICROFRONTEND_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Micro Frontends — Martin Fowler', url: 'https://martinfowler.com/articles/micro-frontends.html' },
+        { label: 'Cam Jackson — Micro Frontends in Action (Manning)', url: 'https://www.manning.com/books/micro-frontends-in-action' },
+        { label: 'Module Federation Documentation', url: 'https://webpack.js.org/concepts/module-federation/' },
+        { label: 'MDN — Web Components', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_components' },
+        { label: 'Vite Documentation', url: 'https://vite.dev/guide/' },
+        { label: 'Single-spa Documentation', url: 'https://single-spa.js.org/docs/getting-started-overview/' }
+      ]
+    },
+
     uml: {
       id: 'uml',
       title: 'UML',
@@ -441,5 +462,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

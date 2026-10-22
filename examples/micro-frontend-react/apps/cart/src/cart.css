@@ -1,0 +1,46 @@
+/* Semua gaya berawalan .ct- dan memakai token milik shell dengan cadangan. */
+.ct-view { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; font-family: var(--font, sans-serif); }
+.ct-head h1 { margin: 0 0 4px; font-size: 24px; }
+.ct-head p { margin: 0 0 18px; font-size: 13.5px; color: var(--muted, #7b8494); }
+.ct-head code { font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace); }
+.ct-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ct-item {
+  display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center;
+  gap: 14px; background: var(--card, #fff); border: 1px solid var(--border, #e3e8f0);
+  border-radius: var(--radius, 12px); padding: 12px 16px;
+}
+.ct-emoji { font-size: 26px; }
+.ct-info { display: grid; }
+.ct-info span { font-size: 12.5px; color: var(--muted, #7b8494); }
+.ct-qty { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.ct-step {
+  width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border, #e3e8f0); background: var(--card, #fff);
+}
+.ct-step:hover { border-color: var(--accent, #4f46e5); color: var(--accent, #4f46e5); }
+.ct-sub { min-width: 96px; text-align: right; }
+.ct-remove {
+  border: 0; background: transparent; color: var(--muted, #7b8494);
+  cursor: pointer; font-size: 15px;
+}
+.ct-remove:hover { color: var(--red, #dc2626); }
+.ct-summary {
+  display: flex; justify-content: space-between; margin: 18px 0 14px;
+  padding: 14px 18px; border-radius: var(--radius, 12px);
+  background: var(--accent-soft, #eef2ff);
+}
+.ct-btn-primary {
+  display: inline-block; border: 1px solid var(--accent, #4f46e5);
+  background: var(--accent, #4f46e5); color: #fff;
+  padding: 8px 16px; border-radius: 9px; font-size: 14px; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+}
+.ct-btn-primary:hover { filter: brightness(1.06); color: #fff; text-decoration: none; }
+.ct-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+.ct-checkout { width: 100%; padding: 12px 16px; font-size: 15px; }
+.ct-empty, .ct-done {
+  text-align: center; padding: 42px 20px; background: var(--card, #fff);
+  border: 1px dashed var(--border, #e3e8f0); border-radius: var(--radius, 12px);
+}
+.ct-empty p, .ct-done p { margin: 0 0 14px; color: var(--text-2, #525a6b); }
+.ct-done h2 { margin: 0 0 6px; font-size: 18px; }

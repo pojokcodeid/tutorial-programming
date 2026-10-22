@@ -725,3 +725,38 @@ Materi **Contoh Fullstack Project Microservices** — satu proyek nyata bernama 
    - nginx location tanpa garis miring + proxy_pass ber-URI, proxy Vite mode dev yang identik, satu origin tanpa CORS, polling lonceng tiap 5 detik dengan cleanup, dan checklist uji end-to-end (browser + curl).
 12. Containerisasi & Rilis
    - Dockerfile multi-stage (satu resep tiga service lewat ARG), lapisan cache build, compose.yaml (healthcheck, depends_on service_healthy, volume, port rootless 8080:80), siklus operasional, dan checklist verifikasi lima lapis.
+
+## Topik Mengenai Micro-Frontend
+
+Materi **Micro-Frontend** — arsitektur frontend yang memecah satu halaman menjadi beberapa aplikasi kecil yang masing-masing dimiliki satu tim dan dirilis mandiri, digabungkan oleh shell, disusun dalam 10 pelajaran berbahasa Indonesia lengkap dengan figur diagram, contoh kode, latihan live editor, dan kuis 30 soal. Materi ini memakai contoh proyek nyata bernama **TokoMicro** (toko daring: shell + remote header, katalog produk, keranjang) yang berjalan tanpa framework maupun bundler — cukup **Node.js** sebagai server statis sekaligus penyedia API — sehingga seluruh konsep (kontrak mount/unmount, event bus, shared store, isolasi gaya) terlihat apa adanya. Kode proyek contoh tersedia di `examples/micro-frontend/` dan teruji berjalan dengan `node server.js` lalu membuka `http://localhost:4173`.
+
+- Rujukan
+  - https://martinfowler.com/articles/micro-frontends.html
+  - https://www.manning.com/books/micro-frontends-in-action
+  - https://webpack.js.org/concepts/module-federation/
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_components
+  - https://vite.dev/guide/
+  - https://single-spa.js.org/docs/getting-started-overview/
+
+- Materi yang harus ada
+
+1. Pengenalan Micro-Frontend
+   - Definisi menurut Cam Jackson, perbandingan monolith frontend vs micro-frontend, tiga bagian utama (shell, remote, shared module), masalah organisasional yang dijawab (tim saling menunggu, ritme rilis berbeda, migrasi bertahap), pembagian tim TokoMicro, dan kapan arsitektur ini harus ditolak.
+2. Anatomi & Teknik Komposisi
+   - Kontrak mount(container, ctx)/unmount() dan rantai cleanup (DOM, listener, timer, request), empat teknik komposisi (iframe, JS entry, Web Components, Module Federation) dalam satu tabel perbandingan, serta praktik membuat custom element.
+3. Shell, Routing & Lazy Loading
+   - Tugas dan batasan shell, peta rute hash → remote, pemetaan deep link, lazy loading dengan import() dinamis, urutan siklus hidup unmount → mount, dan kotak pemulihan bila remote gagal dimuat.
+4. Event Bus & Shared State
+   - Larangan saling mengimpor kode, pembuatan event bus sendiri (on() dengan disposer, emit() dengan try/catch), shared store satu sumber kebenaran, pola pemasangan di remote, serta jebakan listener leak dan payload berupa referensi asli.
+5. Isolasi Gaya & Design Tokens
+   - Sifat global CSS, tiga lapisan pertahanan (awalan selektor, CSS Modules, Shadow DOM), larangan CSS reset di remote, design tokens di shell dengan nilai cadangan var(--x, #default), dan uji tabrakan gaya.
+6. Data, API, BFF & Autentikasi
+   - Aturan remote memanggil API miliknya sendiri, Backend for Frontend sebagai satu pintu agregasi, autentikasi global di shell (guard rute, ctx.token, cookie httpOnly), dan pembatalan request dengan AbortController.
+7. Build, Monorepo & Module Federation
+   - Susunan monorepo dengan CODEOWNERS dan pipeline per paket, remoteEntry.js dan exposes, shared dependencies singleton (mencegah dua kinstance React), manifest versi, content hash & cache CDN, serta strategi rollback.
+8. Pengujian, Error Boundary & Observability
+   - Empat lapis pengujian (unit, kontrak, integrasi, E2E/visual), penguji kontrak shared module, error boundary pada shell plus unhandledrejection, log ber-remoteId, anggaran performa, dan latihan kegagalan.
+9. Tim, CI/CD, Versioning & Migrasi
+   - Hukum Conway dan "you build it, you run it", pipeline CI/CD per remote dengan smoke test & rollback manifest, semantic versioning kontrak (MAJOR/MINOR/PATCH), pola strangler fig rute demi rute, dan pengukuran untuk memutuskan tetap atau mundur.
+10. Proyek Akhir TokoMicro
+    - Peta lengkap proyek examples/micro-frontend/, struktur folder per remote, lima langkah praktik (jalankan & amati, uji komunikasi, uji ketahanan, tambah remote keempat, bersihkan & ukur), serta ide pengembangan lanjutan dua tingkat (tanpa tooling dan dengan Module Federation + Playwright).

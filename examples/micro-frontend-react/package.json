@@ -1,0 +1,22 @@
+{
+  "name": "tokomicro-react",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Contoh micro-frontend React: shell + 3 remote dengan Vite + Module Federation.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "start": "node server.js",
+    "demo": "npm run build && node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1"
+  }
+}

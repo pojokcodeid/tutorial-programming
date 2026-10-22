@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TokoMicro — Contoh Micro-Frontend</title>
+  <link rel="stylesheet" href="/shell/shell.css">
+</head>
+<body>
+
+  <!-- Slot untuk remote "header" (dimount oleh shell.js) -->
+  <div id="mfe-header"></div>
+
+  <main id="view" class="view" tabindex="-1"></main>
+
+  <!-- Slot pesan singkat (toast) yang dipakai remote mana pun -->
+  <div id="toast-root" class="toast-root" aria-live="polite"></div>
+
+  <script type="module" src="/shell/shell.js"></script>
+</body>
+</html>
