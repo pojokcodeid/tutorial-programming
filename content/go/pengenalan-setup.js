@@ -17,17 +17,18 @@ window.GO_LESSONS.push({
   id: 'pengenalan-setup',
   title: 'Pengenalan Go, Instalasi & Lingkungan',
   chapter: 'Pendahuluan',
-  duration: '12 menit',
+  duration: '14 menit',
   intro: [
     '<b>Go</b> (sering disebut <b>Golang</b>) adalah bahasa pemrograman yang dibuat oleh <b>Google</b> dan dirilis ke publik pada <b>2009</b>. Penciptanya adalah <b>Robert Griesemer</b>, <b>Rob Pike</b>, dan <b>Ken Thompson</b> — nama terakhir bahkan ikut menciptakan sistem operasi Unix dan bahasa C.',
-    'Pelajaran ini menjelaskan apa itu Go, mengapa banyak perusahaan memakainya, serta memandu memasang Go dan mengenal variabel lingkungan (environment variables) penting seperti <b>GOROOT</b> dan <b>GOPATH</b>.'
+    'Pelajaran ini menjelaskan apa itu Go, mengapa banyak perusahaan memakainya, serta memandu memasang Go dan mengenal variabel lingkungan (environment variables) penting seperti <b>GOROOT</b> dan <b>GOPATH</b>. Di akhir pelajaran kita membuat proyek Go pertama dengan <code>go mod init</code> lalu menjalankan program Hello World.'
   ],
   objectives: [
     'Memahami apa itu Go beserta kelebihan dan filosofinya',
     'Mengenal kasus penggunaan Go di dunia nyata',
     'Memasang Go di macOS, Linux, dan Windows',
     'Memahami GOROOT, GOPATH, dan PATH',
-    'Menjalankan program Go pertama'
+    'Membuat proyek Go pertama dengan go mod init',
+    'Menjalankan & membangun program Go pertama'
   ],
   sections: [
     {
@@ -117,11 +118,48 @@ go env -w GOFLAGS=-mod=mod`,
       ]
     },
     {
+      type: 'text',
+      html: '<p>Sebelum menulis kode, mari buat <b>proyek Go</b> yang rapi. Praktik yang disarankan: satu folder = satu proyek, dan setiap proyek dimulai dengan perintah <code>go mod init</code>. Meski hanya program "Hello World", biasakan alur ini sejak awal agar kebiasaan buruk tidak ikut tumbuh.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Membuat proyek my-go-project',
+      lang: 'bash',
+      output: false,
+      code: `# 1) Buat folder proyek lalu masuk ke dalamnya:
+mkdir my-go-project
+cd my-go-project
+
+# 2) Inisialisasi Go module (membuat berkas go.mod):
+go mod init my-go-project
+# keluaran: go: creating new go.mod: module my-go-project
+
+# 3) Lihat isi folder — sudah ada go.mod:
+ls
+# go.mod
+
+# 4) Lihat isi go.mod:
+cat go.mod
+# module my-go-project
+#
+# go 1.22`,
+      explain: [
+        '<code>go mod init my-go-project</code> membuat berkas <code>go.mod</code> yang menandai folder ini sebagai satu Go module bernama <code>my-go-project</code>.',
+        'Untuk proyek lokal/latihan, nama sederhana seperti <code>my-go-project</code> sudah cukup. Nanti saat dipublikasikan ke repo, namanya diganti menjadi alamat repo, misalnya <code>github.com/namamu/my-go-project</code>.',
+        'Berkas <code>go.mod</code> (dan nanti <code>go.sum</code>) wajib ikut disimpan di git agar semua anggota tim memakai versi Go dan dependency yang sama.',
+        'Pelajaran berikutnya membahas Go Modules lebih dalam. Untuk sekarang, cukup hafalkan: <b>setiap proyek Go dimulai dengan folder lalu <code>go mod init nama-proyek</code></b>.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p>Sekarang mari tulis program pertama di dalam proyek tadi. Buat berkas bernama <code>main.go</code> di folder <code>my-go-project</code>:</p>'
+    },
+    {
       type: 'example',
       title: 'Program Go pertama: Hello World',
       lang: 'go',
       output: false,
-      code: `// Berkas: main.go
+      code: `// Berkas: my-go-project/main.go
 package main
 
 import "fmt"
@@ -141,17 +179,21 @@ func main() {
       title: 'Menjalankan & membangun program',
       lang: 'bash',
       output: false,
-      code: `# Jalankan langsung (dikompilasi di memori, lalu dieksekusi):
-go run main.go
+      code: `# Jalankan langsung dari dalam folder proyek (dikompilasi di memori, lalu dieksekusi):
+go run .
 # keluaran: Halo, Dunia! 👋
 
-# Bangun menjadi biner (hasilnya file bernama "hello"):
-go build -o hello main.go
-./hello
+# go run juga bisa menunjuk berkas tertentu:
+go run main.go
+
+# Bangun menjadi biner (hasilnya file bernama "my-go-project"):
+go build -o my-go-project .
+./my-go-project
 
 # Cek format kode (Go sangat ketat soal gaya):
 gofmt -w main.go`,
       explain: [
+        '<b>go run .</b> menjalankan package di folder saat ini (tanda <code>.</code> = folder sekarang) — cara paling umum saat proyek sudah memakai go.mod.',
         '<b>go run</b> cocok untuk mencoba cepat — hasil kompilasi tidak disimpan.',
         '<b>go build</b> menghasilkan berkas biner yang bisa dibagikan tanpa perlu memasang Go di komputer tujuan.',
         '<b>gofmt</b> merapikan indentasi dan tata letak secara otomatis — biasakan menjalankannya.'
@@ -172,6 +214,8 @@ gofmt -w main.go`,
       items: [
         ['Go / Golang', 'Bahasa pemrograman terkompilasi buatan Google, rilis 2009.'],
         ['Toolchain', 'Kumpulan alat (compiler, gofmt, go test) yang dipasang bersama Go.'],
+        ['Proyek Go', 'Satu folder yang berisi kode Go dan berkas go.mod sebagai penanda akar proyek.'],
+        ['go mod init', 'Perintah inisialisasi module; membuat berkas go.mod di folder tempat perintah dijalankan.'],
         ['GOROOT', 'Folder tempat Go dipasang.'],
         ['GOPATH', 'Folder kerja pengguna; kini dipakai untuk cache dan biner hasil go install.'],
         ['Biner (binary)', 'Berkas hasil kompilasi yang bisa langsung dijalankan sistem operasi.'],
@@ -184,8 +228,9 @@ gofmt -w main.go`,
     'Go adalah bahasa terkompilasi yang cepat, sederhana, dan punya concurrency bawaan.',
     'Go menghasilkan satu biner tunggal sehingga mudah didistribusikan.',
     'GOROOT adalah lokasi instalasi Go; GOPATH adalah folder kerja pengguna.',
+    'Proyek Go dimulai dengan membuat folder lalu go mod init nama-proyek.',
     'Program Go dimulai dari fungsi main() di package main.',
-    'Gunakan go run untuk mencoba cepat dan go build untuk menghasilkan biner.'
+    'Gunakan go run . untuk mencoba cepat dan go build untuk menghasilkan biner.'
   ]
 });
 
@@ -196,11 +241,11 @@ window.GO_LESSONS.push({
   chapter: 'Pendahuluan',
   duration: '11 menit',
   intro: [
-    'Setelah Go terpasang, langkah berikutnya adalah <b>menata proyek</b>. Go memiliki cara khas untuk mengelola dependensi (pustaka pihak ketiga) yang disebut <b>Go Modules</b>.',
-    'Pelajaran ini memandu membuat modul baru, mengenal struktur folder proyek Go, serta memahami anatomi sebuah berkas <code>.go</code>.'
+    'Di pelajaran sebelumnya kita sudah membuat proyek <code>my-go-project</code> dengan <code>go mod init</code>. Kali ini kita dalami cara kerja <b>Go Modules</b> — sistem manajemen dependensi resmi Go yang memudahkan kita memakai pustaka pihak ketiga.',
+    'Pelajaran ini melanjutkan proyek my-go-project: menambah dependency, menata struktur folder, serta memahami anatomi sebuah berkas <code>.go</code>.'
   ],
   objectives: [
-    'Membuat modul Go dengan go mod init',
+    'Memahami peran go.mod dan go.sum dalam sebuah proyek',
     'Merapikan dependensi dengan go mod tidy',
     'Memahami struktur folder proyek Go yang rapi',
     'Mengenal bagian-bagian berkas .go (package, import, func)'
@@ -212,16 +257,15 @@ window.GO_LESSONS.push({
     },
     {
       type: 'example',
-      title: 'Membuat module baru',
+      title: 'Menyiapkan module proyek my-go-project',
       lang: 'bash',
       output: false,
-      code: `# Buat folder proyek lalu masuk ke dalamnya:
-mkdir hello-go && cd hello-go
+      code: `# Pastikan kamu berada di folder proyek hasil pelajaran sebelumnya:
+cd my-go-project
 
-# Inisialisasi module. Nama module sebaiknya berupa
-# alamat repositori (mis. github.com/namamu/hello-go):
-go mod init github.com/namamu/hello-go
-# keluaran: go: creating new go.mod: module github.com/namamu/hello-go
+# Apabila belum pernah inisialisasi, jalankan:
+go mod init my-go-project
+# keluaran: go: creating new go.mod: module my-go-project
 
 # Setelah menambah dependency di kode, rapikan go.mod & go.sum:
 go mod tidy`,
@@ -236,7 +280,7 @@ go mod tidy`,
       title: 'Isi berkas go.mod',
       lang: 'go',
       output: false,
-      code: `module github.com/namamu/hello-go
+      code: `module my-go-project
 
 go 1.22
 
@@ -260,7 +304,7 @@ require (
       title: 'Struktur folder proyek Go yang rapi',
       lang: 'text',
       output: false,
-      code: `hello-go/
+      code: `my-go-project/
 ├── go.mod              # identitas module & daftar dependency
 ├── go.sum              # checksum dependency (dibuat otomatis)
 ├── main.go             # titik masuk (package main)
