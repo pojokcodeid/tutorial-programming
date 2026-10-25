@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 14: Pointer & Pass by Value/Reference ---------- */
+/* ---------- Pelajaran 15: Pointer & Pass by Value/Reference ---------- */
 window.GO_LESSONS.push({
   id: 'pointer',
   title: 'Pointer & Pass by Value/Reference',
@@ -168,7 +168,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 15: Struct & Method ---------- */
+/* ---------- Pelajaran 16: Struct & Method ---------- */
 window.GO_LESSONS.push({
   id: 'struct-method',
   title: 'Struct & Method (Value vs Pointer Receiver)',

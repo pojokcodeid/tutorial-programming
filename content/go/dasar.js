@@ -1,30 +1,210 @@
 /* ============================================================
    Pelajaran Go — Bab 2: Dasar-Dasar Bahasa Go
    (topik info.md:
+    - "Komentar: komentar baris (//), komentar blok, dan doc comment (godoc)"
     - "Variables & Constants: var, const, short variable declaration (:=)"
+    - "Blank identifier (_): membuang nilai yang tidak dipakai"
+    - "Keyword new (pointer ke zero value) & make (slice, map, channel)"
     - "Tipe Data Dasar: int, float, string, bool"
     - "Zero Values di Go"
     - "Type Conversion (Konversi tipe data)"
-    - "Operator: Aritmatika, Perbandingan, dan Logika")
+    - "Operator: Aritmatika, Perbandingan, dan Logika"
+    - "Fungsi bawaan min() dan max() (sejak Go 1.21)")
    ============================================================ */
 'use strict';
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 3: Variabel & Konstanta ---------- */
+/* ---------- Pelajaran 3: Komentar & Dokumentasi Kode ---------- */
+window.GO_LESSONS.push({
+  id: 'komentar',
+  title: 'Komentar & Dokumentasi Kode',
+  chapter: 'Dasar Bahasa Go',
+  duration: '8 menit',
+  intro: [
+    '<b>Komentar</b> adalah teks yang dibaca manusia tetapi <b>diabaikan oleh compiler</b>. Fungsinya menjelaskan <b>mengapa</b> sebuah kode ditulis, bukan mengulang apa yang sudah jelas terbaca di kode.',
+    'Go punya dua bentuk komentar biasa (<code>//</code> dan <code>/* */</code>) serta satu istimewa: <b>doc comment</b> — komentar yang otomatis menjadi dokumentasi package dan bisa dibaca lewat <code>go doc</code> dan situs pkg.go.dev.'
+  ],
+  objectives: [
+    'Menulis komentar satu baris dengan //',
+    'Menulis komentar blok dengan /* */',
+    'Memahami aturan komentar blok yang tidak boleh bersarang',
+    'Menulis doc comment yang terbaca oleh go doc'
+  ],
+  sections: [
+    {
+      type: 'text',
+      html: '<p>Go hanya mengenal <b>dua bentuk komentar</b> — tidak ada tanda pagar (<code>#</code>) ala Python, apalagi tanda kutip ganda ala JavaScript. Karena kompilator Go mengabaikan komentar, kamu bebas menuliskan apa saja di sana.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Komentar satu baris dengan //',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+// Fungsi sapa mencetak sapaan untuk nama yang diberikan.
+func sapa(nama string) {
+    fmt.Println("Halo,", nama) // komentar di akhir baris
+}
+
+func main() {
+    // Komentar di atas baris berikutnya:
+    sapa("Andi")
+
+    sapa("Budi") // komentar pendek di akhir pemanggilan
+}`,
+      explain: [
+        '<code>//</code> mengomentari <b>satu baris saja</b> — sisanya di baris itu ikut terkomentari.',
+        'Komentar boleh berdiri sendiri di baris kosong, maupun menempel di akhir kode (<code>sapa("Andi") // catatan</code>).',
+        'Karena tidak dieksekusi, menambah atau menghapus komentar tidak mengubah hasil program sama sekali.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p>Untuk teks panjang yang butuh beberapa baris — seperti header lisensi berkas atau penjelasan algoritma — pakai komentar blok <code>/* ... */</code>.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Komentar blok dengan /* */',
+      lang: 'go',
+      output: false,
+      code: `/*
+   Proyek my-go-project
+   Latihan dasar bahasa Go.
+   Lisensi: belajar saja, jangan dipakai untuk tugas kampus orang lain.
+*/
+
+package main
+
+import "fmt"
+
+func main() {
+    /*fmt.Println("Baris ini sedang dimatikan sementara")
+    fmt.Println("Karena berada di dalam komentar blok")*/
+
+    fmt.Println("Baris ini tetap dijalankan")
+}`,
+      explain: [
+        '<code>/* ... */</code> berlaku untuk <b>semua baris</b> di dalamnya — praktis untuk menonaktifkan sebagian kode sekaligus.',
+        'Blok komentar sering dipakai sebagai header lisensi di awal berkas.',
+        'Hasil program tetap sama: hanya <code>fmt.Println("Baris ini tetap dijalankan")</code> yang dijalankan.'
+      ]
+    },
+    {
+      type: 'warn',
+      title: 'Komentar blok tidak boleh bersarang',
+      text: 'Berbeda dengan C atau JavaScript, komentar blok di Go <b>tidak bisa bersarang</b>. Jika di dalam blok <code>/* ... </code> kamu menulis <code>/* ... */</code> lagi, blok pertama justru berakhir di tanda <code>*/</code> yang paling awal — sisanya dianggap kode nyata dan membuat error kompilasi. Solusinya: pakai <code>//</code> untuk catatan di dalam blok.'
+    },
+    {
+      type: 'text',
+      html: '<p>Sekarang bagian yang paling khas dari Go: <b>doc comment</b>. Bila komentar diletakkan <b>tepat di atas</b> deklarasi package, fungsi, tipe, metode, atau variabel — tanpa baris kosong di antaranya — Go menganggapnya sebagai dokumentasi resmi.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Menulis doc comment yang benar',
+      lang: 'go',
+      output: false,
+      code: `// Package main berisi contoh pelajaran komentar.
+package main
+
+import "fmt"
+
+// Hitung menambahkan dua bilangan bulat dan mengembalikan hasilnya.
+// Contoh: Hitung(2, 3) menghasilkan 5.
+func Hitung(a, b int) int {
+    return a + b
+}
+
+// Pengguna menyimpan data satu orang.
+// Nama yang diawali huruf kapital berarti exported (bisa dipakai package lain).
+type Pengguna struct {
+    Nama string // nama lengkap pengguna
+    Umur int    // umur dalam tahun
+}
+
+func main() {
+    total := Hitung(2, 3)
+    p := Pengguna{Nama: "Andi", Umur: 27}
+    fmt.Println(total, p.Nama)
+}`,
+      explain: [
+        'Doc comment dimulai dengan <b>nama yang dikomentari</b>: <code>// Hitung menambahkan ...</code>, bukan langsung <code>// fungsi ini ...</code>. Konvensi ini membuat dokumentasi enak dibaca di <code>go doc</code>.',
+        'Satu baris pertama sebaiknya berdiri sendiri sebagai ringkasan; lanjutkan di baris berikutnya bila perlu penjelasan tambahan.',
+        'Komentar di sebelah kanan field struct (<code>Nama string // nama lengkap</code>) juga didokumentasikan.',
+        'Jangan sisipkan <b>baris kosong</b> antara komentar dan deklarasinya — doc comment-nya akan lepas dan tidak terbaca.'
+      ]
+    },
+    {
+      type: 'example',
+      title: 'Membaca doc comment dengan go doc',
+      lang: 'bash',
+      output: false,
+      code: `# Dokumentasi package saat ini:
+go doc
+
+# Dokumentasi satu fungsi/tipe:
+go doc Hitung
+go doc Pengguna
+
+# Semua isi package, lengkap dengan doc comment:
+go doc -all`,
+      explain: [
+        '<code>go doc</code> menampilkan komentar yang kamu tulis di atas deklarasi — dokumentasi selalu ikut bersama kodenya.',
+        'Situs resmi <b>pkg.go.dev</b> menampilkan doc comment yang sama untuk package yang dipublikasikan ke publik.',
+        'Karena dokumentasi dibaca orang lain (bahkan timbulmu sendiri beberapa bulan ke depan), sempatkan menulis doc comment pada fungsi dan tipe yang bersifat exported.'
+      ]
+    },
+    {
+      type: 'tip',
+      title: 'Komentar khusus yang dimengerti alat Go',
+      text: 'Sebagian komentar dibaca bukan manusia melainkan alat. Contoh: <code>//go:generate stringer -type=Status</code> dijalankan oleh <code>go generate</code>, dan <code>//go:build linux</code> menentukan kapan sebuah berkas ikut dikompilasi. Cirinya: teks langsung menempel setelah <code>//</code> tanpa spasi. Untuk komentar biasa, selalu sisakan spasi: <code>// penjelasan</code>.'
+    },
+    {
+      type: 'warn',
+      title: 'Komentar yang menyesatkan lebih buruk dari tidak ada komentar',
+      text: 'Kode yang disalin lalu komentarnya tidak diperbarui akan menyesatkan pembaca berikutnya. Saat mengubah sebuah fungsi, perbarui pula komentarnya. Untuk kode lama yang sudah tidak dipakai, hapus saja — git menyimpan riwayatnya, tidak perlu disembunyikan dengan komentar blok dalam waktu lama.'
+    },
+    {
+      type: 'vocab',
+      items: [
+        ['Komentar', 'Teks yang diabaikan compiler, hanya dibaca manusia.'],
+        ['// (komentar baris)', 'Komentar satu baris; bisa berdiri sendiri atau di akhir kode.'],
+        ['/* */ (komentar blok)', 'Komentar multi-baris; tidak boleh bersarang di Go.'],
+        ['Doc comment', 'Komentar tepat di atas deklarasi yang menjadi dokumentasi resmi.'],
+        ['go doc', 'Perintah menampilkan doc comment package/fungsi dari terminal.'],
+        ['pkg.go.dev', 'Situs dokumentasi package Go yang menampilkan doc comment.'],
+        ['Direktif //go:...', 'Komentar khusus yang dipahami alat Go, mis. //go:build dan //go:generate.']
+      ]
+    }
+  ],
+  recap: [
+    'Go mengenal dua komentar: // untuk satu baris dan /* */ untuk blok.',
+    'Komentar blok di Go tidak boleh bersarang.',
+    'Doc comment diletakkan tepat di atas deklarasi tanpa baris kosong.',
+    'go doc dan pkg.go.dev menampilkan doc comment sebagai dokumentasi package.',
+    'Komentar harus menjelaskan "mengapa", bukan mengulang kode; perbarui saat kode berubah.'
+  ]
+});
+
+/* ---------- Pelajaran 4: Variabel & Konstanta ---------- */
 window.GO_LESSONS.push({
   id: 'variabel-konstanta',
   title: 'Variabel & Konstanta',
   chapter: 'Dasar Bahasa Go',
-  duration: '10 menit',
+  duration: '14 menit',
   intro: [
     'Setiap program butuh tempat menyimpan nilai: umur pengguna, harga barang, atau status login. Di Go, tempat penyimpanan itu disebut <b>variabel</b> dan <b>konstanta</b>.',
-    'Pelajaran ini membahas tiga cara mendeklarasikan variabel (<code>var</code>, <code>:=</code>, dan bentuk berkelompok), serta kapan sebaiknya memakai <code>const</code>.'
+    'Pelajaran ini membahas tiga cara mendeklarasikan variabel (<code>var</code>, <code>:=</code>, dan bentuk berkelompok), kapan sebaiknya memakai <code>const</code>, identifier kosong <b>blank identifier</b> (<code>_</code>), serta dua kata kunci pembuat nilai baru: <code>new</code> dan <code>make</code>.'
   ],
   objectives: [
     'Mendeklarasikan variabel dengan var dan short declaration (:=)',
     'Memahami perbedaan var, :=, dan const',
     'Mendeklarasikan banyak variabel sekaligus',
+    'Memakai blank identifier (_) untuk membuang nilai yang tidak dipakai',
+    'Membedakan keyword new dan make untuk membuat nilai baru',
     'Mengetahui aturan penamaan identifier di Go'
   ],
   sections: [
@@ -136,12 +316,148 @@ func main() {
     },
     {
       type: 'text',
-      html: '<p>Aturan penamaan (<b>identifier</b>) di Go sederhana:</p><ul><li>Boleh huruf, angka, dan garis bawah (<code>_</code>), tetapi tidak boleh diawali angka.</li><li>Bersifat <b>case-sensitive</b>: <code>nama</code> dan <code>Nama</code> berbeda.</li><li>Nama yang <b>diawali huruf kapital</b> bersifat <b>exproted</b> (bisa diakses dari package lain); yang diawali huruf kecil bersifat privat bagi package.</li><li>Konvensi Go memakai <b>camelCase</b> (<code>namaLengkap</code>), bukan snake_case.</li></ul>'
+      html: '<p>Aturan penamaan (<b>identifier</b>) di Go sederhana:</p><ul><li>Boleh huruf, angka, dan garis bawah (<code>_</code>), tetapi tidak boleh diawali angka.</li><li>Bersifat <b>case-sensitive</b>: <code>nama</code> dan <code>Nama</code> berbeda.</li><li>Nama yang <b>diawali huruf kapital</b> bersifat <b>exported</b> (bisa diakses dari package lain); yang diawali huruf kecil bersifat privat bagi package.</li><li>Konvensi Go memakai <b>camelCase</b> (<code>namaLengkap</code>), bukan snake_case.</li></ul>'
+    },
+    {
+      type: 'text',
+      html: '<p>Di antara semua identifier, satu yang istimewa: <b>garis bawah</b> (<code>_</code>) yang disebut <b>blank identifier</b>. Ia bukan variabel yang bisa dibaca — hanya <b>tempat membuang nilai</b> yang tidak kita butuhkan. Go mewajibkan setiap variabel dipakai, tetapi kadang kita hanya butuh <b>sebagian</b> hasil. Di sinilah <code>_</code> bekerja.</p><p>Tiga situasi paling sering:</p><ul><li><code>_, err := simpan(data)</code> — membuang hasil pertama, hanya error yang dipakai.</li><li><code>for _, v := range data</code> — membuang index, hanya nilai yang diolah.</li><li><code>import _ "github.com/lib/pq"</code> — mengimpor package hanya untuk efek sampingnya (side-effect import).</li></ul>'
+    },
+    {
+      type: 'example',
+      title: 'Blank identifier (_) dalam praktik',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import (
+    "fmt"
+    _ "image/png" // diimpor hanya untuk efek sampingnya
+)
+
+// Fungsi dengan dua hasil
+func ambilData() (string, int) {
+    return "Andi", 27
+}
+
+// Parameter kedua sengaja dibuang: tidak dipakai
+func sapa(nama string, _ int) {
+    fmt.Println("Halo,", nama)
+}
+
+func main() {
+    // 1) Membuang hasil pertama, hanya umur yang dipakai
+    _, umur := ambilData()
+    fmt.Println("Umur:", umur)
+
+    // 2) Membuang salah satu nilai pada penugasan berantai
+    x, _ := 10, 20 // hanya x yang disimpan, 20 dibuang
+    fmt.Println("x =", x)
+
+    // 3) Membuang index saat iterasi
+    buah := []string{"apel", "mangga"}
+    for _, b := range buah {
+        fmt.Println(b)
+    }
+
+    // 4) Argumen yang tidak dipakai oleh fungsi
+    sapa("Budi", 30)
+}`,
+      explain: [
+        '<code>_, umur := ambilData()</code> menyimpan umur saja; nilai "Andi" dibuang tanpa memicu error.',
+        '<code>for _, b := range ...</code> dipakai bila index tidak diperlukan — tulis <code>for i := range data</code> bila sebaliknya nilai yang tidak dipakai.',
+        '<code>func sapa(nama string, _ int)</code> menandai parameter yang memang tidak dibutuhkan fungsi itu.',
+        '<code>import _ "image/png"</code> mengimpor package demi efek sampingnya saja — pola yang lazim untuk driver database seperti <code>import _ "github.com/lib/pq"</code>.',
+        'Karena <code>_</code> bukan variabel, ia tidak dihitung sebagai nama baru dalam short declaration.'
+      ]
     },
     {
       type: 'tip',
-      title: 'Tanda garis bawah _',
-      text: 'Identifier <code>_</code> adalah "blank identifier" — tempat membuang nilai yang tidak dipakai. Contoh: <code>_, err := doSomething()</code> berarti kita mengabaikan hasil pertama dan hanya peduli pada error.'
+      title: 'Aturan blank identifier _',
+      text: 'Blank identifier tidak pernah bisa dibaca: <code>_ = 5</code> atau <code>fmt.Println(_)</code> langsung gagal kompilasi. Karena itu pula <code>_ , err := ...</code> yang ditulis dua kali berturut-turut akan error — minimal satu nama di sebelah kiri <code>:=</code> harus benar-benar nama baru, dan <code>_</code> tidak dihitung.'
+    },
+    {
+      type: 'text',
+      html: '<p>Selain <code>var</code> dan <code>:=</code>, Go punya dua kata kunci lagi yang sering membingungkan pemula: <b>new</b> dan <b>make</b>. Keduanya sama-sama "membuat nilai baru", tetapi ruang lingkupnya berbeda jauh. <b>new</b> bekerja untuk <b>tipe apa saja</b> dan selalu mengembalikan <b>pointer</b> (<code>*T</code>) ke nilai kosong (zero value) tipe itu. Ia setara dengan membuat variabel lokal lalu mengambil alamatnya dengan <code>&amp;</code>.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Keyword new: pointer ke zero value',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+type Pengguna struct {
+    Nama string
+    Umur int
+}
+
+func main() {
+    // new mengembalikan *Pengguna yang isinya zero value
+    p := new(Pengguna)
+    fmt.Printf("tipe: %T, isi: %v\\n", p, p) // *main.Pengguna &{ 0}
+
+    // karena sudah pointer, field bisa langsung diisi
+    p.Nama = "Andi"
+    p.Umur = 27
+    fmt.Println(*p) // {Andi 27}
+
+    // ekuivalen tanpa new: var biasa + operator &
+    q := &Pengguna{Nama: "Budi", Umur: 30}
+    fmt.Println(*q) // {Budi 30}
+}`,
+      explain: [
+        '<code>new(Pengguna)</code> menghasilkan pointer <code>*Pengguna</code>, bukan nilai <code>Pengguna</code>.',
+        'Isinya pasti zero value: <code>Nama</code> = <code>""</code>, <code>Umur</code> = <code>0</code>.',
+        'Menulis <code>var p Pengguna</code> lalu <code>&amp;p</code> menghasilkan hal yang sama; itulah sebabnya <code>new</code> jarang dipakai.',
+        'Bentuk yang lebih lazim di Go: <code>q := &amp;Pengguna{Nama: "Budi", Umur: 30}</code> — pointer sekaligus terisi.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p><b>make</b> juga mengalokasikan memori, tetapi hanya untuk <b>tiga tipe</b> internal Go: <b>slice</b>, <b>map</b>, dan <b>channel</b>. Ketiganya punya "struktur tersembunyi" berupa panjang (len), kapasitas (cap), tabel hash, atau buffer — yang tidak bisa sekadar diisi nol, karena itu dibuat fungsi khusus. <code>make</code> mengembalikan <b>tipe itu sendiri</b> (bukan pointer) dan hasilnya langsung siap dipakai.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Keyword make: slice, map, dan channel',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+func main() {
+    // Slice: make(tipe, panjang) atau make(tipe, panjang, kapasitas)
+    angka := make([]int, 3)     // len=3, cap=3, isinya 0 0 0
+    kapas := make([]int, 3, 10) // len=3, cap=10, siap di-append
+
+    // Map: langsung siap ditulis
+    umur := make(map[string]int)
+    umur["Andi"] = 27
+
+    // Channel: dengan buffer berkapasitas 2
+    ch := make(chan int, 2)
+    ch <- 10
+
+    angka[0] = 100
+    fmt.Println(angka, kapas, umur["Andi"], <-ch)
+}`,
+      explain: [
+        '<code>make([]int, 3, 10)</code> membuat slice panjang 3 dengan kapasitas 10.',
+        '<code>make(map[string]int)</code> membuat map yang boleh langsung diisi — <code>var m map[string]int</code> masih <code>nil</code> dan akan panic bila ditulis.',
+        '<code>make(chan int, 2)</code> membuat channel buffered berkapasitas 2.',
+        'Untuk struct, gunakan <code>&amp;T{...}</code> atau <code>var t T</code> — bukan <code>make</code>, karena <code>make</code> menolak tipe selain slice, map, dan channel.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p>Ringkasan perbedaan <code>new</code> dan <code>make</code>:</p><table class="vocab"><tr><th>Sisi</th><th>new(T)</th><th>make(T, ...)</th></tr><tr><td>Tipe yang boleh</td><td>Tipe apa saja (struct, int, dst.)</td><td>Hanya slice, map, dan channel</td></tr><tr><td>Nilai kembalian</td><td>Pointer (<code>*T</code>)</td><td>Tipe itu sendiri (<code>T</code>)</td></tr><tr><td>Isi hasil</td><td>Zero value, internal belum dibuat</td><td>Sudah diinisialisasi (len, cap, buffer)</td></tr><tr><td>Paling sering dipakai untuk</td><td>Objek buatan sendiri</td><td>Slice, map, channel</td></tr></table><p>Aturan praktisnya: <code>var s []int</code> membuat slice kosong (<i>nil slice</i>) yang masih boleh di-<code>append</code>, sedangkan <code>s := make([]int, 0, n)</code> membuat slice yang sudah menyiapkan ruang <code>n</code> elemen.</p>'
+    },
+    {
+      type: 'warn',
+      title: 'new bukan pengganti make',
+      text: '<code>m := new(map[string]int)</code> hanya menghasilkan <b>pointer ke map yang masih nil</b>; mengisinya lewat <code>(*m)["k"] = "v"</code> tetap panic. Untuk slice, map, dan channel gunakan <code>make</code> — <code>new</code> dipakai untuk tipe yang tidak punya "isi internal", seperti struct.'
     },
     {
       type: 'warn',
@@ -156,7 +472,9 @@ func main() {
         [':=', 'Short variable declaration; tipe ditebak dari nilai.'],
         ['const', 'Nilai tetap yang tidak boleh berubah setelah dideklarasikan.'],
         ['iota', 'Penghitung otomatis di dalam blok const.'],
-        ['Blank identifier _', 'Penanda untuk membuang nilai yang tidak dipakai.'],
+        ['Blank identifier _', 'Penanda untuk membuang nilai yang tidak dipakai; tidak pernah bisa dibaca.'],
+        ['new', 'Mengalokasikan memori untuk tipe apa saja dan mengembalikan pointer *T ke zero value.'],
+        ['make', 'Membuat slice, map, atau channel yang langsung siap dipakai; mengembalikan T, bukan pointer.'],
         ['Exported identifier', 'Nama yang diawali huruf kapital, dapat diakses dari package lain.']
       ]
     }
@@ -165,12 +483,14 @@ func main() {
     'var untuk deklarasi eksplisit; := untuk ringkas di dalam fungsi; const untuk nilai tetap.',
     'Go menolak variabel yang tidak terpakai.',
     'Banyak variabel bisa dideklarasikan sekaligus, termasuk lewat blok var ( ... ).',
+    'Blank identifier _ membuang nilai yang tidak dipakai (hasil ke-2, index range, case, import).',
+    'new mengembalikan pointer *T untuk tipe apa saja; make khusus slice, map, dan channel dan mengembalikan T.',
     'iota membuat enumerasi otomatis di dalam blok const.',
     'Nama berawalan huruf kapital bersifat exported; konvensi memakai camelCase.'
   ]
 });
 
-/* ---------- Pelajaran 4: Tipe Data Dasar & Zero Values ---------- */
+/* ---------- Pelajaran 5: Tipe Data Dasar & Zero Values ---------- */
 window.GO_LESSONS.push({
   id: 'tipe-data-zero',
   title: 'Tipe Data Dasar & Zero Values',
@@ -316,20 +636,21 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 5: Konversi Tipe & Operator ---------- */
+/* ---------- Pelajaran 6: Konversi Tipe & Operator ---------- */
 window.GO_LESSONS.push({
   id: 'konversi-operator',
   title: 'Konversi Tipe & Operator',
   chapter: 'Dasar Bahasa Go',
-  duration: '11 menit',
+  duration: '13 menit',
   intro: [
     'Go <b>tidak melakukan konversi tipe otomatis</b>. Menjumlahkan <code>int</code> dengan <code>float64</code> adalah error; kita harus mengonversi secara eksplisit. Aturan ini terasa kaku, tetapi mencegah banyak bug diam-diam.',
-    'Pelajaran ini membahas cara mengonversi tipe dengan <code>T(nilai)</code> serta semua operator: aritmatika, perbandingan, dan logika.'
+    'Pelajaran ini membahas cara mengonversi tipe dengan <code>T(nilai)</code>, semua operator (aritmatika, perbandingan, logika, bitwise), serta fungsi bawaan <code>min()</code> dan <code>max()</code>.'
   ],
   objectives: [
     'Melakukan konversi tipe secara eksplisit',
     'Mengenal risiko kehilangan presisi saat konversi',
     'Memakai operator aritmatika, perbandingan, dan logika',
+    'Mencari nilai terkecil/terbesar dengan fungsi bawaan min() dan max()',
     'Mengetahui operator bitwise dan penugasan majemuk'
   ],
   sections: [
@@ -349,7 +670,10 @@ import "fmt"
 func main() {
     var bulat int = 42
     var pecahan float64 = float64(bulat)   // int -> float64
-    var lagi int = int(3.99)               // float64 -> int (dipotong!)
+
+    // float -> int memotong pecahan (harus lewat variabel, bukan konstanta)
+    var desimal float64 = 3.99
+    var lagi int = int(desimal)
 
     fmt.Println(pecahan)   // 42
     fmt.Println(lagi)      // 3  (bukan 4 — pembulatan ke bawah)
@@ -365,7 +689,8 @@ func main() {
 }`,
       explain: [
         '<code>float64(bulat)</code> mengubah int ke float64 tanpa kehilangan nilai.',
-        '<code>int(3.99)</code> memotong bagian pecahan menjadi 3 — konversi bukan pembulatan.',
+        '<code>int(desimal)</code> memotong bagian pecahan menjadi 3 — konversi bukan pembulatan.',
+        'Konstanta pecahan langsung seperti <code>int(3.99)</code> dilarang karena 3.99 tidak "ada" sebagai int; simpan dulu ke variabel <code>float64</code>.',
         '<code>fmt.Sprintf</code> mengubah nilai menjadi string berformat.',
         '<code>fmt.Sscanf</code> membaca angka dari string; tanda <code>&</code> mengisi variabel lewat pointer.'
       ]
@@ -466,6 +791,58 @@ func main() {
       ]
     },
     {
+      type: 'text',
+      html: '<p>Menentukan nilai terkecil atau terbesar sejak <b>Go 1.21</b> tidak lagi perlu menulis perbandingan manual. Ada dua <b>fungsi bawaan</b> (built-in function) baru: <code>min()</code> dan <code>max()</code>. Bentuknya mirip operator, tetapi ditulis sebagai fungsi dan menerima <b>dua argumen atau lebih</b> dengan tipe yang sama.</p><table class="vocab"><tr><th>Fungsi</th><th>Artinya</th><th>Contoh</th></tr><tr><td><code>min(a, b, ...)</code></td><td>nilai paling kecil di antara semua argumen</td><td><code>min(7, 3, 10)</code> = 3</td></tr><tr><td><code>max(a, b, ...)</code></td><td>nilai paling besar di antara semua argumen</td><td><code>max(7, 3, 10)</code> = 10</td></tr></table><p>Keduanya bekerja pada tipe yang punya urutan (<b>ordered</b>): angka (<code>int</code>, <code>float</code>, <code>uint</code>) dan teks (<code>string</code>, diurutkan alfabetis). Untuk mencari nilai ekstrem di dalam <b>slice</b>, pakai package <code>slices</code> (<code>slices.Min(s)</code> / <code>slices.Max(s)</code>). Sebelum Go 1.21, <code>float64</code> harus lewat <code>math.Min</code>/<code>math.Max</code>, sedangkan <code>int</code> terpaksa menulis <code>if a &lt; b { ... }</code> berulang.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Fungsi bawaan min() dan max()',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import (
+    "fmt"
+    "slices"
+)
+
+func main() {
+    a, b, c := 7, 3, 10
+
+    // Dua argumen
+    fmt.Println(min(a, b))    // 3
+    fmt.Println(max(a, b))    // 7
+
+    // Boleh lebih dari dua argumen
+    fmt.Println(min(a, b, c)) // 3
+    fmt.Println(max(a, b, c)) // 10
+
+    // Berlaku juga untuk float64 dan string (urutan alfabet)
+    fmt.Println(min(2.5, 1.5))       // 1.5
+    fmt.Println(max("budi", "andi")) // budi
+
+    // Untuk slice memakai package slices (min(s...) dilarang)
+    nilai := []int{90, 45, 78, 60}
+    fmt.Println(slices.Min(nilai), slices.Max(nilai)) // 45 90
+
+    // Pola praktis: membatasi (clamp) nilai dalam rentang 0..100
+    skor := 120
+    skor = min(max(skor, 0), 100)
+    fmt.Println("skor:", skor) // 100
+}`,
+      explain: [
+        '<code>min(a, b)</code> dan <code>max(a, b)</code> adalah fungsi bawaan — tidak perlu <code>import</code> apa pun.',
+        'Argumennya boleh lebih dari dua: <code>min(a, b, c)</code>, dan semua argumen harus bertipe sama.',
+        'Fungsi bawaan ini menolak pola <code>min(s...)</code>; untuk slice pakai <code>slices.Min(s)</code> dan <code>slices.Max(s)</code> dari package <code>slices</code>.',
+        '<code>min(max(skor, 0), 100)</code> adalah trik <i>clamp</i>: memaksa nilai tetap di dalam rentang yang diizinkan.'
+      ]
+    },
+    {
+      type: 'warn',
+      title: 'Sekat pemakaian min() dan max()',
+      text: 'Semua argumen harus bertipe sama — <code>min(1, 2.5)</code> error karena <code>int</code> dan <code>float64</code> bercampur (konversi dulu dengan <code>float64(1)</code>). Untuk <code>float</code>, bila salah satu argumen bernilai <b>NaN</b>, hasilnya juga NaN. Bentuk <code>min(s...)</code> <b>dilarang</b> untuk fungsi bawaan ini — untuk slice pakai <code>slices.Min(s)</code>, dan untuk pointer baca dulu isinya dengan <code>*p</code>.'
+    },
+    {
       type: 'example',
       title: 'Operator bitwise',
       lang: 'go',
@@ -506,6 +883,7 @@ func main() {
         ['Truncation', 'Pemotongan bagian pecahan saat float dikonversi ke int.'],
         ['Overflow', 'Nilai melebihi kapasitas tipe tujuan sehingga hasilnya kacau.'],
         ['Modulus %', 'Operator sisa bagi, hanya untuk bilangan bulat.'],
+        ['min() / max()', 'Fungsi bawaan (Go 1.21) untuk nilai terkecil/terbesar dari dua argumen atau lebih; untuk slice pakai slices.Min/Max.'],
         ['Bitwise', 'Operator yang bekerja pada bit: & | ^ << >>.'],
         ['Short-circuit', 'Evaluasi logika yang berhenti lebih awal bila hasilnya sudah pasti.']
       ]
@@ -516,6 +894,7 @@ func main() {
     'Konversi float ke int memotong pecahan; int64 ke int32 bisa meluap.',
     'Operator aritmatika: + - * / %, dengan % hanya untuk bilangan bulat.',
     'Perbandingan menghasilkan bool; logika memakai &&, ||, dan !.',
+    'min() dan max() adalah fungsi bawaan Go 1.21 untuk nilai terkecil/terbesar; semua argumen harus bertipe sama, dan untuk slice pakai slices.Min/slices.Max.',
     'Operator bitwise & | ^ << >> berguna untuk bendera dan protokol.'
   ]
 });

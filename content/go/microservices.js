@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 31: gRPC, Message Broker & Observability ---------- */
+/* ---------- Pelajaran 32: gRPC, Message Broker & Observability ---------- */
 window.GO_LESSONS.push({
   id: 'microservices',
   title: 'Microservices: gRPC, Message Broker & Observability',

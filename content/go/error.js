@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 18: Error Handling & Custom Error ---------- */
+/* ---------- Pelajaran 19: Error Handling & Custom Error ---------- */
 window.GO_LESSONS.push({
   id: 'error-handling',
   title: 'Error Handling & Custom Error',
@@ -203,7 +203,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 19: defer, panic & recover ---------- */
+/* ---------- Pelajaran 20: defer, panic & recover ---------- */
 window.GO_LESSONS.push({
   id: 'defer-panic-recover',
   title: 'defer, panic & recover',

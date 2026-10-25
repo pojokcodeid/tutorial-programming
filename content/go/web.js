@@ -12,7 +12,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 27: HTTP Server & Routing ---------- */
+/* ---------- Pelajaran 28: HTTP Server & Routing ---------- */
 window.GO_LESSONS.push({
   id: 'http-server',
   title: 'HTTP Server & Routing dengan net/http',
@@ -254,7 +254,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 28: Middleware & Validasi Request ---------- */
+/* ---------- Pelajaran 29: Middleware & Validasi Request ---------- */
 window.GO_LESSONS.push({
   id: 'middleware-validasi',
   title: 'Middleware & Validasi Request',
@@ -497,7 +497,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 29: Integrasi Database ---------- */
+/* ---------- Pelajaran 30: Integrasi Database ---------- */
 window.GO_LESSONS.push({
   id: 'database',
   title: 'Integrasi Database',

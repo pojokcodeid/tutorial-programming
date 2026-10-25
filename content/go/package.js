@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 20: Package Kustom & Manajemen Dependensi ---------- */
+/* ---------- Pelajaran 21: Package Kustom & Manajemen Dependensi ---------- */
 window.GO_LESSONS.push({
   id: 'package-module',
   title: 'Package Kustom & Manajemen Dependensi',

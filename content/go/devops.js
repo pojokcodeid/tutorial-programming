@@ -11,7 +11,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 36: Docker, CI/CD & Keamanan ---------- */
+/* ---------- Pelajaran 37: Docker, CI/CD & Keamanan ---------- */
 window.GO_LESSONS.push({
   id: 'devops-security',
   title: 'Docker, CI/CD & Keamanan',

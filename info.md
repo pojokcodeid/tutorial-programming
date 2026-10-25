@@ -259,11 +259,15 @@ project nyata ada di folder `examples/react-project/`.
     - Memahami struktur folder dan file .go
     - Program pertama: Hello World & perinah go run, go build
   - Dasar-Dasar Bahasa Go
+    - Komentar: //, /* */, doc comment (godoc/go doc)
     - Variables & Constants: var, const, short variable declaration (:=)
+    - Blank identifier (_): membuang nilai yang tidak dipakai
+    - Keyword new (pointer ke zero value) dan make (slice, map, channel)
     - Tipe Data Dasar: int, float, string, bool
     - Zero Values di Go
     - Type Conversion (Konversi tipe data)
     - Operator: Aritmatika, Perbandingan, dan Logika
+    - Fungsi bawaan min() dan max() (sejak Go 1.21)
   - Control Flow (Alur Kontrol)
     - Branching: if, else if, else
     - Switch Case: Standard switch, type switch, dan fallthrough

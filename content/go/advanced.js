@@ -11,7 +11,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 32: Reflection & Unsafe Pointer ---------- */
+/* ---------- Pelajaran 33: Reflection & Unsafe Pointer ---------- */
 window.GO_LESSONS.push({
   id: 'reflection-unsafe',
   title: 'Reflection (reflect) & Unsafe Pointer',
@@ -166,7 +166,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 33: Manajemen Memori & Garbage Collector ---------- */
+/* ---------- Pelajaran 34: Manajemen Memori & Garbage Collector ---------- */
 window.GO_LESSONS.push({
   id: 'memory-gc',
   title: 'Manajemen Memori & Garbage Collector',
@@ -367,7 +367,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 34: Profiling & Performance Tuning ---------- */
+/* ---------- Pelajaran 35: Profiling & Performance Tuning ---------- */
 window.GO_LESSONS.push({
   id: 'profiling',
   title: 'Profiling & Performance Tuning (pprof & trace)',
@@ -529,7 +529,7 @@ go tool pprof -http=:8080 cpu.prof`,
   ]
 });
 
-/* ---------- Pelajaran 35: Generics di Go ---------- */
+/* ---------- Pelajaran 36: Generics di Go ---------- */
 window.GO_LESSONS.push({
   id: 'generics',
   title: 'Generics (Go 1.18+)',

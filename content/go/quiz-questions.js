@@ -501,5 +501,61 @@ window.GO_QUIZ_POOL = [
     options: ['Algoritma tanda tangan, audience, dan issuer sesuai harapan', 'Warna tombol', 'Ukuran berkas', 'Nama pengguna di URL'],
     answer: 0,
     explain: 'Memeriksa algoritma mencegah serangan seperti "alg: none"; audience & issuer memastikan token untuk aplikasi yang benar.'
+  },
+  {
+    id: 'g72',
+    q: 'Bentuk komentar yang dikenal di Go adalah…',
+    options: ['// dan /* */', '# dan """', '// dan """', '<!-- dan -->'],
+    answer: 0,
+    explain: 'Go hanya mengenal komentar baris // dan komentar blok /* */. Tanda # (Python) dan <!-- --> (HTML) tidak dipakai.'
+  },
+  {
+    id: 'g73',
+    q: 'Apa yang terjadi jika komentar blok /* */ bersarang di Go?',
+    options: ['Boleh saja, selama tidak berantakan', 'Blok berakhir di */ pertama sehingga sisanya dianggap kode', 'Compiler langsung menghapus berkas', 'Harus ditutup dengan **/'],
+    answer: 1,
+    explain: 'Komentar blok Go tidak boleh bersarang: blok berakhir di tanda */ yang paling awal, sehingga sisa teks dianggap kode nyata dan memicu error kompilasi.'
+  },
+  {
+    id: 'g74',
+    q: 'Komentar yang menjadi dokumentasi resmi package dan tampil di go doc disebut…',
+    options: ['Doc comment, diletakkan tepat di atas deklarasi', 'Inline comment, diletakkan di akhir baris', 'Komentar blok wajib berlisensi', 'Komentar //TODO yang wajib di setiap fungsi'],
+    answer: 0,
+    explain: 'Doc comment diletakkan tepat di atas package/fungsi/tipe tanpa baris kosong. go doc dan pkg.go.dev menampilkannya sebagai dokumentasi.'
+  },
+  {
+    id: 'g75',
+    q: 'Pada penulisan _, err := simpan(data), tanda _ disebut…',
+    options: ['Blank identifier, tempat membuang nilai yang tidak dipakai', 'Pointer kosong', 'Zero value', 'Wildcard untuk semua tipe'],
+    answer: 0,
+    explain: 'Blank identifier (_) menampung nilai yang tidak dibutuhkan agar kompilasi tidak protes "declared and not used". Ia tidak pernah bisa dibaca atau dicetak.'
+  },
+  {
+    id: 'g76',
+    q: 'Apa yang dikembalikan oleh new(Pengguna) bila Pengguna adalah struct?',
+    options: ['Pointer ke struct berisi zero value (*Pengguna)', 'Struct yang sudah terisi nama', 'Slice siap pakai', 'Nilai int 0'],
+    answer: 0,
+    explain: 'new(T) mengalokasikan memori untuk tipe apa saja lalu mengembalikan pointer *T ke zero value-nya. Bentuk yang lebih lazim di Go adalah &T{...}.'
+  },
+  {
+    id: 'g77',
+    q: 'Kata kunci make() hanya boleh dipakai untuk tipe…',
+    options: ['slice, map, dan channel', 'struct dan interface', 'int, float, dan string', 'semua tipe data'],
+    answer: 0,
+    explain: 'make menginisialisasi struktur internal (len, cap, buffer) yang hanya dimiliki slice, map, dan channel, dan mengembalikan tipe itu sendiri, bukan pointer. Untuk struct gunakan var atau &T{...}.'
+  },
+  {
+    id: 'g78',
+    q: 'Fungsi bawaan untuk mengambil nilai terbesar dari beberapa argumen sejak Go 1.21 adalah…',
+    options: ['max(a, b, ...)', 'largest(a, b)', 'big(a, b)', 'top(a, b)'],
+    answer: 0,
+    explain: 'Go 1.21 menambah dua fungsi bawaan: min() dan max(). Keduanya menerima dua argumen atau lebih bertipe sama dan tidak perlu di-import.'
+  },
+  {
+    id: 'g79',
+    q: 'Apa yang terjadi bila menulis min(1, 2.5) di Go?',
+    options: ['Error kompilasi karena int dan float64 bercampur', 'Hasilnya selalu 1', 'Hasilnya 2.5', 'Go mengonversi otomatis ke float64'],
+    answer: 0,
+    explain: 'Semua argumen min()/max() harus bertipe sama. Karena Go tidak melakukan konversi otomatis, tulis float64(1) agar keduanya float64.'
   }
 ];
