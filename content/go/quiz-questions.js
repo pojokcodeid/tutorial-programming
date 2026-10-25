@@ -557,5 +557,26 @@ window.GO_QUIZ_POOL = [
     options: ['Error kompilasi karena int dan float64 bercampur', 'Hasilnya selalu 1', 'Hasilnya 2.5', 'Go mengonversi otomatis ke float64'],
     answer: 0,
     explain: 'Semua argumen min()/max() harus bertipe sama. Karena Go tidak melakukan konversi otomatis, tulis float64(1) agar keduanya float64.'
+  },
+  {
+    id: 'g80',
+    q: 'Fungsi yang menghasilkan string sesuai format TANPA mencetaknya ke layar adalah…',
+    options: ['fmt.Sprintf', 'fmt.Printf', 'fmt.Println', 'fmt.Print'],
+    answer: 0,
+    explain: 'Sprintf mengembalikan string, sehingga hasilnya bisa disimpan dulu (pesan error, URL, label). Printf menulis langsung ke stdout.'
+  },
+  {
+    id: 'g81',
+    q: 'Pada fmt.Scan(&nama), tanda & di depan nama berfungsi untuk…',
+    options: ['Mengirim alamat variabel agar bisa diisi oleh fungsi', 'Menandai variabel sebagai konstanta', 'Membaca nilai secara copy', 'Menghapus nilai lama'],
+    answer: 0,
+    explain: 'Fungsi Scan mengisi variabel lewat pointer, jadi wajib ditulis &nama. Tanpa &, nilai tidak akan sampai ke variabel Anda.'
+  },
+  {
+    id: 'g82',
+    q: 'Bila harus membaca satu baris utuh berisi spasi (mis. nama lengkap "Budi Santoso"), cara yang tepat adalah…',
+    options: ['bufio.NewReader(os.Stdin).ReadString(\'\\n\') atau bufio.Scanner', 'fmt.Scan(&s)', 'fmt.Printf("%s", &s)', 'fmt.Println(&s)'],
+    answer: 0,
+    explain: 'fmt.Scan hanya mengambil satu kata karena memisah token dengan spasi. bufio membaca seluruh baris sehingga spasi di dalamnya tetap utuh.'
   }
 ];

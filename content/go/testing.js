@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 25: Unit Testing, Table-Driven, Mocking, Benchmark ---------- */
+/* ---------- Pelajaran 26: Unit Testing, Table-Driven, Mocking, Benchmark ---------- */
 window.GO_LESSONS.push({
   id: 'testing',
   title: 'Unit Testing, Mocking & Benchmark',

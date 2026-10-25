@@ -11,7 +11,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 13: Fungsi, Multiple & Named Return ---------- */
+/* ---------- Pelajaran 14: Fungsi, Multiple & Named Return ---------- */
 window.GO_LESSONS.push({
   id: 'fungsi-dasar',
   title: 'Fungsi, Multiple & Named Return',
@@ -198,7 +198,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 14: Variadic, Anonymous & Closures ---------- */
+/* ---------- Pelajaran 15: Variadic, Anonymous & Closures ---------- */
 window.GO_LESSONS.push({
   id: 'variadic-closure',
   title: 'Variadic, Anonymous Functions & Closures',

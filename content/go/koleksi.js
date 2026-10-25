@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 10: Array ---------- */
+/* ---------- Pelajaran 11: Array ---------- */
 window.GO_LESSONS.push({
   id: 'array',
   title: 'Array: Ukuran Tetap',
@@ -151,7 +151,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 11: Slice ---------- */
+/* ---------- Pelajaran 12: Slice ---------- */
 window.GO_LESSONS.push({
   id: 'slice',
   title: 'Slice: Koleksi Fleksibel',
@@ -330,7 +330,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 12: Map & Iterasi for range ---------- */
+/* ---------- Pelajaran 13: Map & Iterasi for range ---------- */
 window.GO_LESSONS.push({
   id: 'map-iterasi',
   title: 'Map & Iterasi for range',

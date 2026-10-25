@@ -259,6 +259,8 @@ project nyata ada di folder `examples/react-project/`.
     - Memahami struktur folder dan file .go
     - Program pertama: Hello World & perinah go run, go build
   - Dasar-Dasar Bahasa Go
+    - Input & Output: fmt.Print, Println, Printf, Sprint, Sprintf, Fprintf, dan format verb
+    - Membaca masukan: fmt.Scan, Scanln, Scanf, serta bufio (ReadString, Scanner)
     - Komentar: //, /* */, doc comment (godoc/go doc)
     - Variables & Constants: var, const, short variable declaration (:=)
     - Blank identifier (_): membuang nilai yang tidak dipakai

@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 31: Arsitektur, DI & Design Patterns ---------- */
+/* ---------- Pelajaran 32: Arsitektur, DI & Design Patterns ---------- */
 window.GO_LESSONS.push({
   id: 'arsitektur',
   title: 'Clean Architecture, DI & Design Patterns',

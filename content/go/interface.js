@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 17: Interface Implicit & Empty Interface ---------- */
+/* ---------- Pelajaran 18: Interface Implicit & Empty Interface ---------- */
 window.GO_LESSONS.push({
   id: 'interface',
   title: 'Interface Implicit & Empty Interface',
@@ -195,7 +195,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 18: Type Assertion & Type Switch ---------- */
+/* ---------- Pelajaran 19: Type Assertion & Type Switch ---------- */
 window.GO_LESSONS.push({
   id: 'type-assertion',
   title: 'Type Assertion & Type Switch',

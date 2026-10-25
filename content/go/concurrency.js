@@ -17,7 +17,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 22: Goroutines ---------- */
+/* ---------- Pelajaran 23: Goroutines ---------- */
 window.GO_LESSONS.push({
   id: 'goroutines',
   title: 'Concurrency & Goroutines',
@@ -142,7 +142,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 23: Channels & Select ---------- */
+/* ---------- Pelajaran 24: Channels & Select ---------- */
 window.GO_LESSONS.push({
   id: 'channels-select',
   title: 'Channels & Select Statement',
@@ -377,7 +377,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 24: Sinkronisasi, Race Detector & Context ---------- */
+/* ---------- Pelajaran 25: Sinkronisasi, Race Detector & Context ---------- */
 window.GO_LESSONS.push({
   id: 'sync-context',
   title: 'sync Package, Race Detector & Context',

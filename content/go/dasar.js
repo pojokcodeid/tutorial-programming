@@ -2,6 +2,8 @@
    Pelajaran Go — Bab 2: Dasar-Dasar Bahasa Go
    (topik info.md:
     - "Komentar: komentar baris (//), komentar blok, dan doc comment (godoc)"
+    - "Input & Output: fmt.Print, Println, Printf, Sprint, Sprintf, Fprintf"
+    - "Format verb (%d %s %v %T %q %f) & membaca masukan (Scan, Scanln, Scanf, bufio)"
     - "Variables & Constants: var, const, short variable declaration (:=)"
     - "Blank identifier (_): membuang nilai yang tidak dipakai"
     - "Keyword new (pointer ke zero value) & make (slice, map, channel)"
@@ -15,7 +17,278 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 3: Komentar & Dokumentasi Kode ---------- */
+/* ---------- Pelajaran 3: Input & Output: Print, Scan, dan fmt ---------- */
+window.GO_LESSONS.push({
+  id: 'input-output',
+  title: 'Input & Output: Print, Scan, dan fmt',
+  chapter: 'Dasar Bahasa Go',
+  duration: '14 menit',
+  intro: [
+    'Program berbicara dengan dunia luar lewat dua pintu: <b>stdout</b> untuk mencetak keluaran dan <b>stdin</b> untuk membaca masukan. Di Go hampir semuanya ditangani oleh package <b>fmt</b> (format).',
+    'Pelajaran ini membahas cara mencetak nilai — <code>Print</code>, <code>Println</code>, <code>Printf</code>, <code>Sprintf</code>, <code>Fprintf</code> — beserta format verb-nya, lalu cara membaca masukan dengan <code>Scan</code>, <code>Scanln</code>, <code>Scanf</code>, dan <code>bufio</code>.'
+  ],
+  objectives: [
+    'Mencetak nilai dengan Print, Println, dan Printf',
+    'Menguasai format verb Printf (%d, %s, %v, %T, %q, %f)',
+    'Membentuk string dengan Sprintf tanpa mencetak',
+    'Membaca masukan dari stdin dengan Scan, Scanln, dan Scanf',
+    'Membaca banyak baris dengan bufio.Scanner',
+    'Membedakan fungsi bawaan print/println dengan package fmt'
+  ],
+  sections: [
+    {
+      type: 'text',
+      html: '<p>Go tidak punya pernyataan <code>print</code> ala bahasa lain. Mencetak adalah <b>pemanggilan fungsi</b>, dan hampir semuanya ada di package <code>fmt</code>. Package ini punya tiga kelompok dengan pola penamaan yang sama sekali konsisten:</p><table class="vocab"><tr><th>Pola</th><th>Bekerja pada</th><th>Contoh</th></tr><tr><td>Tanpa awalan</td><td><b>stdin</b> dan <b>stdout</b></td><td><code>fmt.Println</code>, <code>fmt.Scan</code></td></tr><tr><td>Berawalan <b>F</b></td><td><b>io.Writer</b> / <b>io.Reader</b> (berkas, buffer, HTTP)</td><td><code>fmt.Fprintf</code>, <code>fmt.Fscan</code></td></tr><tr><td>Berawalan <b>S</b></td><td><b>string</b></td><td><code>fmt.Sprintf</code>, <code>fmt.Sscanf</code></td></tr></table><p>Sekali hafal pola ini, Anda bisa menebak nama fungsi <code>fmt</code> mana pun. Ada juga fungsi <b>bawaan</b> <code>print()</code> dan <code>println()</code> (tanpa package) — menulis ke <b>stderr</b> dengan format yang tidak dijanjikan, disediakan hanya untuk debugging compiler, jangan dipakai di kode produksi.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Print dan Println',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+func main() {
+    // Print TIDAK menambah newline sendiri
+    fmt.Print("Halo")
+    fmt.Println(" dunia") // menyambung di baris yang sama
+
+    // Println: spasi antar argumen + newline di akhir
+    fmt.Println("umur:", 27, "aktif:", true)
+
+    // Perbedaan aturan spasi pada Print
+    fmt.Print("a", "b") // ab   dua string -> tanpa spasi
+    fmt.Println()
+    fmt.Print("a", 1)   // a1   ada string -> tanpa spasi
+    fmt.Println()
+    fmt.Print(1, 2)     // 1 2  dua angka  -> diberi spasi
+    fmt.Println()
+}`,
+      explain: [
+        '<code>fmt.Print</code> <b>tidak</b> menambah baris baru — cocok untuk progress dot atau menyambung keluaran.',
+        '<code>fmt.Println</code> selalu menutup dengan <code>\\n</code> dan menaruh spasi antar argumen.',
+        'Aturan spasi <code>Print</code>: spasi ditambahkan hanya bila <b>kedua</b> argumen bukan string.',
+        'Tiga fungsi ini menulis ke <b>stdout</b>; keluaran bisa dialihkan dengan <code>&gt;</code> atau <code>|</code> seperti program lain.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p>Ringkasan fungsi cetak yang paling sering dipakai:</p><table class="vocab"><tr><th>Fungsi</th><th>Hasil ditulis ke</th><th>Akhir baris</th><th>Catatan</th></tr><tr><td><code>fmt.Print(a, b)</code></td><td>stdout</td><td>tidak</td><td>spasi hanya bila bukan string</td></tr><tr><td><code>fmt.Println(a, b)</code></td><td>stdout</td><td>ya</td><td>spasi selalu ditambahkan</td></tr><tr><td><code>fmt.Printf(format, ...)</code></td><td>stdout</td><td>sesuai <code>\\n</code> di format</td><td>format verb: %d, %s, %v, dst.</td></tr><tr><td><code>fmt.Sprint</code> / <code>Sprintln</code></td><td>string</td><td>tidak / ya</td><td>hasil dikembalikan, bukan dicetak</td></tr><tr><td><code>fmt.Sprintf(format, ...)</code></td><td>string</td><td>tidak</td><td>paling sering dipakai untuk merangkai pesan</td></tr><tr><td><code>fmt.Fprint</code> / <code>Fprintln</code> / <code>Fprintf</code></td><td>io.Writer</td><td>tergantung fungsi</td><td>berkas, buffer, <code>http.ResponseWriter</code></td></tr></table>'
+    },
+    {
+      type: 'example',
+      title: 'Printf dan format verb',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+type Produk struct {
+    Nama  string
+    Harga int
+}
+
+func main() {
+    p := Produk{Nama: "Kopi", Harga: 25000}
+
+    fmt.Printf("int    : %d\\n", p.Harga)
+    fmt.Printf("string : %s | teks kutip: %q\\n", p.Nama, p.Nama)
+    fmt.Printf("bool   : %t | float: %.2f | hex: %x\\n", true, 3.14159, 255)
+    fmt.Printf("default: %v\\n", p)
+    fmt.Printf("rinci  : %+v\\n", p)
+    fmt.Printf("tipe    : %T | persen literal: 100%%\\n", p)
+    fmt.Printf("lebar   : [%5d] [%-5d]\\n", 42, 42)
+}`,
+      explain: [
+        '<code>Printf</code> tidak menambah newline otomatis — tulis sendiri <code>\\n</code> di akhir format.',
+        '<code>%v</code> menampilkan nilai apa adanya, <code>%+v</code> menyertakan nama field struct.',
+        '<code>%T</code> menampilkan tipe data, sangat membantu saat debugging.',
+        '<code>%5d</code> melebarkan ke kanan, <code>%-5d</code> rata kiri, <code>%%</code> untuk tanda persen itu sendiri.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<p>Daftar verb yang paling sering dipakai dalam <code>Printf</code>:</p><table class="vocab"><tr><th>Verb</th><th>Untuk</th><th>Contoh hasil</th></tr><tr><td><code>%d</code></td><td>bilangan bulat</td><td>42</td></tr><tr><td><code>%b %o %x</code></td><td>biner, oktal, heksadesimal</td><td>101010, 52, 2a</td></tr><tr><td><code>%f</code> / <code>%.2f</code></td><td>pecahan (default 6 desimal)</td><td>3.141593 / 3.14</td></tr><tr><td><code>%s</code></td><td>teks</td><td>Kopi</td></tr><tr><td><code>%q</code></td><td>teks bersarang tanda kutip</td><td>"Kopi"</td></tr><tr><td><code>%t</code></td><td>boolean</td><td>true</td></tr><tr><td><code>%v</code></td><td>nilai secara default</td><td>{Kopi 25000}</td></tr><tr><td><code>%+v</code></td><td>struct lengkap dengan nama field</td><td>{Nama:Kopi Harga:25000}</td></tr><tr><td><code>%T</code></td><td>tipe data</td><td>main.Produk</td></tr><tr><td><code>%p</code></td><td>alamat pointer</td><td>0xc000014080</td></tr><tr><td><code>%%</code></td><td>tanda persen</td><td>%</td></tr></table>'
+    },
+    {
+      type: 'example',
+      title: 'Sprintf: merangkai string tanpa mencetak',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+func main() {
+    nama := "Andi"
+    umur := 27
+
+    // Sprintf mengembalikan string — belum ada yang tampil di layar
+    s := fmt.Sprintf("%s berumur %d tahun", nama, umur)
+    fmt.Println(s)            // hanya baris ini yang mencetak
+    fmt.Println("panjang:", len(s))
+
+    // Sprintln menambah \\n pada hasilnya
+    eks := fmt.Sprintln("nilai", 42)
+    fmt.Printf("%q\\n", eks)   // "nilai 42\\n"
+
+    // Salah kaprah yang sering terjadi:
+    // pesan := "umur: " + umur  // ERROR: string + int tidak boleh
+    // pesan := fmt.Sprintf("umur: %d", umur)  // cara yang benar
+}`,
+      explain: [
+        '<code>Sprintf</code> dipakai saat kita butuh <b>string</b>-nya dulu: pesan error, URL, nama berkas, label, atau log.',
+        'String tidak bisa digabung dengan angka memakai <code>+</code> — Go menolak pencampuran tipe.',
+        '<code>Sprintln</code> menambahkan newline di akhir hasil, <code>Sprint</code> tidak.',
+        'Butuh lebih dari satu kata dan angka? <code>Sprintf</code> biasanya lebih rapi daripada <code>Sprint(a, b, c)</code>.'
+      ]
+    },
+    {
+      type: 'example',
+      title: 'Fprintf: menulis ke io.Writer',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import (
+    "bytes"
+    "fmt"
+    "os"
+)
+
+func main() {
+    var buf bytes.Buffer
+
+    // Fprintf menulis ke objek yang mengimplementasi io.Writer
+    fmt.Fprintf(&buf, "User #%d: %s\\n", 1, "Budi")
+
+    // stdout hanyalah salah satu io.Writer
+    fmt.Fprintf(os.Stdout, "isi buffer: %s", buf.String())
+}`,
+      explain: [
+        'Di balik layar, <code>fmt.Println</code> sama dengan <code>fmt.Fprintln(os.Stdout, ...)</code>.',
+        '<code>bytes.Buffer</code> adalah <code>io.Writer</code> di memori — berguna untuk menguji kode tanpa menyentuh berkas.',
+        'Saat menulis respons HTTP, yang dipakai adalah <code>fmt.Fprintf(w, ...)</code> dengan <code>w http.ResponseWriter</code>.',
+        'Kebalikannya ada: <code>fmt.Fscan(r, ...)</code> membaca dari <code>io.Reader</code>.'
+      ]
+    },
+    {
+      type: 'tip',
+      title: 'log untuk keluaran bermeter waktu',
+      text: 'Bila butuh keluaran yang menyimpan waktu (log server, CLI yang dipantau), pakai package <code>log</code>: <code>log.Println("gagal:", err)</code> otomatis menulis tanggal dan waktu ke <b>stderr</b>. Untuk keluaran biasa yang harus bisa diparse program lain, tetap pakai <code>fmt</code>.'
+    },
+    {
+      type: 'warn',
+      title: 'Dua kesalahan cetak yang sering terjadi',
+      text: 'Pertama, jangan memakai fungsi bawaan <code>print()</code>/<code>println()</code> — hasilnya ke stderr, bentuknya tidak dijamin antar versi Go, dan tidak mendukung format. Kedua, <code>fmt.Println("umur: " + umur)</code> gagal kompilasi karena <code>int</code> tidak boleh digabung dengan <code>string</code>; gunakan <code>Printf</code> atau <code>Sprintf</code>.'
+    },
+    {
+      type: 'text',
+      html: '<p>Untuk <b>membaca masukan</b>, package <code>fmt</code> menyediakan fungsi kembar dari fungsi cetaknya: <code>Scan</code>, <code>Scanln</code>, dan <code>Scanf</code>. Ketiganya mengisi variabel lewat <b>pointer</b>, sehingga wajib ditulis <code>&amp;nama</code>, bukan <code>nama</code>.</p><table class="vocab"><tr><th>Fungsi</th><th>Cara kerja</th><th>Cocok untuk</th></tr><tr><td><code>fmt.Scan(&amp;a, &amp;b)</code></td><td>memisah masukan dengan spasi, tab, atau newline; terus sampai habis</td><td>input sederhana dan cepat</td></tr><tr><td><code>fmt.Scanln(&amp;a, &amp;b)</code></td><td>sama, tetapi berhenti di akhir baris — sisa isi baris menjadi error</td><td>memastikan satu baris = satu jawaban</td></tr><tr><td><code>fmt.Scanf("%s %f", &amp;a, &amp;b)</code></td><td>pola baca mengikuti format yang kita tulis</td><td>masukan berformat tetap</td></tr><tr><td><code>bufio.NewReader(os.Stdin).ReadString(\'\\n\')</code></td><td>mengambil satu baris utuh, termasuk spasi di dalamnya</td><td>nama lengkap, kalimat</td></tr><tr><td><code>bufio.NewScanner(os.Stdin)</code></td><td>menelusuri masukan baris demi baris</td><td>membaca banyak baris</td></tr></table><p>Ketiga fungsi <code>Scan*</code> mengembalikan <b>dua nilai</b>: jumlah item yang berhasil dibaca dan <code>error</code> (termasuk <code>io.EOF</code> bila masukan habis). Selalu periksa keduanya.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Membaca masukan dengan Scan, Scanf, dan Scanln',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import "fmt"
+
+func main() {
+    // Masukan (diketik di terminal atau lewat pipe):
+    // Budi 30
+    // Jakarta 99.5
+    // 10 20
+
+    var nama string
+    var umur int
+    n, err := fmt.Scan(&nama, &umur)             // token dipisah spasi
+    fmt.Printf("Scan   : %d nilai, err=%v -> %s/%d\\n", n, err, nama, umur)
+
+    var kota string
+    var skor float64
+    n2, err2 := fmt.Scanf("%s %f", &kota, &skor) // pola dari kita
+    fmt.Printf("Scanf  : %d nilai, err=%v -> %s/%.1f\\n", n2, err2, kota, skor)
+
+    var a, b int
+    n3, err3 := fmt.Scanln(&a, &b)               // berhenti di akhir baris
+    fmt.Printf("Scanln : %d nilai, err=%v -> %d/%d\\n", n3, err3, a, b)
+}`,
+      explain: [
+        '<code>Scan</code> melewati semua whitespace, jadi spasi, tab, maupun newline dianggap pemisah token.',
+        '<code>Scanf</code> membaca sesuai format; <code>%f</code> mengisi <code>float64</code>, <code>%d</code> mengisi <code>int</code>.',
+        '<code>Scanln</code> berhenti di newline — bila masih ada sisa di baris, ia mengembalikan error <code>expected newline</code>.',
+        'Selalu sediakan <b>alamat</b> variabel (<code>&amp;a</code>): fungsi ini mengisi nilai lewat pointer, seperti <code>fmt.Sscanf</code>.'
+      ]
+    },
+    {
+      type: 'warn',
+      title: 'Scan hanya mengambil satu kata',
+      text: 'Karena <code>Scan</code> memisah token dengan spasi, masukan <code>Budi Santoso</code> akan terbaca menjadi <code>"Budi"</code> saja dan sisanya dianggap masukan berikutnya. Untuk membaca satu baris utuh (nama lengkap, alamat, kalimat), pakai <code>bufio</code>.'
+    },
+    {
+      type: 'example',
+      title: 'Membaca banyak baris dengan bufio.Scanner',
+      lang: 'go',
+      output: false,
+      code: `package main
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+)
+
+func main() {
+    // Membaca seluruh baris dari stdin sampai EOF
+    sc := bufio.NewScanner(os.Stdin)
+    no := 0
+
+    for sc.Scan() {
+        no++
+        fmt.Printf("%d. %s\\n", no, sc.Text())
+    }
+
+    if err := sc.Err(); err != nil {
+        fmt.Println("gagal membaca:", err)
+    }
+    fmt.Println("total baris:", no)
+}`,
+      explain: [
+        '<code>sc.Scan()</code> mengembalikan <code>true</code> selama masih ada baris; <code>sc.Text()</code> mengambil isinya <b>tanpa</b> newline.',
+        'Spasi di dalam baris tetap utuh — inilah perbedaannya dengan <code>fmt.Scan</code>.',
+        '<code>sc.Err()</code> menangkap error I/O yang terjadi di tengah pembacaan.',
+        'Untuk hanya satu baris, cara singkatnya: <code>baris, err := bufio.NewReader(os.Stdin).ReadString(\'\\n\')</code> (hasilnya masih menyertakan <code>\\n</code>).'
+      ]
+    },
+    {
+      type: 'vocab',
+      items: [
+        ['stdout / stdin', 'Pintu keluaran dan masukan standar program.'],
+        ['fmt.Print / Println', 'Mencetak ke stdout tanpa format / dengan spasi dan baris baru.'],
+        ['fmt.Printf', 'Mencetak ke stdout dengan format verb (%d, %s, %v, %T, %q).'],
+        ['fmt.Sprintf', 'Menghasilkan string sesuai format tanpa mencetaknya.'],
+        ['fmt.Fprintf', 'Menulis hasil format ke objek io.Writer apa pun.'],
+        ['Format verb', 'Kode % yang menentukan cara sebuah nilai ditampilkan.'],
+        ['fmt.Scan / Scanln / Scanf', 'Membaca masukan dari stdin ke variabel lewat pointer.'],
+        ['bufio.Scanner', 'Membaca masukan baris demi baris, spasi tetap utuh.']
+      ]
+    }
+  ],
+  recap: [
+    'Keluaran lewat package fmt: Print (tanpa baris baru), Println (dengan baris baru), Printf (dengan format).',
+    'Printf memakai verb seperti %d, %s, %v, %+v, %T, %q, %t, %.2f, dan %% untuk persen.',
+    'Sprintf menghasilkan string tanpa mencetak; dipakai untuk pesan, URL, dan label.',
+    'Fprintf/Fprintln menulis ke io.Writer — stdout, berkas, buffer, maupun http.ResponseWriter.',
+    'Fungsi bawaan print/println hanya untuk debugging dan menulis ke stderr.',
+    'Masukan dibaca dengan Scan (per token), Scanln (per baris), Scanf (per format), dan bufio (baris utuh); semua Scan menerima pointer & variabel.'
+  ]
+});
+
+/* ---------- Pelajaran 4: Komentar & Dokumentasi Kode ---------- */
 window.GO_LESSONS.push({
   id: 'komentar',
   title: 'Komentar & Dokumentasi Kode',
@@ -189,7 +462,7 @@ go doc -all`,
   ]
 });
 
-/* ---------- Pelajaran 4: Variabel & Konstanta ---------- */
+/* ---------- Pelajaran 5: Variabel & Konstanta ---------- */
 window.GO_LESSONS.push({
   id: 'variabel-konstanta',
   title: 'Variabel & Konstanta',
@@ -490,7 +763,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 5: Tipe Data Dasar & Zero Values ---------- */
+/* ---------- Pelajaran 6: Tipe Data Dasar & Zero Values ---------- */
 window.GO_LESSONS.push({
   id: 'tipe-data-zero',
   title: 'Tipe Data Dasar & Zero Values',
@@ -636,7 +909,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 6: Konversi Tipe & Operator ---------- */
+/* ---------- Pelajaran 7: Konversi Tipe & Operator ---------- */
 window.GO_LESSONS.push({
   id: 'konversi-operator',
   title: 'Konversi Tipe & Operator',

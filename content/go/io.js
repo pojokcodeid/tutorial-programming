@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 26: File I/O (io, os, bufio, bytes) ---------- */
+/* ---------- Pelajaran 27: File I/O (io, os, bufio, bytes) ---------- */
 window.GO_LESSONS.push({
   id: 'file-io',
   title: 'File I/O: io, os, bufio, bytes',
@@ -189,7 +189,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 27: JSON, XML & CSV ---------- */
+/* ---------- Pelajaran 28: JSON, XML & CSV ---------- */
 window.GO_LESSONS.push({
   id: 'json-xml-csv',
   title: 'Memproses JSON, XML & CSV',

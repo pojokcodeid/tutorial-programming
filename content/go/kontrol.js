@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 7: Percabangan if, else if, else ---------- */
+/* ---------- Pelajaran 8: Percabangan if, else if, else ---------- */
 window.GO_LESSONS.push({
   id: 'percabangan',
   title: 'Percabangan: if, else if, else',
@@ -159,7 +159,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 8: Switch, Type Switch & fallthrough ---------- */
+/* ---------- Pelajaran 9: Switch, Type Switch & fallthrough ---------- */
 window.GO_LESSONS.push({
   id: 'switch',
   title: 'Switch, Type Switch & fallthrough',
@@ -351,7 +351,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 9: Perulangan for ---------- */
+/* ---------- Pelajaran 10: Perulangan for ---------- */
 window.GO_LESSONS.push({
   id: 'perulangan-for',
   title: 'Perulangan: Hanya Ada for',
