@@ -323,6 +323,10 @@ project nyata ada di folder `examples/react-project/`.
     - Package io, os, bufio, dan bytes
     - Membaca dan menulis file
     - Working with JSON, XML, dan CSV (encoding/json)
+  - Logging & Observability
+    - Package log: Print/Println/Printf, Fatal/Panic, flag, prefix, dan log.New (multi-writer)
+    - Structured logging dengan log/slog (Go 1.21+): TextHandler, JSONHandler, level, dan Group
+    - Logger pihak ketiga (Zap & ZeroLog), rotasi berkas, level via environment, serta praktik logging produksi
   - Web Development & REST API
     - HTTP Server dasar menggunakan net/http
     - Routing / Multiplexer (Standard Library vs Framework seperti Gin, Echo, atau Fiber)

@@ -578,5 +578,89 @@ window.GO_QUIZ_POOL = [
     options: ['bufio.NewReader(os.Stdin).ReadString(\'\\n\') atau bufio.Scanner', 'fmt.Scan(&s)', 'fmt.Printf("%s", &s)', 'fmt.Println(&s)'],
     answer: 0,
     explain: 'fmt.Scan hanya mengambil satu kata karena memisah token dengan spasi. bufio membaca seluruh baris sehingga spasi di dalamnya tetap utuh.'
+  },
+  {
+    id: 'g83',
+    q: 'Tujuan utama package log dibanding fmt.Println adalah…',
+    options: ['Menulis catatan diagnostik berstempel waktu ke stderr', 'Menampilkan output ke pengguna di stdout', 'Membaca input dari keyboard', 'Mengubah tipe data otomatis'],
+    answer: 0,
+    explain: 'fmt.Print menulis ke stdout untuk pengguna, sedangkan log menulis ke stderr untuk diagnostik dan otomatis menambahkan tanggal & waktu.'
+  },
+  {
+    id: 'g84',
+    q: 'Flag yang membuat log menyertakan nama berkas dan baris pemanggil adalah…',
+    options: ['log.Lshortfile', 'log.Ldate', 'log.Lmsgprefix', 'log.Lmicroseconds'],
+    answer: 0,
+    explain: 'Lshortfile menambahkan nama berkas dan nomor baris sumber pesan, sangat membantu menemukan lokasi kejadian. Ldate hanya menambah tanggal.'
+  },
+  {
+    id: 'g85',
+    q: 'Perbedaan log.Fatal dan log.Panic adalah…',
+    options: ['Fatal keluar dari program (os.Exit), Panic memicu panic yang bisa ditangkap recover', 'Fatal mencetak ke file, Panic mencetak ke layar', 'Keduanya sama persis', 'Fatal berhenti di fungsi saja, Panic menghentikan seluruh program'],
+    answer: 0,
+    explain: 'log.Fatal mengakhiri program dengan status keluar 1 (defer tidak jalan), sedangkan log.Panic memicu panic sehingga masih bisa ditangani recover.'
+  },
+  {
+    id: 'g86',
+    q: 'Untuk membuat logger khusus dengan prefix dan tujuan sendiri dipakai…',
+    options: ['log.New(w, prefix, flags)', 'log.SetNew(prefix)', 'log.Create(prefix)', 'log.Custom(prefix)'],
+    answer: 0,
+    explain: 'log.New menghasilkan logger independen yang menerima io.Writer, prefix, dan flag, sehingga tiap komponen bisa dibedakan.'
+  },
+  {
+    id: 'g87',
+    q: 'Agar satu panggilan log tertulis ke layar sekaligus ke berkas, gunakan…',
+    options: ['io.MultiWriter(os.Stdout, berkas)', 'io.Copy(os.Stdout, berkas)', 'bytes.Join', 'log.Combine'],
+    answer: 0,
+    explain: 'io.MultiWriter meneruskan setiap tulisan ke semua penulisnya, sehingga log tampil di stdout dan tersimpan di berkas sekaligus.'
+  },
+  {
+    id: 'g88',
+    q: 'Package structured logging bawaan Go (sejak Go 1.21) adalah…',
+    options: ['log/slog', 'log/json', 'log/trace', 'log/format'],
+    answer: 0,
+    explain: 'log/slog adalah package structured logging di standard library: log berupa kunci-nilai sehingga mudah dicari dan diindeks mesin.'
+  },
+  {
+    id: 'g89',
+    q: 'Pada slog.Info("login", "user_id", 42, "ip", "10.0.0.1"), bentuk argumennya adalah…',
+    options: ['Pasangan kunci-nilai bergantian', 'Satu string format dengan %d', 'Slice of string', 'Struct tanpa tag'],
+    answer: 0,
+    explain: 'slog menerima argumen berpasangan: kunci lalu nilai, kunci lalu nilai. Urutan ini wajib bergantian agar atribut tidak berantakan.'
+  },
+  {
+    id: 'g90',
+    q: 'Handler yang menghasilkan JSON per baris — standar untuk produksi — adalah…',
+    options: ['slog.NewJSONHandler', 'slog.TextHandler', 'slog.ConsoleHandler', 'slog.DebugHandler'],
+    answer: 0,
+    explain: 'JSONHandler menulis satu objek JSON per kejadian, cocok untuk dikonsumsi sistem log terpusat. TextHandler untuk dibaca manusia.'
+  },
+  {
+    id: 'g91',
+    q: 'Cara membuat logger yang membawa atribut tetap (mis. service dan env) pada setiap barisnya adalah…',
+    options: ['dasar.With(slog.String("service", "order"))', 'dasar.Append(...)', 'dasar.Merge(...)', 'dasar.Set(...)'],
+    answer: 0,
+    explain: 'With membuat logger turunan dengan atribut tetap, sehingga kunci service/env tidak perlu ditulis ulang di setiap panggilan.'
+  },
+  {
+    id: 'g92',
+    q: 'Logger terstruktur yang dibuat oleh Uber dan terkenal sangat cepat adalah…',
+    options: ['Zap', 'Logrus', 'Zerolog', 'BeeGo Log'],
+    answer: 0,
+    explain: 'Zap (go.uber.org/zap) dirancang zero-allocation sehingga sangat cepat. Zerolog juga cepat tetapi dibuat oleh rs, bukan Uber.'
+  },
+  {
+    id: 'g93',
+    q: 'Dalam praktik 12-factor, sebaiknya aplikasi menulis log ke…',
+    options: ['stdout, lalu diurus oleh pengumpul log container', 'berkas tanpa batas ukuran', 'database', 'email admin'],
+    answer: 0,
+    explain: 'Aplikasi menulis log ke stdout; fluentbit/Loki/Datadog yang mengumpulkan dan menyimpannya. Rotasi berkas tetap perlu bila juga menulis ke disk.'
+  },
+  {
+    id: 'g94',
+    q: 'Bahaya log yang tidak dirotasi adalah…',
+    options: ['Berkas tumbuh tanpa batas hingga disk penuh dan service mati', 'Log menjadi tidak terstruktur', 'Program menjadi lebih lambat dari awal', 'Prefix tidak tercetak'],
+    answer: 0,
+    explain: 'Tanpa kebijakan retensi (batas ukuran, jumlah cadangan, lama simpan), log akan menghabiskan disk. Library seperti lumberjack mengatur rotasinya.'
   }
 ];

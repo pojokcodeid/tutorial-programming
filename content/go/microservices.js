@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 15: Microservices & Distributed Systems
+   Pelajaran Go — Bab 16: Microservices & Distributed Systems
    (topik info.md:
     - "gRPC & Protocol Buffers (protobuf)"
     - "Message Broker integration (RabbitMQ, Apache Kafka, NATS)"
@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 33: gRPC, Message Broker & Observability ---------- */
+/* ---------- Pelajaran 36: gRPC, Message Broker & Observability ---------- */
 window.GO_LESSONS.push({
   id: 'microservices',
   title: 'Microservices: gRPC, Message Broker & Observability',
@@ -219,6 +219,7 @@ func main() {
         '<b>Structured logging</b> menulis log sebagai data (key-value/JSON), bukan teks bebas.',
         'Memudahkan pencarian & analitik di sistem seperti Loki, Elasticsearch, atau Datadog.',
         'Zap dan ZeroLog adalah pilihan populer karena sangat cepat.',
+        'Cara pakai lengkapnya — log, log/slog, Zap, ZeroLog, hingga rotasi berkas — dibahas di <b>bab Logging &amp; Observability</b>.',
         'Hindari mencetak log yang tidak terstruktur pada sistem berskala besar.'
       ]
     },

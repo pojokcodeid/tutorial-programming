@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 16: Advanced Go Internal & Optimization
+   Pelajaran Go — Bab 17: Advanced Go Internal & Optimization
    (topik info.md:
     - "Reflection (reflect package) & Unsafe Pointer"
     - "Memory Management: Garbage Collection (GC) tuning,
@@ -11,7 +11,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 34: Reflection & Unsafe Pointer ---------- */
+/* ---------- Pelajaran 37: Reflection & Unsafe Pointer ---------- */
 window.GO_LESSONS.push({
   id: 'reflection-unsafe',
   title: 'Reflection (reflect) & Unsafe Pointer',
@@ -166,7 +166,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 35: Manajemen Memori & Garbage Collector ---------- */
+/* ---------- Pelajaran 38: Manajemen Memori & Garbage Collector ---------- */
 window.GO_LESSONS.push({
   id: 'memory-gc',
   title: 'Manajemen Memori & Garbage Collector',
@@ -367,7 +367,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 36: Profiling & Performance Tuning ---------- */
+/* ---------- Pelajaran 39: Profiling & Performance Tuning ---------- */
 window.GO_LESSONS.push({
   id: 'profiling',
   title: 'Profiling & Performance Tuning (pprof & trace)',
@@ -529,7 +529,7 @@ go tool pprof -http=:8080 cpu.prof`,
   ]
 });
 
-/* ---------- Pelajaran 37: Generics di Go ---------- */
+/* ---------- Pelajaran 40: Generics di Go ---------- */
 window.GO_LESSONS.push({
   id: 'generics',
   title: 'Generics (Go 1.18+)',

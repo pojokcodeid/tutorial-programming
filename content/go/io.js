@@ -420,7 +420,7 @@ func main() {
     {
       type: 'tip',
       title: 'JSON adalah standar API web',
-      text: 'Hampir semua REST API modern memakai JSON. Kuasai <code>encoding/json</code> beserta tag-nya — ini keterampilan wajib sebelum membangun layanan web di bab berikutnya.'
+      text: 'Hampir semua REST API modern memakai JSON. Kuasai <code>encoding/json</code> beserta tag-nya — ini keterampilan wajib sebelum membangun layanan web di <b>bab Web &amp; REST API</b>.'
     },
     {
       type: 'warn',

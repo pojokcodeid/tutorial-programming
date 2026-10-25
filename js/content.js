@@ -159,7 +159,7 @@ const CONTENT = (() => {
       tagline: 'Bahasa Cepat untuk Backend & Cloud',
       icon: 'assets/logos/go.svg',
       color: '#00ADD8',
-      desc: 'Belajar Go dari nol: dasar bahasa, struct, interface, error handling, concurrency, web & REST API, microservices, hingga Docker & keamanan.',
+      desc: 'Belajar Go dari nol: dasar bahasa, struct, interface, error handling, concurrency, logging & observability, web & REST API, microservices, hingga Docker & keamanan.',
       status: 'ready',
       sequential: true,
       lessons: (window.GO_LESSONS || []).slice(),
