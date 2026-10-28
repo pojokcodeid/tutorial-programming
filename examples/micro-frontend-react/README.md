@@ -1,166 +1,277 @@
-# TokoMicro React — Contoh Micro-Frontend dengan React JS
+# TokoMicro React — Proyek Rujukan Micro-Frontend
 
-Versi **React** dari contoh TokoMicro pada [`examples/micro-frontend/`](../micro-frontend/).
-Satu shell + tiga remote (`header`, `products`, `cart`) yang dibangun **terpisah**
-dengan Vite dan digabungkan saat runtime memakai **Module Federation** —
-teknik komposisi yang dibahas pada Tahap 2 dan Tahap 7 materi
-[`micro-frontend.md`](../../micro-frontend.md).
+Contoh lengkap micro-frontend dengan **React 18 + TypeScript + Vite + Module Federation**. Satu shell memuat empat remote yang dibangun, diuji, dan dirilis terpisah, ditambah satu aplikasi legacy untuk latihan migrasi.
 
-| | Contoh vanilla | Contoh React (ini) |
-| --- | --- | --- |
-| Framework | DOM JavaScript murni | React 18 |
-| Build | tidak ada | Vite per remote |
-| Penggabungan | `import()` dinamis | Module Federation (`remoteEntry.js`) |
-| Kontrak remote | `mount()` / `unmount()` | komponen React + lifecycle bawaan React |
-| State bersama | event bus + store modul | `globalThis` + `useSyncExternalStore` |
-| Penangkap galat | `try/catch` di shell | React *error boundary* per remote |
+Proyek ini dipakai oleh 20 bab materi micro-frontend di repositori utama. Setiap keputusan penting di sini punya alasan yang dijelaskan di bab terkait.
+
+---
+
+## Yang bisa kamu pelajari di sini
+
+- Shell sebagai pemilik URL, layout, login, dan error boundary.
+- Empat remote: `header`, `products`, `cart`, dan `account`.
+- Kontrak bersama bertipe (`@tokomicro/contracts`) dan validasi Zod.
+- State keranjang bersama tanpa menyalin data antar remote.
+- Event bus bertipe untuk komunikasi antar remote.
+- Design system + token + tema terang/gelap + Storybook.
+- Autentikasi sekali login: access token di memori, refresh token di cookie `httpOnly`.
+- Manifest remote dinamis, rilis berversi, dan rollback tanpa build ulang shell.
+- Feature flag, telemetry, Web Vitals, dan halaman status.
+- Pengujian unit, E2E, visual, dan laporan ukuran bundel.
+- CI/CD dengan GitHub Actions.
+- Migrasi bertahap dari aplikasi legacy lewat iframe.
+
+---
+
+## Prasyarat
+
+- Node.js 18 atau lebih baru (disarankan 20+).
+- npm 9+.
+- Browser modern (Chromium/Firefox/Safari terbaru).
+
+---
 
 ## Menjalankan
 
-Butuh Node.js 18+ dan koneksi internet untuk `npm install`.
-
 ```bash
 cd examples/micro-frontend-react
-npm install          # sekali saja, seluruh workspace
-npm run build        # membangun shell + 3 remote secara terpisah
-npm start            # → http://localhost:4173
+
+npm install
+npm run build
+npm start
 ```
 
-Atau satu perintah: `npm run demo`.
+Buka **http://localhost:4173**.
 
-> **Kenapa wajib build?** Mode dev Vite (`vite dev`) belum mendukung Module
-> Federation. Federasi bekerja pada hasil build, jadi setiap perubahan kode
-> perlu `npm run build` ulang — hanya remote yang berubah yang dibangun
-> ulang, tetap mandiri.
+> Module Federation pada proyek ini memakai build produksi. Untuk pengembangan sehari-hari, jalankan `npm run build` lebih dulu, lalu `npm start`; shell akan memuat `remoteEntry.js` dari origin masing-masing.
 
-## Empat origin, satu halaman
+### Akun demo
 
-`server.js` melayani empat port sekaligus — meniru deployment asli di mana tiap
-remote berada di server/CDN sendiri. CORS dibuka karena shell memang memuat
-remote lintas origin.
+| Nama pengguna | Kata sandi | Peran |
+| --- | --- | --- |
+| `demo` | `demo123` | customer |
+| `admin` | `admin123` | admin |
 
-| Port | Aplikasi | Folder build | Peran |
-| --- | --- | --- | --- |
-| 4173 | shell | `apps/shell/dist` | pemilik URL, layout, routing, error boundary, API `/api/*` |
-| 4174 | header | `apps/header/dist` | logo, navigasi, badge keranjang |
-| 4175 | products | `apps/products/dist` | katalog & filter kategori |
-| 4176 | cart | `apps/cart/dist` | daftar item, jumlah, checkout |
+---
 
-## Struktur
+## Peta origin
 
-```text
-micro-frontend-react/
-├── package.json           # npm workspaces: seluruh app dibangun dari satu install
-├── server.js              # 4 origin + API palsu (/api/products, /api/orders)
+Satu proses Node melayani enam origin berbeda agar batas jaringan antar tim terlihat nyata.
+
+| Origin | Aplikasi | Isi |
+| --- | --- | --- |
+| `http://localhost:4173` | shell | Halaman induk, router, login, API `/api/*` |
+| `http://localhost:4174` | header | Navigasi, badge keranjang, tema, bahasa |
+| `http://localhost:4175` | products | Katalog + rute detail |
+| `http://localhost:4176` | cart | Keranjang + checkout |
+| `http://localhost:4177` | account | Profil, riwayat pesanan, dan halaman admin `/akun/admin` |
+| `http://localhost:4178` | legacy | Aplikasi katalog lama (statis) |
+
+Setiap origin remote juga melayani versi rilis:
+
+```
+http://localhost:4175/v/1.0.0/assets/remoteEntry.js
+```
+
+---
+
+## Struktur folder
+
+```
+examples/micro-frontend-react/
+├── apps/
+│   ├── shell/            # BrowserRouter, auth, manifest, status, legacy
+│   ├── header/           # remote: nav, badge, tema, locale
+│   ├── products/         # remote: katalog + detail/:id
+│   ├── cart/             # remote: keranjang + checkout
+│   ├── account/          # remote: profil + pesanan + admin
+│   └── legacy/           # aplikasi lama statis (tanpa bundler)
 ├── packages/
-│   └── shared/            # @tokomicro/shared — state keranjang (tanpa React)
-└── apps/
-    ├── shell/             # aplikasi induk
-    │   ├── vite.config.js #   remotes + shared react (singleton)
-    │   └── src/App.jsx    #   routing hash, lazy remote, error boundary, toast
-    ├── header/
-    │   ├── vite.config.js #   exposes: { './App': './src/App.jsx' }
-    │   └── src/App.jsx
-    ├── products/          # pola sama: remote mandiri + halaman uji sendiri
-    └── cart/
+│   ├── contracts/        # tipe, skema Zod, deklarasi remote
+│   ├── shared/           # state keranjang + event bus
+│   ├── ui-kit/           # Button, Card, Badge, token, Storybook
+│   ├── i18n/             # kamus id/en
+│   └── telemetry/        # event, error, metrik
+├── scripts/
+│   ├── release.mjs       # salin build ke cdn/<remote>/<versi>
+│   ├── rollback.mjs      # ganti manifest ke versi lama
+│   └── perf-report.mjs   # laporan ukuran bundel
+├── cdn/                  # manifest + hasil rilis (di-ignore)
+├── tests/                # unit, setup, visual
+├── e2e-smoke.mjs         # uji alur nyata dengan Playwright
+└── server.js             # enam origin + API + penyajian versi
 ```
 
-Setiap remote punya `index.html` sendiri, sehingga bisa dibuka mandiri
-(misal `vite preview --port 4175`) untuk dikembangkan tanpa menjalankan shell —
-syarat rilis mandiri per tim (Tahap 9).
+---
 
-## Kontrak antar pihak
+## Perintah penting
 
-| Pihak | Kewajiban |
+| Perintah | Fungsi |
 | --- | --- |
-| Shell | menyiapkan slot, memuat remote lewat `import('nama/App')`, routing, skeleton, error boundary per remote, menyediakan `ctx` |
-| Remote | mengekspor komponen default menerima `{ ctx }`, memakai awalan CSS sendiri, tidak mengimpor berkas internal remote lain |
-| `@tokomicro/shared` | state satu instance untuk semua remote, tidak mengimpor remote maupun React |
+| `npm run build` | Build semua aplikasi dengan Turbo |
+| `npm run typecheck` | TypeScript di seluruh workspace |
+| `npm test` | Unit test Vitest (shared, kontrak, UI, i18n) |
+| `npm run test:e2e` | E2E Playwright; menyalakan server sendiri bila perlu |
+| `npm run test:visual` | Tangkapan layar terang/gelap/status/mobile |
+| `npm run perf` | Laporan ukuran bundel + cek budget |
+| `npm run storybook` | Storybook design system di port 6006 |
+| `npm run storybook:build` | Build Storybook statis |
+| `npm run release -- products 1.1.0` | Rilis remote produk versi 1.1.0 |
+| `npm run rollback -- products` | Rollback produk ke versi stabil sebelumnya |
+| `npm start` | Jalankan enam origin |
 
-`ctx` berisi `{ route, navigate(to), toast(message, type) }` — dibuat shell dan
-diteruskan sebagai props. Cara kedua (untuk data lintas remote) adalah modul
-bersama.
-
-## Bagaimana state keranjang bisa satu
-
-```text
-header (port 4174)  ─┐
-products (4175)     ─┼─ @tokomicro/shared → globalThis.__TOKOMICRO__.cart
-cart (4176)         ─┘
-```
-
-Tiap remote menggandakan `@tokomicro/shared` ke bundelnya sendiri, tetapi
-seluruh state diletakkan di `globalThis`, jadi tetap **satu instance**.
-Komponen membacanya dengan `useSyncExternalStore(subscribe, getSnapshot)` —
-API React untuk state eksternal; langganan otomatis dibersihkan saat remote
-dibongkar (tanpa takut *listener leak*).
-
-Alternatif setara: daftarkan paket bersama itu di `shared` Module Federation
-dengan `singleton: true`, seperti `react` dan `react-dom` di
-`vite.config.js` — bundler-lah yang menjamin satu salinan.
-
-## Mengapa React hanya dimuat sekali
-
-Keempat `vite.config.js` menyepakati hal yang sama:
-
-```js
-shared: {
-  react: { singleton: true, requiredVersion: '^18.2.0' },
-  'react-dom': { singleton: true, requiredVersion: '^18.2.0' }
-}
-```
-
-Shell yang menyiapkan React, remote tinggal memakai. Tanpa konfigurasi ini,
-tiap remote membawa React sendiri → dua kinstance framework dalam satu halaman
-(boros memori, konteks & hook bisa gagal terbaca).
-
-## Uji coba mandiri
-
-1. **Alur utama** — buka `http://localhost:4173`, tambah dua produk, lihat badge
-   header bertambah, buka **Keranjang**, ubah jumlah, lalu **Buat pesanan**
-   (`ORD-0001` muncul).
-2. **Rilis mandiri** — ubah teks tombol di `apps/products/src/App.jsx`, jalankan
-   `npm run build -w @tokomicro/products`, muat ulang halaman. Hanya katalog
-   yang berubah; shell, header, dan cart tidak dibangun ulang.
-3. **Isolasi kegagalan** — ubah isi `apps/products/src/App.jsx` menjadi
-   `export default function` (sintaks rusak), `npm run build -w @tokomicro/products`,
-   muat ulang. Shell tetap hidup: header jalan, area konten menampilkan kotak
-   galat + tombol **Coba lagi**.
-4. **Satu React** — di tab Network cari `react`; hanya satu bundel React yang
-   dimuat meski ada empat aplikasi.
-5. **Lazy per rute** — berpindah ke `#/keranjang` mengunduh chunk `cart` saat
-   itu juga, bukan di awal halaman. Log `[shell] remote "…" siap dalam … ms`
-   tercetak di konsol (observability, Tahap 8).
-
-## Uji end-to-end (opsional)
-
-Tersedia skrip uji asap browser headless dengan Playwright — alur lengkap
-tambah ke keranjang → badge header → checkout:
+Contoh rilis semua remote:
 
 ```bash
-npm install                 # bila belum
-npm run build && node server.js   # terminal 1 (biarkan hidup)
-npx playwright install chromium    # sekali saja, unduh browser
-node e2e-smoke.mjs                # terminal 2 → HASIL: LULUS
+for app in header products cart account; do
+  node scripts/release.mjs "$app" 1.0.0
+done
 ```
 
-Skrip ini juga memastikan tidak ada `console.error` maupun `pageerror`
-selama alur berjalan — deteksi dini kegagalan komposisi antar remote.
+Setelah rilis, muat ulang shell. Manifest `/api/remotes` akan menunjuk ke `/v/1.0.0/assets/remoteEntry.js`.
 
-## Menambah remote baru
+---
 
-1. Salin `apps/header` menjadi `apps/wishlist`, ubah `name` di `package.json`
-   dan `name`/`exposes` di `vite.config.js`.
-2. Daftarkan di `apps/shell/vite.config.js`: `remotes: { wishlist: remoteUrl('wishlist', 4177) }`.
-3. Tambahkan port baru di `server.js`.
-4. `npm install` lalu `npm run build`.
-5. Muat dari shell: `lazy(() => import('wishlist/App'))`.
+## Arsitektur singkat
 
-## Catatan versi
+```
+                        ┌──────────────────────────────┐
+                        │            SHELL             │
+                        │ BrowserRouter · auth · flags │
+                        │ manifest · error boundary    │
+                        └──────────────┬───────────────┘
+                                       │ ctx + slot
+          ┌────────────────┬───────────┴──────────┬────────────────┐
+          ▼                ▼                      ▼                ▼
+     ┌─────────┐     ┌──────────┐          ┌──────────┐     ┌──────────┐
+     │ header  │     │ products │          │   cart   │     │ account  │
+     │ :4174   │     │  :4175   │          │  :4176   │     │  :4177   │
+     └────┬────┘     └────┬─────┘          └────┬─────┘     └────┬─────┘
+          │               │                     │                │
+          └───────────────┴──────┬──────────────┴────────────────┘
+                                 ▼
+                    @tokomicro/contracts + shared
+                    state keranjang · event · tipe ctx
+```
 
-- Vite **5** + `@vitejs/plugin-react` **4** + `@originjs/vite-plugin-federation`
-  **1.4.1** — kombinasi yang dipakai materi dan diuji pada contoh ini.
-- React **18** agar cocok dengan `requiredVersion: '^18.2.0'` pada materi.
-- `build.target: 'esnext'` dan `minify: false` wajib untuk plugin federasi.
-- Versi remote dapat diganti tanpa membangun ulang shell lewat variabel
-  lingkungan, misal `CART_REMOTE=https://cdn.example.com/cart/assets/remoteEntry.js npm start`.
+Aturan batas yang dipegang:
+
+1. Shell tidak mengimpor berkas internal remote; hanya `remote/App`.
+2. Remote tidak punya halaman login sendiri; token diminta lewat `ctx.getToken()`.
+3. Remote tidak memanggil API remote lain; komunikasi lewat kontrak event.
+4. Gaya memakai token `--tm-*`, bukan warna hard-coded.
+5. Setiap remote bisa dibuka sendiri lewat `MemoryRouter`.
+
+---
+
+## Autentikasi
+
+- Access token disimpan **di memori** shell, berlaku 15 menit.
+- Refresh token disimpan di cookie **`httpOnly` + `SameSite=Lax`**, dirotasi setiap refresh.
+- Setelah reload, shell memanggil `/api/refresh`, lalu `/api/me`.
+- Remote meminta token segar lewat `ctx.getToken()`; tidak ada salinan sesi di remote.
+
+Akun demo ada di `server.js`. Di produksi, ganti dengan identity provider sungguhan.
+
+---
+
+## Rilis, versi, dan rollback
+
+`cdn/manifest.json` menyimpan versi aktif tiap remote. Server membacanya dan membentuk URL lengkap sesuai host yang dipakai.
+
+```bash
+# 1. build
+npm run build
+
+# 2. rilis produk 1.0.0 dan 1.0.1
+node scripts/release.mjs products 1.0.0
+node scripts/release.mjs products 1.0.1
+
+# 3. cek manifest
+curl -s http://localhost:4173/api/remotes | python3 -m json.tool
+
+# 4. rollback ke versi sebelumnya
+node scripts/rollback.mjs products
+```
+
+Shell **tidak perlu di-build ulang** karena URL remote dibaca saat runtime.
+
+---
+
+## Telemetry dan status
+
+Buka **http://localhost:4173/status**.
+
+Halaman ini menampilkan:
+
+- versi, pemilik, status, dan URL setiap remote;
+- jumlah event, error, dan metrik yang masuk ke `/api/telemetry`;
+- ringkasan per aplikasi.
+
+Shell mengirim `boot_ms`, `remote_load_ms`, LCP, CLS, dan INP lewat `web-vitals`.
+
+---
+
+## Storybook
+
+```bash
+npm run storybook
+```
+
+Buka **http://localhost:6006**. Storybook hanya untuk `packages/ui-kit`, bukan untuk remote, supaya batas tanggung jawab tetap jelas.
+
+---
+
+## Lab pendamping
+
+| Folder | Isi |
+| --- | --- |
+| `examples/micro-frontend-techniques` | iframe, Web Component, import map |
+| `examples/micro-frontend-webpack` | Webpack 5 + varian Rspack |
+| `examples/micro-frontend-ssr` | CSR vs SSR + hydration |
+
+Lab dipisah agar proyek utama tetap ringan dan bisa dijalankan tanpa dependensi tambahan.
+
+---
+
+## Troubleshooting
+
+**Shell menampilkan "Modul … tidak dapat dimuat".**
+Pastikan `npm run build` sudah dijalankan dan keenam origin hidup. Buka URL `remoteEntry.js` di browser untuk memastikan 200.
+
+**Remote gagal karena CORS.**
+Server sudah mengirim `Access-Control-Allow-Origin`. Jika kamu mengganti port, perbarui `apps/shell/vite.config.ts` dan `server.js`.
+
+**Halaman detail 404 setelah reload.**
+Shell memakai SPA fallback. Pastikan kamu mengakses lewat `server.js`, bukan `file://`.
+
+**Perubahan remote tidak terlihat.**
+Manifest mungkin menunjuk versi CDN lama. Cek `/api/remotes`, lalu rilis ulang atau jalankan `node scripts/rollback.mjs`.
+
+**Storybook tidak menemukan komponen.**
+Jalankan dari root proyek: `npm run storybook`. Konfigurasi berada di `packages/ui-kit/.storybook`.
+
+---
+
+## Latihan
+
+1. Tambahkan remote `wishlist` di port 4179 dengan rute `/wishlist`.
+2. Tambahkan feature flag `newCheckout` untuk mengubah teks tombol checkout.
+3. Buat event `tokomicro:wishlist-added` dan validasi payload-nya dengan Zod.
+4. Tambahkan satu cerita Storybook untuk komponen baru.
+5. Rilis `cart` versi `1.2.0`, lalu rollback dan bandingkan halaman status.
+
+---
+
+## Checkpoint
+
+Kamu dianggap selesai mencoba proyek ini bila:
+
+- [ ] `npm run typecheck`, `npm test`, `npm run build`, dan `npm run test:e2e` lulus.
+- [ ] Bisa menambah produk, checkout, dan melihat pesanan di remote akun.
+- [ ] Customer ditolak di `/akun/admin`; admin melihat seluruh pesanan lewat `scope=all`.
+- [ ] Reload halaman tetap login.
+- [ ] Tema bertahan setelah reload.
+- [ ] `/status` menampilkan empat remote.
+- [ ] Rilis lalu rollback mengubah URL di manifest tanpa build ulang shell.
+- [ ] Mematikan satu origin remote tidak menjatuhkan shell.

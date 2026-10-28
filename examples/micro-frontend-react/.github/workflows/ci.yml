@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/micro-frontend-react/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - 'examples/micro-frontend-react/**'
+      - '.github/workflows/ci.yml'
+
+defaults:
+  run:
+    working-directory: examples/micro-frontend-react
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: examples/micro-frontend-react/package-lock.json
+
+      - name: Instal dependensi
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit test
+        run: npm test
+
+      - name: Build semua aplikasi
+        run: npm run build
+
+      - name: Pasang browser Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E
+        run: npm run test:e2e
+
+      - name: Laporan ukuran bundel
+        run: npm run perf
+
+      - name: Simpan laporan build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tokomicro-dist
+          path: |
+            examples/micro-frontend-react/apps/*/dist
+            examples/micro-frontend-react/packages/ui-kit/storybook-static
+          if-no-files-found: ignore

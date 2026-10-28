@@ -7,177 +7,136 @@ window.MICROFRONTEND_LESSONS = window.MICROFRONTEND_LESSONS || [];
 
 window.MICROFRONTEND_LESSONS.push({
   id: 'mf-anatomi',
-  title: 'Anatomi & Teknik Komposisi',
+  title: 'Anatomi, Batas Tanggung Jawab, dan Tujuh Teknik Komposisi',
   chapter: 'Fondasi',
-  duration: '14 menit',
+  duration: '20 menit',
   intro: [
-    'Bagaimana sebuah remote benar-benar masuk ke dalam halaman? Bab ini menjawabnya dari dua sisi: <b>anatomi</b> — bentuk sebuah remote dan kontrak yang harus dipenuhinya, serta <b>teknik komposisi</b> — empat cara menggabungkan remote, mulai dari iframe sampai Module Federation.',
-    'Kamu akan mengenal kontrak <code>mount(container, ctx)</code> dan <code>unmount()</code> yang menjadi kesepakatan universal micro-frontend, lalu membandingkan iframe, JavaScript entry, Web Components, dan Module Federation dalam satu tabel sehingga kamu bisa memilih dengan sadar, bukan ikut-ikutan.',
-    'Di bagian praktik kamu akan membuat sebuah <b>Web Component</b> kecil yang bisa dipasang di halaman mana pun — bukti nyata bahwa sebuah potongan antarmuka bisa dibuat mandiri lalu dikomposisikan.'
+    'Setiap micro-frontend, apa pun tooling-nya, tersusun dari tiga bagian yang sama: <b>shell</b>, <b>remote</b>, dan <b>shared module</b>. Kamu perlu mengenali peran ketiganya sebelum menghafal nama pustaka atau konfigurasi bundler.',
+    'Setelah anatominya jelas, pertanyaan berikutnya adalah <b>bagaimana</b> remote digabungkan. Ada tujuh teknik yang umum dipakai, dari iframe sampai edge-side include. Masing-masing punya biaya, risiko, dan konteks yang berbeda; tidak ada pemenang mutlak.',
+    'Bab ini membantumu memilih teknik dengan alasan yang bisa dipertanggungjawabkan. Untuk TokoMicro React, pilihan jatuh pada <b>Module Federation</b>, tetapi kamu tetap perlu tahu kapan iframe atau paket monorepo justru lebih tepat.'
   ],
   objectives: [
-    'Menjelaskan struktur sebuah remote dan kontrak mount/unmount',
-    'Membedakan empat teknik komposisi beserta kelebihan dan biayanya',
-    'Memilih teknik komposisi sesuai kebutuhan produk',
-    'Membuat custom element sederhana yang bisa dikomposisikan shell',
-    'Mengenali tanda-tanda remote yang melanggar kontrak'
+    'Menjelaskan tugas shell, remote, dan shared module beserta batasannya',
+    'Membandingkan tujuh teknik komposisi micro-frontend',
+    'Memilih teknik komposisi sesuai kebutuhan tim dan produk',
+    'Menuliskan kontrak remote yang tidak membocorkan detail internal',
+    'Mendokumentasikan keputusan komposisi dalam ADR'
   ],
   sections: [
     {
       type: 'text',
-      html: '<h3>Anatomi Sebuah Remote</h3><p>Sebuah remote adalah aplikasi kecil yang lengkap. Yang membedakannya dari komponen biasa adalah satu hal: <b>ia tidak tahu ia akan dipasang di mana</b>. Ia hanya menyediakan dua pintu — <code>mount</code> untuk dipasang dan <code>unmount</code> untuk dibongkar — dan shell yang mengatur sisanya.</p>'
+      html: '<h3>Anatomi Tiga Bagian</h3><p><b>Shell</b> adalah pemilik halaman: layout, peta URL, login, error boundary, dan design token. <b>Remote</b> adalah aplikasi kecil yang mengisi slot di halaman dan memiliki API sendiri. <b>Shared module</b> adalah kode yang benar-benar disepakati bersama: state keranjang, kontrak <code>ctx</code>, dan utilitas format.</p><p>Batas paling penting: shell tidak boleh tahu isi internal remote, dan remote tidak boleh mengimpor berkas internal remote lain. Bila batas ini dilanggar, kamu kembali ke monolith yang lebih sulit dilacak, tetapi dengan biaya operasional micro-frontend.</p><p>Pada TokoMicro, shell menyediakan <code>BrowserRouter</code>. Remote hanya merender <code>&lt;Routes&gt;</code> bersarang di dalam rute yang diberikan shell, misalnya products di <code>/katalog/*</code>. Saat berdiri sendiri, remote memakai <code>MemoryRouter</code> agar tidak menabrak URL host.</p>'
+    },
+    {
+      type: 'text',
+      html: '<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 300" width="760" role="img" aria-label="Batas shell, remote, dan shared module pada TokoMicro"><rect x="20" y="18" width="720" height="110" rx="10" class="u-box"/><text x="40" y="44" class="u-title">SHELL :4173</text><text x="40" y="64" class="u-lbl">BrowserRouter · layout · login · token di memori · error boundary · token --tm-*</text><rect x="40" y="76" width="205" height="38" rx="7" class="u-hl"/><text x="142" y="100" class="u-lbl" text-anchor="middle">tidak tahu isi remote</text><rect x="275" y="76" width="205" height="38" rx="7" class="u-hl"/><text x="377" y="100" class="u-lbl" text-anchor="middle">memuat lewat kontrak</text><rect x="510" y="76" width="205" height="38" rx="7" class="u-hl"/><text x="612" y="100" class="u-lbl" text-anchor="middle">menyediakan ctx</text><rect x="40" y="156" width="200" height="78" rx="8" class="u-box"/><text x="140" y="181" class="u-title" text-anchor="middle">header :4174</text><text x="140" y="200" class="u-lbl" text-anchor="middle">badge · navigasi</text><text x="140" y="217" class="u-lbl" text-anchor="middle">tanpa API sendiri</text><rect x="280" y="156" width="200" height="78" rx="8" class="u-box"/><text x="380" y="181" class="u-title" text-anchor="middle">products :4175</text><text x="380" y="200" class="u-lbl" text-anchor="middle">katalog · filter</text><text x="380" y="217" class="u-lbl" text-anchor="middle">GET /api/products</text><rect x="520" y="156" width="200" height="78" rx="8" class="u-box"/><text x="620" y="181" class="u-title" text-anchor="middle">cart :4176</text><text x="620" y="200" class="u-lbl" text-anchor="middle">jumlah · checkout</text><text x="620" y="217" class="u-lbl" text-anchor="middle">POST /api/orders</text><line x1="140" y1="234" x2="140" y2="262" class="u-dash"/><line x1="380" y1="234" x2="380" y2="262" class="u-dash"/><line x1="620" y1="234" x2="620" y2="262" class="u-dash"/><rect x="150" y="264" width="460" height="30" rx="7" class="u-hl"/><text x="380" y="284" class="u-lbl" text-anchor="middle">shared: kontrak ctx · state keranjang · i18n · telemetry · ui-kit</text></svg></div><figcaption class="fig-cap"><b>Gambar 2.1</b> — Shell memiliki halaman; setiap remote memiliki rute dan API-nya; shared module menyimpan kesepakatan</figcaption></figure>'
     },
     {
       type: 'example',
-      title: 'Bentuk umum sebuah remote',
-      lang: 'js',
+      title: 'Kontrak remote dalam TypeScript',
+      lang: 'tsx',
       output: false,
-      code: `// remote/entry.js — berkas masuk sebuah remote
-let root = null;
-let cleanup = null;
-
-export function mount(container, ctx) {
-  // 1. simpan slot DOM yang diberikan shell
-  root = container;
-
-  // 2. bangun antarmuka ke dalam slot itu (BUKAN ke document.body)
-  root.innerHTML = '<div class="pf-panel">Kerangka produk</div>';
-
-  // 3. mulai bekerja: dengarkan event, ambil data, pasang timer
-  cleanup = ctx.bus.on('cart:change', (items) => {
-    root.querySelector('.pf-panel').textContent = 'Item: ' + items.length;
-  });
+      code: `// packages/contracts/src/index.ts
+export interface AppContext {
+  route: string;
+  params: URLSearchParams;
+  navigate(path: string, options?: { replace?: boolean }): void;
+  toast(message: string, type?: 'info' | 'success' | 'error'): void;
+  user: User | null;
+  getToken(): Promise<string | null>;
 }
 
-export function unmount() {
-  // 4. lepas SEMUA yang pernah dipasang
-  if (cleanup) cleanup();
-  if (root) root.innerHTML = '';
-  root = null;
-}`,
+export interface RemoteAppProps {
+  ctx: AppContext;
+}
+
+// apps/products/src/App.tsx
+import { Route, Routes } from 'react-router-dom';
+import type { RemoteAppProps } from '@tokomicro/contracts';
+
+export default function Products({ ctx }: RemoteAppProps) {
+  return (
+    <Routes>
+      <Route index element={<ProductList ctx={ctx} />} />
+      <Route path="detail/:id" element={<ProductDetail ctx={ctx} />} />
+    </Routes>
+  );
+}
+
+// apps/shell/src/App.tsx
+<Route path="/katalog/*" element={<RemoteSlot name="products" ctx={ctx} />} />`,
       explain: [
-        'Antarmuka dibangun ke <code>container</code> yang diberikan shell, bukan ke <code>document.body</code> — inilah yang membuat beberapa remote bisa hidup berdampingan dalam satu halaman.',
-        'Objek <code>ctx</code> adalah satu-satunya jembatan remote ke dunia luar: event bus, state bersama, dan token. Remote tidak pernah mengimpor berkas milik remote lain.',
-        'Fungsi <code>mount</code> mengembalikan fungsi pembatal (<i>disposer</i>) dari langganan event; disimpan lalu dipanggil di <code>unmount</code> agar tidak ada yang tertinggal.'
+        'Kontraknya kecil: nama modul, nama ekspos <code>./App</code>, dan props <code>{ ctx }</code>. Struktur folder serta komponen internal remote tidak menjadi bagian kontrak.',
+        'Remote memakai <code>&lt;Routes&gt;</code> bersarang karena shell sudah memiliki <code>BrowserRouter</code>. Remote tidak membuat router baru saat berjalan di dalam shell.',
+        'Saat mandiri, <code>main.tsx</code> remote membungkus <code>App</code> dengan <code>MemoryRouter</code>, sehingga pengujian tidak mengubah URL shell.'
       ]
     },
     {
-      type: 'tip',
-      title: 'Rantai Cleanup: DOM, Listener, Timer, Request',
-      text: 'Ada empat jenis peninggalan yang wajib dibersihkan unmount(): <b>DOM</b> yang kamu buat di container, <b>listener</b> yang dipasang pada window/document/event bus, <b>timer</b> (setInterval, setTimeout yang masih hidup), dan <b>request</b> yang masih menggantung. Simpan semua pembatalnya ke dalam satu array <code>cleanups</code>, lalu panggil semuanya saat unmount — pola ini jauh lebih mudah diawasi daripada mengingat satu per satu.'
-    },
-    {
       type: 'text',
-      html: '<h3>Empat Teknik Komposisi</h3><p>\"Komposisi\" berarti menggabungkan remote menjadi satu halaman. Ada empat cara utama, dan masing-masing menempati titik berbeda antara isolasi dan kesatuan tampilan.</p>'
-    },
-    {
-      type: 'text',
-      html: '<figure class="fig"><div class="fig-scroll"><svg viewBox="0 0 760 250" width="760" role="img" aria-label="Empat teknik komposisi: iframe, JavaScript entry, Web Components, Module Federation"><rect x="15" y="55" width=\"170\" height=\"90\" rx=\"8\" class=\"u-box\"/><text x=\"100\" y=\"80\" class=\"u-title\" text-anchor=\"middle\">1. iframe</text><text x=\"100\" y=\"100\" class=\"u-lbl\" text-anchor=\"middle\">isolasi penuh</text><text x=\"100\" y=\"118\" class=\"u-lbl\" text-anchor=\"middle\">dokumen terpisah</text><text x=\"100\" y=\"136\" class=\"u-lbl\" text-anchor=\"middle\">postMessage</text><line x1=\"190\" y1=\"100\" x2=\"200\" y2=\"100\" class=\"u-line\"/><rect x=\"205\" y=\"55\" width=\"170\" height=\"90\" rx=\"8\" class=\"u-box\"/><text x=\"290\" y=\"80\" class=\"u-title\" text-anchor=\"middle\">2. JS entry</text><text x=\"290\" y=\"100\" class=\"u-lbl\" text-anchor=\"middle\">impor runtime</text><text x=\"290\" y=\"118\" class=\"u-lbl\" text-anchor=\"middle\">salah CSS bisa bocor</text><text x=\"290\" y=\"136\" class=\"u-lbl\" text-anchor=\"middle\">ringan, tanpa tooling</text><line x1=\"380\" y1=\"100\" x2=\"390\" y2=\"100\" class=\"u-line\"/><rect x=\"395\" y=\"55\" width=\"170\" height=\"90\" rx=\"8\" class=\"u-box\"/><text x=\"480\" y=\"80\" class=\"u-title\" text-anchor=\"middle\">3. Web Components</text><text x=\"480\" y=\"100\" class=\"u-lbl\" text-anchor=\"middle\">standar peramban</text><text x=\"480\" y=\"118\" class=\"u-lbl\" text-anchor=\"middle\">shadow DOM opsional</text><text x=\"480\" y=\"136\" class=\"u-lbl\" text-anchor=\"middle\">lintas framework</text><line x1=\"570\" y1=\"100\" x2=\"580\" y2=\"100\" class=\"u-line\"/><rect x=\"580\" y=\"55\" width=\"170\" height=\"90\" rx=\"8\" class=\"u-hl\"/><text x=\"665\" y=\"80\" class=\"u-title\" text-anchor=\"middle\">4. Module Fed.</text><text x=\"665\" y=\"100\" class=\"u-lbl\" text-anchor=\"middle\">manifest + bundler</text><text x=\"665\" y=\"118\" class=\"u-lbl\" text-anchor=\"middle\">berbagi dependensi</text><text x=\"665\" y=\"136\" class=\"u-lbl\" text-anchor=\"middle\">butuh konfigurasi</text><line x1=\"100\" y1=\"145\" x2=\"100\" y2=\"185\" class=\"u-line\" marker-end=\"url(#u-arrow)\"/><line x1=\"290\" y1=\"145\" x2=\"290\" y2=\"185\" class=\"u-line\" marker-end=\"url(#u-arrow)\"/><line x1=\"480\" y1=\"145\" x2=\"480\" y2=\"185\" class=\"u-line\" marker-end=\"url(#u-arrow)\"/><line x1=\"665\" y1=\"145\" x2=\"665\" y2=\"185\" class=\"u-line\" marker-end=\"url(#u-arrow)\"/><rect x=\"120\" y=\"190\" width=\"520\" height=\"44\" rx=\"8\" class=\"u-hd\"/><text x=\"380\" y=\"211\" class=\"u-title\" text-anchor=\"middle\">SHELL — memilih teknik per bagian halaman</text><text x=\"380\" y=\"227\" class=\"u-lbl\" text-anchor=\"middle\">bagian inti: JS entry atau Web Components · bagian asing: iframe</text></svg></div><figcaption class="fig-cap\"><b>Gambar 2.1</b> — Dari isolasi penuh (kiri) menuju kesatuan tampilan (kanan)</figcaption></figure>'
+      html: '<h3>Tujuh Teknik Komposisi</h3><table class="vocab"><tr><th>Teknik</th><th>Cara kerja</th><th>Kelebihan</th><th>Kekurangan</th></tr><tr><td><b>iframe</b></td><td>Tiap remote adalah dokumen dan origin sendiri</td><td>Isolasi CSS/JS paling kuat</td><td>Sizing, SEO, fokus, dan UX terpecah</td></tr><tr><td><b>Web Components</b></td><td>Remote mendaftarkan custom element</td><td>Tahan framework, batas jelas</td><td>Styling, event, dan aksesibilitas perlu usaha</td></tr><tr><td><b>Module Federation</b></td><td>Bundler bertukar modul saat runtime lewat remoteEntry.js</td><td>Rilis mandiri, React dapat singleton</td><td>Terikat tooling dan versi dependensi</td></tr><tr><td><b>Import maps</b></td><td>Browser memetakan nama modul ke URL ESM</td><td>Tanpa bundler, standar web</td><td>Kontrol versi dan fallback masih manual</td></tr><tr><td><b>Server-side include</b></td><td>Server menyatukan potongan HTML sebelum dikirim</td><td>Sederhana, TTFB baik</td><td>Interaktivitas tetap di client</td></tr><tr><td><b>Edge-side include</b></td><td>CDN/edge merakit fragmen dari beberapa origin</td><td>Cache per fragmen, dekat pengguna</td><td>Debugging dan konsistensi lebih rumit</td></tr><tr><td><b>Paket monorepo</b></td><td>Remote dipublikasikan sebagai paket lalu di-bundle shell</td><td>Paling sederhana dan type-safe</td><td>Rilis remote menunggu build shell</td></tr></table><p>Perhatikan bahwa dua teknik terakhir mengomposisi di server atau saat build, bukan di browser. Pilihan teknik adalah pilihan <b>di mana</b> dan <b>kapan</b> penggabungan terjadi.</p>'
     },
     {
       type: 'example',
-      title: 'Perbandingan empat teknik komposisi',
+      title: 'Praktik: memilih teknik untuk tiga skenario',
       lang: 'text',
       output: false,
-      code: `TEKNIK           CARA KERJA                       KELEBIHAN                  BIAYA
-───────────────  ────────────────────────────────  ─────────────────────────  ──────────────────────────────
-iframe           <iframe src="remote.html">         isolasi CSS/JS penuh       pengaturan ukuran manual,
-                                     + postMessage  remote asing tak merusak   navigasi janggal, SEO lemah
+      code: `SKENARIO 1 — Aplikasi legacy :4178
+  jQuery, CSS global, SEO tidak penting, tim akan menghapusnya
+  dalam 6 bulan.
+  PILIHAN: iframe.
+  Alasan: isolasi penuh dan migrasi tidak mengganggu shell.
 
-JS entry         shell mengimpor entri remote      sederhana, tanpa tooling   salah CSS bisa bocor ke
-                 lalu memanggil mount(slot)         (cukup modul ES)           remote lain; pustaka bentrok
+SKENARIO 2 — Header dan katalog TokoMicro
+  Tim berbeda, React 18, butuh rilis mandiri, satu sesi login.
+  PILIHAN: Module Federation.
+  Alasan: remoteEntry.js per remote, shared React singleton,
+  kontrak ctx yang sama.
 
-Web Components   remote merilis <app-cart>;         standar peramban,          perlu disiplin atribut &
-                 shell menempatkannya di slot       bisa dicampur framework    kontrak nama elemen
-
-Module           bundler memuat remoteEntry +       berbagi dependensi,        konfigurasi berat, perlu
-Federation       manifest; shared singleton         rilis benar-benar mandiri  pemahaman bundler
-
-Pilihan TokoMicro: JS entry (modul ES) karena proyek sengaja tanpa tooling —
-prinsipnya sama dengan Module Federation, hanya konfigurasinya yang lebih ringan.`,
+SKENARIO 3 — Footer statis dan halaman bantuan
+  Berubah 2 kali setahun, tidak punya tim khusus, tidak butuh
+  state atau API.
+  PILIHAN: paket monorepo atau server-side include.
+  Alasan: build-time sudah cukup; menambah remote hanya
+  menambah origin dan pipeline tanpa manfaat.`,
       explain: [
-        'Tidak ada teknik yang paling benar secara mutlak: iframe dipilih untuk bagian yang tidak tepercaya atau benar-benar asing, sedangkan bagian inti produk umumnya memakai JS entry atau Web Components agar terasa menyatu.',
-        'Module Federation memberi kemampuan paling lengkap (berbagi satu React untuk semua remote), tetapi juga menuntut konfigurasi dan pemahaman bundler paling dalam.',
-        'Yang penting bukan tekniknya, melainkan <b>kontrak mount/unmount-nya tetap sama</b> — shell bisa menukar teknik komposisi tanpa mengubah cara remote bekerja.'
+        'Pertanyaan pertama bukan "teknik mana yang paling modern", melainkan "siapa pemiliknya, seberapa sering berubah, dan seberapa kuat isolasi yang dibutuhkan".',
+        'Skenario 1 memilih iframe karena batas organisasi dan teknologinya benar-benar asing. Skenario 3 justru menghindari micro-frontend karena tidak ada masalah yang perlu diselesaikan.'
       ]
     },
     {
       type: 'text',
-      html: '<h3>Membuat Web Component</h3><p>Web Components adalah bukti paling jelas sifat <i>portable</i> sebuah remote: karena berbasis standar peramban, kode yang sama bisa dipasang di halaman React, Vue, atau HTML biasa tanpa perubahan apa pun. Cukup daftarkan elemen kustom sekali, lalu gunakan seperti tag biasa.</p>'
-    },
-    {
-      type: 'live',
-      title: 'Coba sendiri: Web Component produk',
-      lang: 'html',
-      hint: 'Jalankan, lalu ganti atribut nama dan harga pada <app-produk> — elemennya berubah sendiri tanpa menyentuh JavaScript.',
-      initial: `<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Web Component Produk</title>
-  <style>
-    body { font-family: system-ui, sans-serif; padding: 16px; }
-    app-produk { display: block; }
-  </style>
-</head>
-<body>
-  <h3>Komposisi remote</h3>
-
-  <!-- dua "remote" berbeda, dipasang di halaman yang sama -->
-  <app-produk nama="Kopi Susu" harga="24000" stok="8"></app-produk>
-  <app-produk nama="Teh Manis" harga="12000" stok="0"></app-produk>
-
-  <script>
-    class ProdukEl extends HTMLElement {
-      connectedCallback() {
-        const nama = this.getAttribute('nama') || 'Produk';
-        const harga = Number(this.getAttribute('harga') || 0);
-        const stok = Number(this.getAttribute('stok') || 0);
-
-        const box = document.createElement('div');
-        box.style.cssText = 'border:1px solid #c7d2fe;border-radius:10px;' +
-          'padding:10px 12px;margin:8px 0;max-width:280px';
-
-        box.innerHTML =
-          '<div style="font-weight:600">' + nama + '</div>' +
-          '<div style="color:#6366f1">Rp' + harga.toLocaleString('id-ID') + '</div>' +
-          '<div style="font-size:12px;color:#666">' +
-            (stok > 0 ? stok + ' tersedia' : 'habis') + '</div>';
-
-        this.appendChild(box);
-      }
-    }
-
-    // daftarkan sekali — bisa dipakai di halaman mana pun
-    customElements.define('app-produk', ProdukEl);
-  </script>
-</body>
-</html>`
+      html: '<h3>Checkpoint Pemilihan Teknik</h3><ol><li>Tulis satu kalimat masalah yang ingin diselesaikan, bukan nama teknik.</li><li>Tentukan pemilik setiap bagian dan ritme rilisnya.</li><li>Putuskan apakah isolasi CSS/JS harus mutlak; jika ya, iframe patut dipertimbangkan.</li><li>Periksa apakah semua pihak memakai framework dan versi yang sama; jika ya, Module Federation lebih murah.</li><li>Hitung jumlah origin dan pipeline baru yang akan kamu rawat.</li><li>Simpan keputusan beserta alternatif yang ditolak di ADR.</li></ol><p><b>Verifikasi:</b> kamu berhasil bila dapat menjelaskan mengapa teknik yang dipilih lebih murah daripada dua alternatif terdekat, bukan hanya mengapa teknik itu bisa bekerja.</p>'
     },
     {
       type: 'warn',
-      title: 'Nama Elemen adalah Kontrak',
-      text: 'Karena nama elemen kustom berlaku global di seluruh peramban, <code>&lt;app-cart&gt;</code> hanya boleh didefinisikan satu kali di seluruh halaman. Bila dua remote mendaftarkan nama yang sama, peramban akan menolak definisi kedua dan elemennya berhenti bekerja — kesalahan yang membingungkan karena kodenya sendiri terlihat benar. Sepakati ruang nama sekali di awal (misal awalan <code>app-</code>), dan pastikan hanya satu pihak yang mendaftarkan setiap nama.'
+      title: 'Jangan Menaruh Semua Hal di Shared Module',
+      text: 'Shared module adalah kontrak paling mahal: satu perubahan di sana bisa memaksa semua tim menyesuaikan diri. Isi hanya yang benar-benar dipakai bersama, seperti kontrak ctx, state keranjang, token desain, dan utilitas murni. Jangan jadikan shared module tempat sampah kode umum, dan jangan pernah mengimpor berkas internal remote lain secara langsung.'
+    },
+    {
+      type: 'tip',
+      title: 'Mulai dari Satu Kontrak, Bukan Sepuluh',
+      text: 'Kontrak awal cukup: nama remote, nama ekspos, props <code>ctx</code>, awalan CSS, dan API yang dipanggil. Tambahkan kontrak baru hanya ketika ada kebutuhan nyata. Kontrak yang gemuk adalah tanda batas tim mulai kabur.'
     },
     {
       type: 'vocab',
       items: [
-        ['Kontrak mount/unmount', 'Perjanjian dua fungsi yang diekspor remote: dipasang ke container yang diberikan shell, lalu dibongkar bersih saat rute ditinggalkan.'],
-        ['Slot DOM', 'Elemen yang disediakan shell sebagai tempat sebuah remote membangun antarmukanya.'],
-        ['Custom element', 'Elemen HTML buatan pengembang yang didaftarkan lewat customElements.define() dan dipakai seperti tag biasa.'],
-        ['Shadow DOM', 'Lapisan DOM terisolasi yang menyembunyikan internal komponen dari CSS dan selektor halaman induk.'],
-        ['Module Federation', 'Kemampuan bundler (Vite/Webpack) memuat modul dari proyek lain saat runtime, lengkap dengan berbagi dependensi bersama.'],
-        ['remoteEntry.js', 'Berkas kecil hasil build yang menjadi pintu masuk sebuah remote — berisi peta modul yang bisa dimuat.'],
-        ['Komposisi runtime', 'Penggabungan remote yang terjadi di peramban ketika halaman dibuka, bukan saat proses build.'],
-        ['postMessage', 'Cara baku untuk berkomunikasi antardokumen, termasuk antara shell dan remote berbentuk iframe.']
+        ['Shell', 'Aplikasi induk yang memiliki URL, layout, login, dan pemuatan remote.'],
+        ['Remote', 'Aplikasi kecil dengan build sendiri yang dimuat shell lewat kontrak.'],
+        ['Shared module', 'Kode yang dipakai bersama dan menjadi tanggung jawab semua tim pemakainya.'],
+        ['Module Federation', 'Teknik bundler untuk berbagi modul dan dependensi saat runtime.'],
+        ['remoteEntry.js', 'Berkas pintu masuk remote yang dimuat shell.'],
+        ['Import map', 'Pemetaan nama modul ke URL yang dipahami browser tanpa bundler.'],
+        ['ESI/SSI', 'Edge-side atau server-side include: penggabungan fragmen HTML di server/CDN.'],
+        ['Kontrak', 'Kesepakatan bentuk data dan fungsi antar pihak, misalnya props ctx.'],
+        ['Komposisi runtime', 'Penggabungan remote yang terjadi di browser saat halaman dibuka.']
       ]
     }
   ],
   recap: [
-    'Sebuah remote mengekspor mount(container, ctx) untuk dipasang dan unmount() untuk dibongkar; ia tidak pernah tahu ia dipasang di mana.',
-    'Empat teknik komposisi: iframe (isolasi penuh), JS entry (sederhana), Web Components (standar lintas framework), dan Module Federation (berbagi dependensi).',
-    'Pilihan teknik bersifat per-bagian: bagian inti produk umumnya memakai JS entry/Web Components, bagian asing bisa memakai iframe.',
-    'Karena nama custom element bersifat global, hanya satu pihak yang boleh mendaftarkan setiap nama elemen.',
-    'Yang harus tetap sama walau teknik komposisi berganti adalah kontrak mount/unmount.'
+    'Tiga bagian micro-frontend: shell, remote, dan shared module, masing-masing dengan batas jelas.',
+    'Shell memiliki BrowserRouter dan halaman; remote memakai Routes bersarang, atau MemoryRouter saat mandiri.',
+    'Ada tujuh teknik komposisi; masing-masing berbeda pada tempat dan waktu penggabungan.',
+    'Module Federation dipilih TokoMicro karena rilis mandiri dan React dapat dimuat sekali.',
+    'Shared module harus kurus karena setiap isinya mengikat beberapa tim.'
   ]
 });

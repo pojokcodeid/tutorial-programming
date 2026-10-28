@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 12: I/O, File System & Data Format
+   Pelajaran Go — Bab 14: I/O, File System & Data Format
    (topik info.md:
     - "Package io, os, bufio, dan bytes"
     - "Membaca dan menulis file"
@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 27: File I/O (io, os, bufio, bytes) ---------- */
+/* ---------- Pelajaran 29: File I/O (io, os, bufio, bytes) ---------- */
 window.GO_LESSONS.push({
   id: 'file-io',
   title: 'File I/O: io, os, bufio, bytes',
@@ -189,7 +189,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 28: JSON, XML & CSV ---------- */
+/* ---------- Pelajaran 30: JSON, XML & CSV ---------- */
 window.GO_LESSONS.push({
   id: 'json-xml-csv',
   title: 'Memproses JSON, XML & CSV',

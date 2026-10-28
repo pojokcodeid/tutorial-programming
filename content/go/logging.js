@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 13: Logging & Observability
+   Pelajaran Go — Bab 15: Logging & Observability
    (topik info.md:
     - "Package log: Print/Println/Printf, Fatal/Panic, flag,
        prefix, dan log.New (multi-writer)"
@@ -12,7 +12,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 29: Logging Dasar dengan Package log ---------- */
+/* ---------- Pelajaran 31: Logging Dasar dengan Package log ---------- */
 window.GO_LESSONS.push({
   id: 'log-dasar',
   title: 'Logging Dasar dengan Package log',
@@ -175,7 +175,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 30: Structured Logging dengan log/slog ---------- */
+/* ---------- Pelajaran 32: Structured Logging dengan log/slog ---------- */
 window.GO_LESSONS.push({
   id: 'slog-structured',
   title: 'Structured Logging dengan log/slog',
@@ -376,7 +376,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 31: Zap, ZeroLog & Praktik Logging Produksi ---------- */
+/* ---------- Pelajaran 33: Zap, ZeroLog & Praktik Logging Produksi ---------- */
 window.GO_LESSONS.push({
   id: 'zap-zerolog',
   title: 'Zap, ZeroLog & Praktik Logging Produksi',

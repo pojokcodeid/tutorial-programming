@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Lab micro-frontend: bandingkan iframe, Web Component, dan import map dalam satu server tanpa dependensi.">
+  <title>Lab Micro-Frontend — Tiga Teknik Integrasi</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/landing.css">
+</head>
+<body>
+  <header class="lab-header">
+    <div class="lab-header__inner">
+      <a class="merek" href="/">
+        <span class="merek__tanda">MF</span>
+        <span>Lab Micro-Frontend</span>
+      </a>
+      <nav class="lab-nav" aria-label="Navigasi lab">
+        <a href="/iframe/">iframe</a>
+        <a href="/web-component/">Web Component</a>
+        <a href="/import-map/">Import map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lab-main">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Lab perbandingan · 3 teknik</p>
+        <h1>Tiga cara menyatukan <span class="aksen">aplikasi kecil</span> menjadi satu produk.</h1>
+        <p class="lede">
+          Kamu akan mencoba iframe, Web Component, dan import map pada satu server yang sama.
+          Setiap demo punya shell dan remote sendiri, jadi kamu bisa merasakan langsung di mana
+          isolasi bekerja, di mana komunikasi menjadi rumit, dan kapan teknik tertentu masuk akal.
+        </p>
+        <div class="hero__aksi">
+          <a class="tombol tombol--utama" href="/iframe/">Mulai dari iframe</a>
+          <a class="tombol tombol--hantu" href="#bandingkan">Lihat perbandingan</a>
+        </div>
+        <div class="hero__meta">
+          <span>Node 18+</span>
+          <span>Tanpa dependensi</span>
+          <span>Tanpa bundler</span>
+          <span>Semua teks Bahasa Indonesia</span>
+        </div>
+      </div>
+
+      <aside class="hero__kode panel" aria-label="Perintah menjalankan lab">
+        <div class="panel__kepala"><span><span class="titik"></span>terminal</span><span>zsh</span></div>
+        <pre><code>cd examples/micro-frontend-techniques
+node server.js
+
+# buka http://localhost:4180</code></pre>
+        <p class="kecil">API kecil tersedia di <code>/api/produk</code>. Tanpa dependensi.</p>
+      </aside>
+    </section>
+
+    <section class="bagian" aria-labelledby="pilih-teknik">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Pilih teknik</p>
+          <h2 id="pilih-teknik">Tiga demo, satu server</h2>
+        </div>
+        <p class="muted">
+          Semua demo memakai data produk yang sama dari API. Yang berbeda adalah cara shell
+          memuat dan berkomunikasi dengan remote.
+        </p>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="kartu-teknik" style="--warna: #7dd3fc">
+          <span class="nomor">01 · iframe</span>
+          <h3>Dokumen di dalam dokumen</h3>
+          <p>
+            Remote hidup di dokumen terpisah. CSS, JavaScript, dan global scope-nya tidak
+            bercampur dengan shell.
+          </p>
+          <ul class="daftar-ringkas">
+            <li>Isolasi paling total</li>
+            <li>Komunikasi lewat <code>postMessage</code></li>
+            <li>Tinggi dan layout harus diatur shell</li>
+          </ul>
+          <a class="tautan-panah" href="/iframe/">Buka demo iframe <span aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="kartu-teknik" style="--warna: #a7f3d0">
+          <span class="nomor">02 · Web Component</span>
+          <h3>Elemen dengan batas bayangan</h3>
+          <p>
+            Remote dibungkus custom element dan Shadow DOM. Gaya di dalamnya tidak mudah
+            diganggu oleh CSS global shell.
+          </p>
+          <ul class="daftar-ringkas">
+            <li>Enkapsulasi gaya yang kuat</li>
+            <li>Kontrak atribut dan <code>CustomEvent</code></li>
+            <li>Menyatu dengan DOM dan aksesibilitas</li>
+          </ul>
+          <a class="tautan-panah" href="/web-component/">Buka demo Web Component <span aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="kartu-teknik" style="--warna: #c4b5fd">
+          <span class="nomor">03 · Import map</span>
+          <h3>Modul ESM tanpa bundler</h3>
+          <p>
+            Shell memetakan nama modul ke URL, lalu memanggil <code>import()</code> saat
+            dibutuhkan. Tidak ada build step.
+          </p>
+          <ul class="daftar-ringkas">
+            <li>Lazy load dan berbagi modul</li>
+            <li>Kontrak <code>import</code> / <code>export</code> langsung</li>
+            <li>Tidak ada isolasi gaya atau global</li>
+          </ul>
+          <a class="tautan-panah" href="/import-map/">Buka demo import map <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="bagian" id="bandingkan" aria-labelledby="judul-banding">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Bandingkan</p>
+          <h2 id="judul-banding">Trade-off yang perlu kamu pilih</h2>
+        </div>
+        <p class="muted">
+          Tidak ada pemenang mutlak. Pilihan bergantung pada tingkat isolasi, tim, dan
+          seberapa sering remote berubah.
+        </p>
+      </div>
+
+      <div class="tabel-bungkus">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Aspek</th>
+              <th scope="col">iframe</th>
+              <th scope="col">Web Component</th>
+              <th scope="col">Import map</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Isolasi gaya</td>
+              <td>Total — dokumen punya CSS sendiri.</td>
+              <td>Kuat — Shadow DOM mengunci gaya internal.</td>
+              <td>Tidak ada — semua CSS berbagi satu dokumen.</td>
+            </tr>
+            <tr>
+              <td>Isolasi JavaScript</td>
+              <td>Total — global scope dan error terpisah.</td>
+              <td>Sebagian — DOM terisolasi, global tetap bersama.</td>
+              <td>Tidak ada — modul berbagi global dan runtime.</td>
+            </tr>
+            <tr>
+              <td>Komunikasi</td>
+              <td><code>postMessage</code>, asinkron, data diserialisasi.</td>
+              <td><code>CustomEvent</code>, mengalir di DOM.</td>
+              <td>Panggilan fungsi / <code>import</code> langsung.</td>
+            </tr>
+            <tr>
+              <td>Integrasi layout</td>
+              <td>Kotak tetap; tinggi dan scroll diatur shell.</td>
+              <td>Mengalir seperti elemen biasa.</td>
+              <td>Mengalir seperti elemen biasa.</td>
+            </tr>
+            <tr>
+              <td>SEO &amp; aksesibilitas</td>
+              <td>Paling sulit; konten di dokumen terpisah.</td>
+              <td>Baik; DOM dan fokus tetap di halaman.</td>
+              <td>Baik; DOM dan fokus tetap di halaman.</td>
+            </tr>
+            <tr>
+              <td>Biaya integrasi</td>
+              <td>Rendah untuk mulai, tinggi untuk komunikasi.</td>
+              <td>Sedang; butuh kontrak atribut/event yang jelas.</td>
+              <td>Rendah jika semua pihak memakai ESM.</td>
+            </tr>
+            <tr>
+              <td>Paling cocok untuk</td>
+              <td>Aplikasi legacy, vendor, atau remote yang benar-benar asing.</td>
+              <td>Widget lintas framework yang perlu tampil menyatu.</td>
+              <td>Berbagi modul dan lazy load dalam satu stack.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="bagian" aria-labelledby="kontrak">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Kontrak</p>
+          <h2 id="kontrak">Apa yang kamu pelajari di tiap demo</h2>
+        </div>
+      </div>
+
+      <div class="grid grid--2">
+        <div class="kontrak">
+          <article>
+            <h3>iframe — pesan dua arah</h3>
+            <pre><code>// shell → remote
+iframe.contentWindow.postMessage(
+  { tipe: 'sapa', teks: 'Halo!' },
+  '*'
+);
+
+// remote → shell
+window.parent.postMessage(
+  { tipe: 'balasan', teks: 'Halo juga!' },
+  '*'
+);</code></pre>
+          </article>
+          <article>
+            <h3>Web Component — atribut &amp; event</h3>
+            <pre><code>&lt;tokomicro-product-card
+  nama="Keyboard Mekanik"
+  harga="750000"&gt;
+&lt;/tokomicro-product-card&gt;
+
+kartu.addEventListener('add-to-cart', (e) =&gt; {
+  console.log(e.detail);
+});</code></pre>
+          </article>
+        </div>
+
+        <div class="kontrak">
+          <article>
+            <h3>Import map — nama modul</h3>
+            <pre><code>&lt;script type="importmap"&gt;
+{
+  "imports": {
+    "@lab/remote": "/import-map/remote.js"
+  }
+}
+&lt;/script&gt;
+
+const modul = await import('@lab/remote');</code></pre>
+          </article>
+          <article>
+            <h3>Urutan yang disarankan</h3>
+            <p class="kecil">
+              Mulai dari iframe untuk merasakan isolasi paling ketat. Lanjut ke Web Component
+              untuk melihat isolasi gaya yang lebih nyaman. Terakhir, import map untuk
+              merasakan integrasi paling langsung — sekaligus risikonya.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="bagian" aria-labelledby="alur">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Alur latihan</p>
+          <h2 id="alur">Cara memakai lab ini</h2>
+        </div>
+        <p class="muted">Sekitar 15 menit jika kamu mengikuti urutannya.</p>
+      </div>
+
+      <ol class="alur">
+        <li>
+          <div>
+            <strong>Buka demo iframe</strong>
+            Kirim pesan dari shell, balas dari remote, lalu tekan tombol yang mencoba
+            mengakses DOM shell. Perhatikan error yang muncul.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Buka demo Web Component</strong>
+            Tambahkan produk ke keranjang, lalu nyalakan “serangan gaya”. Bandingkan kartu
+            biasa dengan kartu Shadow DOM.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Buka demo import map</strong>
+            Muat remote, lalu coba modul rusak. Pastikan shell tetap hidup dan pesan error
+            tampil dengan jelas.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Bandingkan dan catat</strong>
+            Buka DevTools → Network dan Elements. Lihat berapa request, di mana CSS berada,
+            dan bagaimana event bergerak.
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="bagian" aria-label="Catatan penting">
+      <div class="catatan">
+        <p>
+          <strong>Catatan tentang satu origin.</strong> Semua demo dilayani dari
+          <code>http://localhost:4180</code> supaya mudah dijalankan. Di produksi, remote
+          sering berada di origin berbeda. Saat itu terjadi, kamu perlu memikirkan CORS,
+          CSP, autentikasi, <code>targetOrigin</code> yang spesifik, dan versioning modul.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="lab-footer">
+    <div class="lab-footer__inner">
+      <span>Lab Micro-Frontend · iframe, Web Component, import map</span>
+      <span>Node.js murni · tanpa dependensi</span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -100,6 +100,26 @@ async function main() {
     'content/typescript/generics.js',
     'content/typescript/modules.js',
     'content/typescript/decorators.js',
+    'content/http/quiz-questions.js',
+    'content/http/01-persiapan-laboratorium.js',
+    'content/http/02-fondasi-http.js',
+    'content/http/03-request-response.js',
+    'content/http/04-url-query-body.js',
+    'content/http/05-method-semantik.js',
+    'content/http/06-status-code.js',
+    'content/http/07-header-penting.js',
+    'content/http/08-body-negotiation.js',
+    'content/http/09-cookie-session.js',
+    'content/http/10-autentikasi-otorisasi.js',
+    'content/http/11-caching-conditional.js',
+    'content/http/12-https-tls.js',
+    'content/http/13-cors-keamanan.js',
+    'content/http/14-http-versi.js',
+    'content/http/15-proxy-cdn.js',
+    'content/http/16-desain-api.js',
+    'content/http/17-debugging-curl.js',
+    'content/http/18-testing-diagnosis.js',
+    'content/http/19-proyek-akhir.js',
     'content/git/quiz-questions.js',
     'content/git/pengenalan.js',
     'content/git/instalasi.js',
@@ -253,16 +273,26 @@ async function main() {
     'content/fullstack/11-integrasi-frontend.js',
     'content/fullstack/12-containerisasi-rilis.js',
     'content/micro-frontend/quiz-questions.js',
-    'content/micro-frontend/01-pengenalan.js',
+    'content/micro-frontend/01-konsep.js',
     'content/micro-frontend/02-anatomi-komposisi.js',
-    'content/micro-frontend/03-shell-routing.js',
-    'content/micro-frontend/04-komunikasi-state.js',
-    'content/micro-frontend/05-isolasi-gaya.js',
-    'content/micro-frontend/06-data-api-auth.js',
-    'content/micro-frontend/07-build-deploy.js',
-    'content/micro-frontend/08-pengujian-observability.js',
-    'content/micro-frontend/09-tim-cicd.js',
-    'content/micro-frontend/10-proyek-tokomicro.js',
+    'content/micro-frontend/03-persiapan-monorepo.js',
+    'content/micro-frontend/04-shell-react.js',
+    'content/micro-frontend/05-remote-module-federation.js',
+    'content/micro-frontend/06-routing-kontrak.js',
+    'content/micro-frontend/07-state-event.js',
+    'content/micro-frontend/08-design-system.js',
+    'content/micro-frontend/09-data-api.js',
+    'content/micro-frontend/10-auth-otorisasi.js',
+    'content/micro-frontend/11-manifest-flags.js',
+    'content/micro-frontend/12-resilience.js',
+    'content/micro-frontend/13-testing.js',
+    'content/micro-frontend/14-observability.js',
+    'content/micro-frontend/15-performa.js',
+    'content/micro-frontend/16-rilis-rollback.js',
+    'content/micro-frontend/17-cicd-tim.js',
+    'content/micro-frontend/18-migrasi-legacy.js',
+    'content/micro-frontend/19-governance.js',
+    'content/micro-frontend/20-proyek-akhir.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -302,6 +332,59 @@ async function main() {
   const types = new Set();
   CONTENT.html.lessons.forEach(l => l.sections.forEach(s => types.add(s.type)));
   check('semua jenis section dipakai', ['text','example','tip','warn','live','vocab'].every(t => types.has(t)));
+
+  // 4a2) konten HTTP: 19 pelajaran + 40 soal kuis + laboratorium lokal
+  const httpC = CONTENT.get('http');
+  check('HTTP terdaftar & status ready', !!httpC && httpC.status === 'ready');
+  check('19 pelajaran HTTP', httpC.lessons.length === 19);
+  const httpIds = httpC.lessons.map(l => l.id);
+  check('id pelajaran HTTP unik', new Set(httpIds).size === httpIds.length);
+  check('judul, durasi, bab, intro, objectives & recap HTTP terisi',
+    httpC.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  let httpBadSection = 0, httpFig = 0;
+  for (const l of httpC.lessons) {
+    const typesL = new Set(l.sections.map(s => s.type));
+    if (typesL.size < 3) httpBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) httpFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) httpBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) httpBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) httpBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) httpBadSection++;
+        if ((s.code || '').includes('`') || (s.code || '').includes('${')) httpBadSection++;
+      }
+      if (s.type === 'live') httpBadSection++;
+    }
+  }
+  check('struktur section pelajaran HTTP valid', httpBadSection === 0);
+  check('figur ilustrasi HTTP tersebar (>= 4 pelajaran)', httpFig >= 4);
+  check('40 soal kuis HTTP lengkap (4 opsi, jawaban & penjelasan) & id unik httpNN',
+    httpC.quizPool.length === 40 &&
+    new Set(httpC.quizPool.map(q => q.id)).size === httpC.quizPool.length &&
+    httpC.quizPool.every(q => /^http\d{2}$/.test(q.id)) &&
+    !httpC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const httpRefs = (httpC.refs || []).map(r => r.url);
+  check('rujukan HTTP (MDN, RFC 9110, RFC 9111, curl)',
+    ['https://developer.mozilla.org/en-US/docs/Web/HTTP',
+     'https://www.rfc-editor.org/rfc/rfc9110',
+     'https://www.rfc-editor.org/rfc/rfc9111',
+     'https://curl.se/docs/']
+      .every(u => httpRefs.includes(u)));
+  check('laboratorium HTTP tersedia (server, proxy, tes, README, kumpulan request, logo)',
+    fs.existsSync(path.join(ROOT, 'examples/http-lab/server.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/http-lab/proxy.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/http-lab/lab.test.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/http-lab/README.md')) &&
+    fs.existsSync(path.join(ROOT, 'examples/http-lab/requests.http')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/http.svg')));
+  check('logo HTTP berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/http.svg'), 'utf8').includes('<svg'));
 
   // 4b) konten CSS: 18 pelajaran = 18 topik di info.md, terdaftar & siap
   check('CSS status ready', CONTENT.css.status === 'ready');
@@ -758,10 +841,10 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/services/notification/cmd/main.go')) &&
     fs.existsSync(path.join(ROOT, 'examples/fullstack-microservice/frontend/src/App.jsx')));
 
-  // 4m) konten micro-frontend: 10 pelajaran + 30 soal kuis
+  // 4m) konten micro-frontend: 20 pelajaran React + 60 soal kuis
   const mfC = CONTENT.get('microfrontend');
   check('microfrontend terdaftar & status ready', !!mfC && mfC.status === 'ready');
-  check('10 pelajaran micro-frontend', mfC.lessons.length === 10);
+  check('20 pelajaran micro-frontend', mfC.lessons.length === 20);
   const mfIds = mfC.lessons.map(l => l.id);
   check('id pelajaran micro-frontend unik', new Set(mfIds).size === mfIds.length);
   check('judul, durasi, bab, intro, objectives & recap micro-frontend terisi',
@@ -769,46 +852,81 @@ async function main() {
       l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
       Array.isArray(l.objectives) && l.objectives.length >= 4 &&
       Array.isArray(l.recap) && l.recap.length >= 4));
-  let mfBadSection = 0, mfFig = 0, mfLive = 0;
+  let mfBadSection = 0;
   for (const l of mfC.lessons) {
     const types = new Set(l.sections.map(s => s.type));
-    if (types.size < 3) mfBadSection++;
-    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) mfFig++;
+    if (types.size < 4) mfBadSection++;
     if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) mfBadSection++;
     if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) mfBadSection++;
     if (!l.sections.some(s => s.type === 'example' && s.code)) mfBadSection++;
+    const html = l.sections.map(s => `${s.title || ''} ${s.html || ''} ${s.text || ''} ${Array.isArray(s.explain) ? s.explain.join(' ') : ''}`).join(' ');
+    if (!/praktik|latihan/i.test(html)) mfBadSection++;
+    if (!/checkpoint|verifikasi/i.test(html)) mfBadSection++;
     for (const s of l.sections) {
       if (s.type === 'example') {
         if (s.output !== false || !s.explain || s.explain.length < 2) mfBadSection++;
       }
-      if (s.type === 'live') mfLive++;
     }
   }
-  check('struktur section pelajaran micro-frontend valid', mfBadSection === 0);
-  check('tiap pelajaran micro-frontend memuat figur ilustrasi (10/10)', mfFig === 10);
-  check('latihan live tersedia di pelajaran micro-frontend', mfLive >= 6);
-  check('30 soal kuis micro-frontend lengkap (4 opsi, jawaban & penjelasan) & id unik mfNN',
-    mfC.quizPool.length === 30 &&
+  check('struktur section pelajaran micro-frontend valid (praktik + checkpoint + vocab)', mfBadSection === 0);
+  check('60 soal kuis micro-frontend lengkap (4 opsi, jawaban & penjelasan) & id unik mfNN',
+    mfC.quizPool.length === 60 &&
     new Set(mfC.quizPool.map(q => q.id)).size === mfC.quizPool.length &&
     mfC.quizPool.every(q => /^mf\d{2}$/.test(q.id)) &&
     !mfC.quizPool.some(q =>
       !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
       typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
   const mfRefs = (mfC.refs || []).map(r => r.url);
-  check('rujukan micro-frontend (Martin Fowler, module federation, MDN)',
+  check('rujukan micro-frontend (Fowler, Module Federation, React, Vite, Playwright, Rspack, Storybook, Web Vitals)',
     ['https://martinfowler.com/articles/micro-frontends.html',
      'https://webpack.js.org/concepts/module-federation/',
-     'https://developer.mozilla.org/en-US/docs/Web/API/Web_components']
+     'https://react.dev/reference/react/useSyncExternalStore',
+     'https://vite.dev/guide/',
+     'https://github.com/originjs/vite-plugin-federation',
+     'https://playwright.dev/docs/intro',
+     'https://rspack.dev/',
+     'https://storybook.js.org/docs',
+     'https://web.dev/articles/vitals']
       .every(u => mfRefs.includes(u)));
-  check('proyek contoh examples/micro-frontend tersedia (server + shell + 3 remote + shared)',
+  check('proyek contoh React tersedia (server + shell + 4 remote + paket bersama + tes)',
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/server.js')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/shell/src/App.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/shell/src/ErrorBoundary.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/shell/src/remoteLoader.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/shell/vite.config.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/header/src/App.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/products/src/App.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/cart/src/App.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/apps/account/src/App.tsx')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/packages/contracts/src/index.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/packages/shared/src/index.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/packages/ui-kit/src/index.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/tests/shared.test.ts')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/e2e-smoke.mjs')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/scripts/release.mjs')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/cdn/manifest.json')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-react/.github/workflows/ci.yml')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/microfrontend.svg')));
+  check('lab micro-frontend tersedia (teknik, webpack/rspack, ssr)',
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-techniques/README.md')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-webpack/README.md')) &&
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend-ssr/README.md')));
+  const shellApp = fs.readFileSync(
+    path.join(ROOT, 'examples/micro-frontend-react/apps/shell/src/App.tsx'), 'utf8');
+  const serverSource = fs.readFileSync(
+    path.join(ROOT, 'examples/micro-frontend-react/server.js'), 'utf8');
+  check('otorisasi admin tersedia (guard /akun/admin + endpoint scope=all)',
+    shellApp.includes('whenPath="/akun/admin"') &&
+    serverSource.includes("scope') === 'all'") &&
+    serverSource.includes('user.role !== \'admin\''));
+  check('proyek pembanding vanilla tersedia (server + shell + 3 remote + shared)',
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/server.js')) &&
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shell/shell.js')) &&
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shared/bus.js')) &&
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/shared/store.js')) &&
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/header/header.js')) &&
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/products/products.js')) &&
-    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/cart/cart.js')) &&
-    fs.existsSync(path.join(ROOT, 'assets/logos/microfrontend.svg')));
+    fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/cart/cart.js')));
   check('logo microfrontend.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/microfrontend.svg'), 'utf8').includes('<svg'));
 

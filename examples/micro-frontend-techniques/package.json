@@ -1,0 +1,11 @@
+{
+  "name": "micro-frontend-techniques",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lab membandingkan iframe, Web Component, dan import map tanpa dependensi.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test.mjs"
+  }
+}

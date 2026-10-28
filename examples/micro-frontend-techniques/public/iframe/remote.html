@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote TokoMicro — di dalam iframe</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --kertas: #fff7ed;
+      --kertas-2: #ffedd5;
+      --tinta: #3b2416;
+      --tinta-lembut: #7c5a43;
+      --oranye: #c2410c;
+      --oranye-tua: #9a3412;
+      --garis: #fed7aa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 1.1rem;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 40%),
+        var(--kertas);
+      color: var(--tinta);
+      font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      margin: 0 0 0.6rem;
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0 0 0.75rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    code {
+      padding: 0.08rem 0.3rem;
+      border: 1px solid var(--garis);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--oranye-tua);
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.86em;
+    }
+
+    .remote-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 2px solid var(--tinta);
+    }
+
+    .remote-header p {
+      margin: 0.25rem 0 0;
+      color: var(--tinta-lembut);
+      font-size: 0.78rem;
+    }
+
+    .cap {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border: 1px solid var(--tinta);
+      border-radius: 3px;
+      background: var(--kertas-2);
+      color: var(--tinta);
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .bagian {
+      margin-top: 1.1rem;
+      padding: 0.9rem;
+      border: 1px solid var(--garis);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .bagian__kepala {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .status {
+      color: var(--tinta-lembut);
+      font-size: 0.72rem;
+    }
+
+    .status.galat {
+      color: #b91c1c;
+      font-weight: 700;
+    }
+
+    .daftar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .produk {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding: 0.5rem;
+      border: 1px solid var(--garis);
+      border-radius: 5px;
+      background: #fff;
+    }
+
+    .produk__emoji {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .produk h3 {
+      margin: 0.15rem 0 0;
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .produk__kategori {
+      color: var(--tinta-lembut);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .produk__harga {
+      margin-top: auto;
+      padding-top: 0.3rem;
+      color: var(--oranye-tua);
+      font-family: Georgia, serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .produk__stok {
+      color: var(--tinta-lembut);
+      font-size: 0.66rem;
+    }
+
+    .tombol {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0.7rem;
+      border: 1px solid var(--oranye);
+      border-radius: 4px;
+      background: var(--oranye);
+      color: #fff;
+      font: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tombol:hover {
+      background: var(--oranye-tua);
+    }
+
+    .tombol--garis {
+      background: transparent;
+      color: var(--oranye-tua);
+    }
+
+    .tombol--garis:hover {
+      background: var(--kertas-2);
+    }
+
+    .baris-aksi {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .pesan {
+      display: grid;
+      gap: 0.35rem;
+      max-height: 105px;
+      padding: 0.55rem;
+      overflow: auto;
+      border: 1px dashed var(--garis);
+      border-radius: 4px;
+      background: #fff;
+      font-size: 0.74rem;
+    }
+
+    .pesan:empty::before {
+      content: "Belum ada pesan dari shell.";
+      color: var(--tinta-lembut);
+    }
+
+    .pesan__item {
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid #ffedd5;
+    }
+
+    .pesan__item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .pesan__waktu {
+      color: var(--tinta-lembut);
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.62rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 0.3rem;
+      margin-top: 0.6rem;
+    }
+
+    .field label {
+      color: var(--tinta-lembut);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border: 1px solid var(--garis);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--tinta);
+      font: inherit;
+      font-size: 0.8rem;
+    }
+
+    .catatan {
+      margin-top: 0.7rem;
+      color: var(--tinta-lembut);
+      font-size: 0.7rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="remote-header">
+    <div>
+      <h1>TokoMicro Remote</h1>
+      <p>Dokumen terpisah di dalam iframe. CSS dan global scope-nya sendiri.</p>
+    </div>
+    <span class="cap">remote</span>
+  </header>
+
+  <section class="bagian" aria-labelledby="judul-pesan">
+    <h2 id="judul-pesan">Pesan dari shell</h2>
+    <div id="pesan-masuk" class="pesan" aria-live="polite" aria-label="Pesan yang diterima dari shell"></div>
+
+    <div class="field">
+      <label for="balasan">Balas ke shell</label>
+      <input id="balasan" type="text" placeholder="Tulis balasan untuk shell…" autocomplete="off">
+    </div>
+    <div class="baris-aksi">
+      <button id="kirim-balasan" class="tombol" type="button">Kirim balasan</button>
+      <button id="coba-dom" class="tombol tombol--garis" type="button">Coba akses DOM shell</button>
+    </div>
+  </section>
+
+  <section class="bagian" aria-labelledby="judul-katalog">
+    <div class="bagian__kepala">
+      <h2 id="judul-katalog">Katalog dari API</h2>
+      <span id="status-produk" class="status" role="status">Memuat katalog…</span>
+    </div>
+    <div id="daftar-produk" class="daftar" aria-live="polite"></div>
+    <div class="baris-aksi">
+      <button id="ulangi-produk" class="tombol tombol--garis" type="button" hidden>Coba lagi</button>
+    </div>
+    <p class="catatan">
+      Remote ini berjalan dengan <code>sandbox="allow-scripts"</code> tanpa
+      <code>allow-same-origin</code>. Karena itu <code>window.parent.document</code> akan
+      ditolak browser, dan <code>fetch</code> ke API membutuhkan header CORS dari server.
+    </p>
+  </section>
+
+  <script>
+    const daftarProduk = document.querySelector('#daftar-produk');
+    const statusProduk = document.querySelector('#status-produk');
+    const ulangiProduk = document.querySelector('#ulangi-produk');
+    const pesanMasuk = document.querySelector('#pesan-masuk');
+    const inputBalasan = document.querySelector('#balasan');
+    const tombolBalasan = document.querySelector('#kirim-balasan');
+    const tombolDom = document.querySelector('#coba-dom');
+
+    function formatRupiah(nilai) {
+      const angka = Number(nilai);
+      if (!Number.isFinite(angka)) return 'Rp 0';
+      const bulat = Math.round(angka);
+      return `Rp ${String(Math.abs(bulat)).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
+    }
+
+    function waktu() {
+      return new Intl.DateTimeFormat('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).format(new Date());
+    }
+
+    function tambahPesan(teks, jenis = 'masuk') {
+      const item = document.createElement('div');
+      item.className = 'pesan__item';
+
+      const waktuEl = document.createElement('div');
+      waktuEl.className = 'pesan__waktu';
+      waktuEl.textContent = `${waktu()} · ${jenis}`;
+
+      const isi = document.createElement('div');
+      isi.textContent = teks;
+
+      item.append(waktuEl, isi);
+      pesanMasuk.append(item);
+      pesanMasuk.scrollTop = pesanMasuk.scrollHeight;
+    }
+
+    function buatKartu(produk) {
+      const kartu = document.createElement('article');
+      kartu.className = 'produk';
+
+      const emoji = document.createElement('span');
+      emoji.className = 'produk__emoji';
+      emoji.textContent = produk.emoji || '📦';
+
+      const kategori = document.createElement('span');
+      kategori.className = 'produk__kategori';
+      kategori.textContent = produk.kategori;
+
+      const nama = document.createElement('h3');
+      nama.textContent = produk.nama;
+
+      const harga = document.createElement('span');
+      harga.className = 'produk__harga';
+      harga.textContent = formatRupiah(produk.harga);
+
+      const stok = document.createElement('span');
+      stok.className = 'produk__stok';
+      stok.textContent = produk.stok > 0 ? `Stok ${produk.stok}` : 'Stok habis';
+
+      kartu.append(emoji, kategori, nama, harga, stok);
+      return kartu;
+    }
+
+    async function muatProduk() {
+      statusProduk.className = 'status';
+      statusProduk.textContent = 'Memuat katalog…';
+      ulangiProduk.hidden = true;
+
+      try {
+        const respons = await fetch('/api/produk', { headers: { Accept: 'application/json' } });
+        if (!respons.ok) throw new Error(`HTTP ${respons.status}`);
+
+        const hasil = await respons.json();
+        daftarProduk.replaceChildren(...hasil.data.map(buatKartu));
+        statusProduk.textContent = `${hasil.total} produk dimuat lewat API.`;
+      } catch (err) {
+        statusProduk.className = 'status galat';
+        statusProduk.textContent = `Gagal memuat katalog: ${err.message}`;
+        ulangiProduk.hidden = false;
+      }
+    }
+
+    function kirimBalasan() {
+      const teks = inputBalasan.value.trim();
+      if (!teks) {
+        inputBalasan.focus();
+        return;
+      }
+
+      window.parent.postMessage({ tipe: 'balasan', teks }, '*');
+      tambahPesan(`Kamu: ${teks}`, 'keluar');
+      inputBalasan.value = '';
+      inputBalasan.focus();
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object' || data.tipe !== 'sapa') return;
+      if (typeof data.teks !== 'string') return;
+
+      const teks = data.teks.slice(0, 300);
+      tambahPesan(`Shell: ${teks}`, 'masuk');
+
+      window.parent.postMessage(
+        { tipe: 'balasan', teks: `Remote menerima: “${teks}”` },
+        '*'
+      );
+    });
+
+    ulangiProduk.addEventListener('click', muatProduk);
+    tombolBalasan.addEventListener('click', kirimBalasan);
+
+    inputBalasan.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        kirimBalasan();
+      }
+    });
+
+    tombolDom.addEventListener('click', () => {
+      try {
+        const judul = window.parent.document.title;
+        tambahPesan(`Akses berhasil: ${judul}`, 'sistem');
+      } catch (err) {
+        tambahPesan(
+          `Akses ditolak (${err.name}). Ini bukti isolasi dokumen.`,
+          'sistem'
+        );
+      }
+    });
+
+    muatProduk();
+
+    window.parent.postMessage(
+      { tipe: 'siap', teks: 'Remote selesai dimuat di dalam iframe.' },
+      '*'
+    );
+  </script>
+</body>
+</html>

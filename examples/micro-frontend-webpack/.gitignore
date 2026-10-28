@@ -1,0 +1,19 @@
+# Dependensi — jangan pernah commit node_modules
+node_modules/
+
+# Hasil build
+dist/
+*.tsbuildinfo
+
+# macOS metadata
+._*
+.DS_Store
+
+# Log dan environment lokal
+*.log
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/

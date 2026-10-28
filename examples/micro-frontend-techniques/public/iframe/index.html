@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo iframe: isolasi total dengan komunikasi postMessage.">
+  <title>Demo iframe — Lab Micro-Frontend</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/iframe/shell.css">
+</head>
+<body class="demo-iframe">
+  <header class="lab-header">
+    <div class="lab-header__inner">
+      <a class="merek" href="/">
+        <span class="merek__tanda">MF</span>
+        <span>Lab Micro-Frontend</span>
+      </a>
+      <nav class="lab-nav" aria-label="Navigasi lab">
+        <a href="/iframe/" aria-current="page">iframe</a>
+        <a href="/web-component/">Web Component</a>
+        <a href="/import-map/">Import map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lab-main">
+    <section class="demo-intro">
+      <p class="eyebrow">Teknik 01 · iframe</p>
+      <h1>Isolasi total, komunikasi terbatas.</h1>
+      <p class="lede">
+        Shell dan remote hidup di dua dokumen terpisah. Remote memakai tema terang dan font
+        serif, sementara shell tetap gelap — CSS keduanya tidak saling bocor. Harga yang kamu
+        bayar adalah komunikasi: semua pesan harus melewati <code>postMessage</code>.
+      </p>
+    </section>
+
+    <div class="iframe-grid">
+      <section class="panel" aria-labelledby="judul-shell">
+        <div class="panel__kepala">
+          <div>
+            <h2 id="judul-shell">Shell — dokumen induk</h2>
+            <p class="kecil">Kirim pesan ke remote, lalu lihat balasannya di log.</p>
+          </div>
+          <span class="badge">window.parent</span>
+        </div>
+
+        <div class="field">
+          <label for="pesan">Pesan untuk remote</label>
+          <input id="pesan" type="text" value="Halo dari shell! Apa kabar?" autocomplete="off">
+        </div>
+
+        <div class="aksi">
+          <button id="kirim" class="tombol tombol--utama" type="button">Kirim via postMessage</button>
+          <button id="bersihkan" class="tombol tombol--hantu tombol--kecil" type="button">Bersihkan log</button>
+        </div>
+
+        <p class="kecil iframe-catatan">
+          Shell mengirim ke <code>iframe.contentWindow</code> dengan <code>targetOrigin = '*'</code>.
+          Remote berjalan di dalam <code>sandbox</code> tanpa <code>allow-same-origin</code>,
+          sehingga origin-nya menjadi opaque (<code>null</code>).
+        </p>
+
+        <div id="log" class="log" aria-live="polite" aria-label="Log pesan iframe"></div>
+      </section>
+
+      <section class="panel panel-remote" aria-labelledby="judul-remote">
+        <div class="panel__kepala">
+          <div>
+            <h2 id="judul-remote">Remote — di dalam iframe</h2>
+            <p class="kecil">Dokumen ini punya CSS, global scope, dan siklus hidup sendiri.</p>
+          </div>
+          <span class="badge">sandbox="allow-scripts"</span>
+        </div>
+
+        <div class="bingkai-iframe">
+          <iframe
+            id="remote"
+            src="/iframe/remote.html"
+            title="Remote katalog TokoMicro di dalam iframe"
+            sandbox="allow-scripts"></iframe>
+        </div>
+
+        <p class="kecil iframe-catatan">
+          Tinggi iframe ditentukan shell (740 px di layar lebar, 580 px di layar kecil).
+          Remote tidak bisa mengubah layout halaman induk, dan shell tidak bisa membaca DOM
+          remote.
+        </p>
+      </section>
+    </div>
+
+    <section class="bagian" aria-labelledby="pelajari-iframe">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Yang perlu kamu amati</p>
+          <h2 id="pelajari-iframe">Isolasi bekerja, komunikasi jadi manual</h2>
+        </div>
+      </div>
+
+      <div class="grid grid--3">
+        <article class="panel kecil-panel">
+          <h3>1. Gaya tidak bocor</h3>
+          <p class="kecil">
+            Shell memakai latar gelap. Remote memakai latar krem dan heading serif. Tidak ada
+            aturan CSS shell yang mengubah tombol di dalam iframe.
+          </p>
+        </article>
+        <article class="panel kecil-panel">
+          <h3>2. DOM tidak bisa disentuh</h3>
+          <p class="kecil">
+            Tekan <strong>Coba akses DOM shell</strong> di remote. Browser akan menolak akses
+            karena dokumen remote berjalan di origin opaque.
+          </p>
+        </article>
+        <article class="panel kecil-panel">
+          <h3>3. Semua lewat pesan</h3>
+          <p class="kecil">
+            Tidak ada import fungsi atau state bersama. Shell dan remote hanya bertukar objek
+            JSON lewat <code>postMessage</code>, dan masing-masing harus memvalidasi bentuk
+            pesan.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="lab-footer">
+    <div class="lab-footer__inner">
+      <a href="/">← Kembali ke halaman utama</a>
+      <span>iframe · isolasi total · postMessage</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/iframe/shell.js"></script>
+</body>
+</html>

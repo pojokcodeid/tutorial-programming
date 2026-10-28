@@ -5,7 +5,8 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (41 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, dan **Micro-Frontend (10 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, dan **Micro-Frontend React (20 pelajaran)**
+- ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
 - ✅ Contoh kode dengan pewarnaan syntax (highlight.js, termasuk grammar khusus **CFML** buatan sendiri di `js/hljs-cfml.js`)
@@ -44,6 +45,8 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/css/          # materi tutorial CSS (Bahasa Indonesia)
 ├── content/js/           # materi tutorial JavaScript (Bahasa Indonesia)
 ├── content/typescript/   # materi tutorial TypeScript (Bahasa Indonesia)
+├── content/http/         # materi tutorial HTTP (Bahasa Indonesia)
+├── examples/http-lab/    # laboratorium HTTP lokal: server, proxy, tes, dan kumpulan request
 ├── content/git/          # materi tutorial Git & GitHub (Bahasa Indonesia)
 ├── content/sql/          # materi tutorial SQL (Bahasa Indonesia)
 ├── content/react/        # materi tutorial React JS (Bahasa Indonesia)
@@ -64,9 +67,12 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/microservice/ # materi tutorial Microservices dengan Go (Bahasa Indonesia)
 ├── content/fullstack/    # materi tutorial Contoh Fullstack Microservices (Bahasa Indonesia)
 ├── examples/fullstack-microservice/ # contoh proyek nyata TokoKita: MariaDB + 3 service Go + Redis + RabbitMQ + React/AntD (dari materi fullstack)
-├── content/micro-frontend/ # materi tutorial Micro-Frontend (Bahasa Indonesia)
-├── examples/micro-frontend/ # contoh proyek nyata TokoMicro: shell + 3 remote (header, products, cart) + shared bus/store tanpa bundler (dari materi micro-frontend)
-├── examples/micro-frontend-react/ # contoh yang sama versi React 18: shell + 3 remote dengan Vite + Module Federation (dari materi micro-frontend)
+├── content/micro-frontend/ # materi tutorial Micro-Frontend React + TypeScript (20 pelajaran)
+├── examples/micro-frontend-react/ # contoh utama TokoMicro React 18 + TypeScript: shell + 4 remote + manifest dinamis + CDN berversi (dari materi micro-frontend)
+├── examples/micro-frontend/ # pembanding konsep tanpa bundler: shell + 3 remote + shared bus/store (lampiran materi micro-frontend)
+├── examples/micro-frontend-techniques/ # lab iframe, Web Component, dan import map
+├── examples/micro-frontend-webpack/ # lab Webpack 5 + varian Rspack
+├── examples/micro-frontend-ssr/ # lab CSR vs SSR + hydration
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── content/luceemvc/     # materi tutorial Framework MVC Lucee CFML (Bahasa Indonesia)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
@@ -117,11 +123,36 @@ __CODE__
 }
 ```
 
+## Laboratorium HTTP
+
+Materi HTTP dilengkapi laboratorium lokal tanpa dependensi. Jalankan dari folder utama proyek:
+
+```bash
+node examples/http-lab/server.js
+# buka http://localhost:8787/
+```
+
+Perintah `curl` di setiap pelajaran bisa langsung dicoba. Untuk latihan proxy:
+
+```bash
+node examples/http-lab/proxy.js
+curl -i http://localhost:8788/health
+```
+
+Jalankan pengujian laboratorium dengan:
+
+```bash
+node --test examples/http-lab/lab.test.js
+```
+
+Panduan lengkap endpoint, akun demo, HTTPS lokal, dan alur latihan ada di `examples/http-lab/README.md`. Laboratorium ini hanya untuk belajar di komputer sendiri dan **bukan** konfigurasi produksi.
+
 ## Referensi materi
 
 - **HTML** — https://developer.mozilla.org/en-US/docs/Web/HTML · https://www.w3schools.com/Html/ · https://web.dev/learn/html/welcome
 - **CSS** — https://developer.mozilla.org/en-US/docs/Web/CSS · https://www.w3schools.com/css/ · https://web.dev/learn/css/welcome
 - **JavaScript** — https://javascript.info/ · https://developer.mozilla.org/en-US/docs/Web/JavaScript · https://www.javascripttutorial.net/ · https://www.w3schools.com/js/
+- **HTTP** — https://developer.mozilla.org/en-US/docs/Web/HTTP · https://www.rfc-editor.org/rfc/rfc9110 · https://www.rfc-editor.org/rfc/rfc9111 · https://curl.se/docs/
 - **Git & GitHub** — https://git-scm.com/book/id/v2 · https://www.w3schools.com/git/
 - **SQL** — https://www.w3schools.com/sql/default.asp · https://www.sqltutorial.org/
 - **React JS** — https://react.dev/learn · https://www.w3schools.com/react/default.asp · https://www.javascripttutorial.net/react-tutorial/

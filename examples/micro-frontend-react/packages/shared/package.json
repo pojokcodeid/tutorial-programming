@@ -1,9 +1,21 @@
 {
   "name": "@tokomicro/shared",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "State keranjang & utilitas yang dipakai bersama seluruh micro-frontend TokoMicro.",
-  "main": "./index.js",
-  "exports": "./index.js"
+  "description": "State keranjang, event bus, dan utilitas yang dipakai bersama seluruh micro-frontend TokoMicro.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tokomicro/contracts": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
 }

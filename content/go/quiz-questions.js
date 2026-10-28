@@ -662,5 +662,40 @@ window.GO_QUIZ_POOL = [
     options: ['Berkas tumbuh tanpa batas hingga disk penuh dan service mati', 'Log menjadi tidak terstruktur', 'Program menjadi lebih lambat dari awal', 'Prefix tidak tercetak'],
     answer: 0,
     explain: 'Tanpa kebijakan retensi (batas ukuran, jumlah cadangan, lama simpan), log akan menghabiskan disk. Library seperti lumberjack mengatur rotasinya.'
+  },
+  {
+    id: 'g95',
+    q: 'Untuk menjalankan hanya subtest bernama sukses pada TestBayar, perintahnya…',
+    options: ['go test -run TestBayar/sukses', 'go test -sub TestBayar sukses', 'go test TestBayar.sukses', 'go test -only TestBayar'],
+    answer: 0,
+    explain: '-run menerima pola regex dengan pemisah garis miring untuk tingkat subtest: go test -run TestBayar/sukses -v.'
+  },
+  {
+    id: 'g96',
+    q: 'Fungsi t.TempDir() pada tes Go berguna untuk…',
+    options: ['Membuat folder unik per tes yang otomatis dibersihkan', 'Menyimpan berkas tes secara permanen', 'Mengubah direktori kerja package', 'Membuat file sementara di memori'],
+    answer: 0,
+    explain: 't.TempDir() memberi direktori bersih yang berbeda tiap tes dan dihapus setelah tes selesai, sehingga tes tidak saling menimpa.'
+  },
+  {
+    id: 'g97',
+    q: 'Cara menguji handler HTTP tanpa membuka port adalah…',
+    options: ['httptest.NewRequest + httptest.NewRecorder lalu panggil handler', 'http.ListenAndServe pada port 80', 'Menjalankan server dengan go run lalu curl', 'Menulis permintaan ke berkas lalu membacanya'],
+    answer: 0,
+    explain: 'httptest membuat permintaan palsu dan merekam respons; handler dipanggil langsung sebagai fungsi biasa sehingga tes sangat cepat.'
+  },
+  {
+    id: 'g98',
+    q: 'Dalam istilah test doubles, implementasi sederhana yang benar-benar bekerja (mis. repository di memori tanpa SQL) disebut…',
+    options: ['Fake', 'Stub', 'Mock', 'Spy'],
+    answer: 0,
+    explain: 'Fake adalah implementasi nyata versi ringan (biasanya in-memori). Stub hanya mengembalikan nilai tetap, mock memeriksa ekspektasi, dan spy mencatat pemanggilan.'
+  },
+  {
+    id: 'g99',
+    q: 'Pada testify, perbedaan utama require dan assert adalah…',
+    options: ['require menghentikan tes saat gagal, assert tetap lanjut', 'require tidak butuh import, assert butuh', 'assert hanya untuk string', 'require berjalan paralel, assert tidak'],
+    answer: 0,
+    explain: 'require.ErrorIs sejenis menghentikan fungsi tes begitu gagal (untuk prasyarat), sedangkan assert hanya mencatat kegagalan dan melanjutkan pemeriksaan berikutnya.'
   }
 ];

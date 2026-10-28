@@ -1,0 +1,194 @@
+/**
+ * Design token TokoMicro.
+ *
+ * Remote tidak menulis warna langsung. Semua memakai var(--tm-*), sehingga
+ * tema terang/gelap cukup diganti di satu tempat.
+ */
+:root,
+[data-theme='light'] {
+  --tm-bg: #f5f7fb;
+  --tm-card: #ffffff;
+  --tm-text: #1c2333;
+  --tm-text-2: #525a6b;
+  --tm-muted: #7b8494;
+  --tm-border: #e3e8f0;
+  --tm-accent: #4f46e5;
+  --tm-accent-soft: #eef2ff;
+  --tm-green: #16a34a;
+  --tm-red: #dc2626;
+  --tm-radius: 12px;
+  --tm-radius-sm: 9px;
+  --tm-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tm-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --tm-shadow: 0 8px 24px rgba(28, 35, 51, 0.08);
+}
+
+[data-theme='dark'] {
+  --tm-bg: #0f1420;
+  --tm-card: #171e2e;
+  --tm-text: #eef2ff;
+  --tm-text-2: #b6c0d4;
+  --tm-muted: #8b97ad;
+  --tm-border: #2a3448;
+  --tm-accent: #818cf8;
+  --tm-accent-soft: #1e2540;
+  --tm-green: #4ade80;
+  --tm-red: #f87171;
+  --tm-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--tm-font);
+  background: var(--tm-bg);
+  color: var(--tm-text);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--tm-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.tm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--tm-border);
+  background: var(--tm-card);
+  color: var(--tm-text);
+  padding: 8px 16px;
+  border-radius: var(--tm-radius-sm);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tm-btn:hover:not(:disabled) {
+  border-color: var(--tm-accent);
+  color: var(--tm-accent);
+}
+
+.tm-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--tm-accent) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.tm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tm-btn--primary {
+  background: var(--tm-accent);
+  border-color: var(--tm-accent);
+  color: #fff;
+}
+
+.tm-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  color: #fff;
+}
+
+.tm-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--tm-text-2);
+}
+
+.tm-btn--danger {
+  background: var(--tm-red);
+  border-color: var(--tm-red);
+  color: #fff;
+}
+
+.tm-btn--sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.tm-btn--lg {
+  padding: 12px 20px;
+  font-size: 15px;
+}
+
+.tm-card {
+  background: var(--tm-card);
+  border: 1px solid var(--tm-border);
+  border-radius: var(--tm-radius);
+  padding: 18px;
+  box-shadow: var(--tm-shadow);
+}
+
+.tm-card__title {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.tm-card__body {
+  color: var(--tm-text-2);
+  font-size: 14px;
+}
+
+.tm-card__footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--tm-border);
+}
+
+.tm-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--tm-accent-soft);
+  color: var(--tm-accent);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+}
+
+.tm-badge--solid {
+  background: var(--tm-accent);
+  color: #fff;
+}
+
+.tm-badge--success {
+  background: color-mix(in srgb, var(--tm-green) 16%, transparent);
+  color: var(--tm-green);
+}
+
+.tm-badge--danger {
+  background: color-mix(in srgb, var(--tm-red) 16%, transparent);
+  color: var(--tm-red);
+}
+
+.tm-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.tm-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tm-muted {
+  color: var(--tm-muted);
+  font-size: 13px;
+}

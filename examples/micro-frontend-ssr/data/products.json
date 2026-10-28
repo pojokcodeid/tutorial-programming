@@ -1,0 +1,56 @@
+[
+  {
+    "id": "kopi-gayo",
+    "name": "Kopi Arabika Gayo",
+    "category": "Minuman",
+    "price": 85000,
+    "stock": 18,
+    "emoji": "☕",
+    "description": "Biji kopi single origin dari Aceh, profil asam jeruk dan cokelat."
+  },
+  {
+    "id": "teh-melati",
+    "name": "Teh Melati Premium",
+    "category": "Minuman",
+    "price": 32000,
+    "stock": 24,
+    "emoji": "🍵",
+    "description": "Teh hijau wangi melati, cocok diseduh panas maupun dingin."
+  },
+  {
+    "id": "roti-sourdough",
+    "name": "Roti Sourdough",
+    "category": "Roti",
+    "price": 48000,
+    "stock": 9,
+    "emoji": "🍞",
+    "description": "Fermentasi alami 24 jam dengan kulit renyah dan remah lembut."
+  },
+  {
+    "id": "keju-cheddar",
+    "name": "Keju Cheddar",
+    "category": "Dairy",
+    "price": 65000,
+    "stock": 7,
+    "emoji": "🧀",
+    "description": "Keju cheddar matang, gurih, dan mudah dipadukan dengan roti."
+  },
+  {
+    "id": "cokelat-70",
+    "name": "Cokelat Hitam 70%",
+    "category": "Camilan",
+    "price": 55000,
+    "stock": 15,
+    "emoji": "🍫",
+    "description": "Dark chocolate dengan kakao 70%, manisnya seimbang."
+  },
+  {
+    "id": "madu-hutan",
+    "name": "Madu Hutan",
+    "category": "Pantry",
+    "price": 120000,
+    "stock": 5,
+    "emoji": "🍯",
+    "description": "Madu hutan murni dari lebah liar, tekstur pekat dan aromatik."
+  }
+]

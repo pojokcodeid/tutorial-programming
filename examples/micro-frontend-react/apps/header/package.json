@@ -1,20 +1,30 @@
 {
   "name": "@tokomicro/header",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite --port 4174",
     "build": "vite build",
-    "preview": "vite preview --port 4174"
+    "preview": "vite preview --port 4174",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tokomicro/contracts": "*",
+    "@tokomicro/i18n": "*",
     "@tokomicro/shared": "*",
+    "@tokomicro/telemetry": "*",
+    "@tokomicro/ui-kit": "*",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
     "@originjs/vite-plugin-federation": "^1.4.1",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.7.2",
     "vite": "^5.4.0"
   }
 }

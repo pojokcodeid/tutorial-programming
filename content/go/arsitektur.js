@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 15: Software Architecture & Best Practices
+   Pelajaran Go — Bab 17: Software Architecture & Best Practices
    (topik info.md:
     - "Clean Architecture / Hexagonal Architecture di Go"
     - "Dependency Injection (menggunakan library seperti google/wire
@@ -10,7 +10,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 35: Arsitektur, DI & Design Patterns ---------- */
+/* ---------- Pelajaran 37: Arsitektur, DI & Design Patterns ---------- */
 window.GO_LESSONS.push({
   id: 'arsitektur',
   title: 'Clean Architecture, DI & Design Patterns',

@@ -1,69 +1,334 @@
-/* Design tokens milik shell — dipakai semua remote lewat var(--token, cadangan). */
-:root {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #1c2333;
-  --text-2: #525a6b;
-  --muted: #7b8494;
-  --border: #e3e8f0;
-  --accent: #4f46e5;
-  --accent-soft: #eef2ff;
-  --green: #16a34a;
-  --red: #dc2626;
-  --radius: 12px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+/**
+ * Gaya milik shell.
+ *
+ * Token warna berasal dari @tokomicro/ui-kit/tokens.css (--tm-*). Berkas ini
+ * hanya menambah tata letak dan komponen yang memang tanggung jawab shell:
+ * boot screen, status, login, legacy, dan toast.
+ */
+
+.view {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  outline: none;
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+/* ------------------------------------------------------------------ */
+/* Boot & skeleton                                                     */
+/* ------------------------------------------------------------------ */
 
-.view { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; outline: none; }
+.shell-boot {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  color: var(--tm-muted);
+  font-size: 14px;
+}
 
-.skeleton { display: grid; gap: 12px; }
+.shell-boot__bar {
+  height: 44px;
+  margin-bottom: 20px;
+  border-radius: var(--tm-radius);
+  background: var(--tm-card);
+  border: 1px solid var(--tm-border);
+}
+
+.skeleton {
+  display: grid;
+  gap: 12px;
+}
+
 .skeleton span {
-  display: block; height: 86px; border-radius: var(--radius);
-  background: linear-gradient(90deg, #e9edf6 25%, #f4f7fd 37%, #e9edf6 63%);
-  background-size: 400% 100%; animation: shimmer 1.3s ease infinite;
+  display: block;
+  height: 86px;
+  border-radius: var(--tm-radius);
+  background: linear-gradient(
+    90deg,
+    var(--tm-border) 25%,
+    var(--tm-card) 37%,
+    var(--tm-border) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease infinite;
 }
-.skeleton-hd { padding: 14px 20px; }
-.skeleton-hd span { height: 28px; }
-@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 
-.error-box, .notice-box {
-  border: 1px solid color-mix(in srgb, var(--red) 35%, var(--border));
-  background: #fef2f2; border-radius: var(--radius); padding: 22px;
+.skeleton-hd {
+  padding: 14px 20px;
 }
-.notice-box { border-color: var(--border); background: var(--card); }
-.error-box h2, .notice-box h2 { margin: 0 0 6px; font-size: 17px; }
-.error-box h2 { color: var(--red); }
-.error-box p, .notice-box p { margin: 0 0 14px; font-size: 14px; color: var(--text-2); }
 
-.btn {
-  border: 1px solid var(--border); background: var(--card); color: var(--text);
-  padding: 8px 16px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer;
+.skeleton-hd span {
+  height: 28px;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { filter: brightness(1.06); color: #fff; }
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Kotak galat & pemberitahuan                                         */
+/* ------------------------------------------------------------------ */
+
+.error-box,
+.notice-box {
+  border: 1px solid color-mix(in srgb, var(--tm-red) 35%, var(--tm-border));
+  background: color-mix(in srgb, var(--tm-red) 7%, var(--tm-card));
+  border-radius: var(--tm-radius);
+  padding: 22px;
+}
+
+.notice-box {
+  border-color: var(--tm-border);
+  background: var(--tm-card);
+}
+
+.error-box h2,
+.notice-box h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.error-box h2 {
+  color: var(--tm-red);
+}
+
+.error-box p,
+.notice-box p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--tm-text-2);
+}
+
+.hd-fallback {
+  padding: 14px 20px;
+  background: var(--tm-card);
+  border-bottom: 1px solid var(--tm-border);
+  font-weight: 700;
+}
+
+.hd-fallback a {
+  color: var(--tm-text);
+}
+
+/* ------------------------------------------------------------------ */
+/* Toast                                                               */
+/* ------------------------------------------------------------------ */
 
 .toast-root {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-  display: grid; gap: 8px; z-index: 100;
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 8px;
+  z-index: 100;
+  width: min(92vw, 420px);
 }
-.toast {
-  padding: 10px 18px; border-radius: 99px; font-size: 13.5px; font-weight: 600;
-  background: var(--text); color: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
-  animation: toast-in .2s ease;
-}
-.toast-error { background: var(--red); }
-.toast-success { background: var(--green); }
-@keyframes toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-/* Cadangan bila remote header sendirian gagal dimuat. */
-.hd-fallback {
-  padding: 14px 20px; background: var(--card); border-bottom: 1px solid var(--border);
-  font-weight: 700;
+.toast {
+  padding: 10px 18px;
+  border-radius: 99px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: center;
+  background: var(--tm-text);
+  color: var(--tm-bg);
+  box-shadow: var(--tm-shadow);
+  animation: toast-in 0.2s ease;
+}
+
+.toast-error {
+  background: var(--tm-red);
+  color: #fff;
+}
+
+.toast-success {
+  background: var(--tm-green);
+  color: #fff;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Login milik shell                                                   */
+/* ------------------------------------------------------------------ */
+
+.auth {
+  display: grid;
+  place-items: center;
+  padding: 32px 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--tm-card);
+  border: 1px solid var(--tm-border);
+  border-radius: var(--tm-radius);
+  padding: 26px;
+  box-shadow: var(--tm-shadow);
+}
+
+.auth-card h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.auth-lead {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--tm-text-2);
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tm-text-2);
+}
+
+.auth-field input {
+  border: 1px solid var(--tm-border);
+  border-radius: var(--tm-radius-sm);
+  padding: 9px 12px;
+  font: inherit;
+  color: var(--tm-text);
+  background: var(--tm-bg);
+}
+
+.auth-field input:focus {
+  outline: 2px solid color-mix(in srgb, var(--tm-accent) 35%, transparent);
+  border-color: var(--tm-accent);
+}
+
+.auth-error {
+  margin: 0;
+  color: var(--tm-red);
+  font-size: 13px;
+}
+
+.auth-note {
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  color: var(--tm-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* Halaman status remote                                               */
+/* ------------------------------------------------------------------ */
+
+.status h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.status-lead {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  color: var(--tm-muted);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.status-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: capitalize;
+}
+
+.status-list {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.status-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-list dt {
+  color: var(--tm-muted);
+}
+
+.status-list dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.status-url {
+  display: block;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: var(--tm-radius-sm);
+  background: var(--tm-bg);
+  border: 1px solid var(--tm-border);
+  font-family: var(--tm-mono);
+  font-size: 11px;
+  color: var(--tm-text-2);
+  overflow-wrap: anywhere;
+}
+
+.status-metrics {
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Halaman aplikasi lama                                               */
+/* ------------------------------------------------------------------ */
+
+.legacy h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.legacy-lead {
+  margin: 0 0 16px;
+  font-size: 13.5px;
+  color: var(--tm-muted);
+  max-width: 640px;
+}
+
+.legacy-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.legacy-frame {
+  width: 100%;
+  height: 520px;
+  border: 1px solid var(--tm-border);
+  border-radius: var(--tm-radius);
+  background: var(--tm-card);
 }

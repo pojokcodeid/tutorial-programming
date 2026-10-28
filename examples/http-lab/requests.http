@@ -1,0 +1,82 @@
+### Health
+GET http://localhost:8787/health
+
+### Echo dengan query
+GET http://localhost:8787/echo?topik=http&page=2
+
+### Echo dengan body JSON
+POST http://localhost:8787/echo
+Content-Type: application/json
+
+{
+  "pesan": "halo HTTP",
+  "topik": "request-response"
+}
+
+### Daftar produk
+GET http://localhost:8787/products?page=1&limit=2
+
+### Buat produk
+POST http://localhost:8787/products
+Content-Type: application/json
+Idempotency-Key: contoh-produk-001
+
+{
+  "name": "Gula Aren",
+  "price": 25000,
+  "stock": 20
+}
+
+### Detail produk
+GET http://localhost:8787/products/1
+
+### Ubah stok
+PATCH http://localhost:8787/products/1
+Content-Type: application/json
+
+{
+  "stock": 10
+}
+
+### Login user
+POST http://localhost:8787/login
+Content-Type: application/json
+
+{
+  "username": "nina",
+  "password": "rahasia123"
+}
+
+### Profil dengan bearer token
+GET http://localhost:8787/profile
+Authorization: Bearer GANTI_DENGAN_TOKEN
+
+### Admin dengan bearer token
+GET http://localhost:8787/admin
+Authorization: Bearer GANTI_DENGAN_TOKEN
+
+### Cache
+GET http://localhost:8787/cache
+
+### Cache dengan validasi ETag
+GET http://localhost:8787/cache
+If-None-Match: "GANTI_DENGAN_ETAG"
+
+### Content negotiation
+GET http://localhost:8787/negotiate
+Accept: application/json
+
+### Preflight CORS
+OPTIONS http://localhost:8787/cors
+Origin: http://localhost:8123
+Access-Control-Request-Method: POST
+
+### Range request
+GET http://localhost:8787/range/sample.txt
+Range: bytes=0-9
+
+### Simulasi status
+GET http://localhost:8787/status/422
+
+### Reset data lab
+POST http://localhost:8787/reset

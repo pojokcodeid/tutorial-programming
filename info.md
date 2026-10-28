@@ -319,6 +319,15 @@ project nyata ada di folder `examples/react-project/`.
     - Table-Driven Tests
     - Mocking & Interface Stubbing
     - Benchmark Testing (testing.B) & Code Coverage analysis
+  - Unit Testing (lanjutan)
+    - Siklus hidup tes: TestMain, t.TempDir, t.Cleanup, t.Skip, dan t.Parallel
+    - Subtest dengan t.Run, filter -run (regex), dan helper assertion t.Helper
+    - Golden file (testdata) beserta flag -update untuk menguji keluaran panjang
+    - Code coverage mendalam: -coverprofile, go tool cover -func/-html, dan -coverpkg
+    - Unit test handler HTTP dengan net/http/httptest (NewRequest + NewRecorder, NewServer)
+    - Test doubles: stub, fake, mock, dan spy berbasis interface
+    - Dependency injection (interface Repo, Jam, Pengirim) untuk menguji service
+    - Assertion dengan testify (assert vs require)
   - I/O, File System, dan Data Format
     - Package io, os, bufio, dan bytes
     - Membaca dan menulis file
@@ -738,35 +747,119 @@ Materi **Contoh Fullstack Project Microservices** — satu proyek nyata bernama 
 
 ## Topik Mengenai Micro-Frontend
 
-Materi **Micro-Frontend** — arsitektur frontend yang memecah satu halaman menjadi beberapa aplikasi kecil yang masing-masing dimiliki satu tim dan dirilis mandiri, digabungkan oleh shell, disusun dalam 10 pelajaran berbahasa Indonesia lengkap dengan figur diagram, contoh kode, latihan live editor, dan kuis 30 soal. Materi ini memakai contoh proyek nyata bernama **TokoMicro** (toko daring: shell + remote header, katalog produk, keranjang) yang berjalan tanpa framework maupun bundler — cukup **Node.js** sebagai server statis sekaligus penyedia API — sehingga seluruh konsep (kontrak mount/unmount, event bus, shared store, isolasi gaya) terlihat apa adanya. Kode proyek contoh tersedia di `examples/micro-frontend/` dan teruji berjalan dengan `node server.js` lalu membuka `http://localhost:4173`.
+Materi **Micro-Frontend** — arsitektur frontend yang memecah satu halaman menjadi beberapa aplikasi kecil yang masing-masing dimiliki satu tim dan dirilis mandiri, lalu digabungkan oleh shell. Materi disusun dalam **20 pelajaran** berbahasa Indonesia dengan sapaan “kamu”, masing-masing memuat konsep, contoh kode, praktik yang bisa dijalankan, checkpoint verifikasi, jebakan, kosakata, ringkasan, dan 3 soal kuis — total **60 soal**. Seluruh praktik memakai **React 18 + TypeScript + Vite 5 + Module Federation** melalui `@originjs/vite-plugin-federation`, dengan proyek rujukan **TokoMicro React**: shell di port 4173 dan empat remote (header, products, cart, account) di port 4174–4177, aplikasi legacy di 4178, serta paket `@tokomicro/contracts`, `shared`, `ui-kit`, `i18n`, dan `telemetry`. Proyek menyediakan API demo, autentikasi sekali login (`demo` / `demo123`, admin `admin123`), checkout terproteksi, halaman admin dengan guard peran dan endpoint <code>scope=all</code>, manifest remote dinamis, rilis CDN berversi, rollback, feature flag, telemetry, Storybook, unit test Vitest, E2E Playwright, uji visual, dan laporan budget bundel. Tiga lab pendamping memisahkan topik lanjutan: `examples/micro-frontend-techniques/` (iframe, Web Component, import map), `examples/micro-frontend-webpack/` (Webpack 5 + Rspack), dan `examples/micro-frontend-ssr/` (CSR vs SSR + hydration). Kode utama ada di `examples/micro-frontend-react/`; contoh vanilla di `examples/micro-frontend/` dipertahankan sebagai pembanding konsep tanpa bundler.
 
 - Rujukan
   - https://martinfowler.com/articles/micro-frontends.html
   - https://www.manning.com/books/micro-frontends-in-action
   - https://webpack.js.org/concepts/module-federation/
-  - https://developer.mozilla.org/en-US/docs/Web/API/Web_components
+  - https://react.dev/reference/react/useSyncExternalStore
   - https://vite.dev/guide/
+  - https://github.com/originjs/vite-plugin-federation
+  - https://playwright.dev/docs/intro
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_components
   - https://single-spa.js.org/docs/getting-started-overview/
+  - https://rspack.dev/
+  - https://storybook.js.org/docs
+  - https://web.dev/articles/vitals
 
 - Materi yang harus ada
 
-1. Pengenalan Micro-Frontend
-   - Definisi menurut Cam Jackson, perbandingan monolith frontend vs micro-frontend, tiga bagian utama (shell, remote, shared module), masalah organisasional yang dijawab (tim saling menunggu, ritme rilis berbeda, migrasi bertahap), pembagian tim TokoMicro, dan kapan arsitektur ini harus ditolak.
-2. Anatomi & Teknik Komposisi
-   - Kontrak mount(container, ctx)/unmount() dan rantai cleanup (DOM, listener, timer, request), empat teknik komposisi (iframe, JS entry, Web Components, Module Federation) dalam satu tabel perbandingan, serta praktik membuat custom element.
-3. Shell, Routing & Lazy Loading
-   - Tugas dan batasan shell, peta rute hash → remote, pemetaan deep link, lazy loading dengan import() dinamis, urutan siklus hidup unmount → mount, dan kotak pemulihan bila remote gagal dimuat.
-4. Event Bus & Shared State
-   - Larangan saling mengimpor kode, pembuatan event bus sendiri (on() dengan disposer, emit() dengan try/catch), shared store satu sumber kebenaran, pola pemasangan di remote, serta jebakan listener leak dan payload berupa referensi asli.
-5. Isolasi Gaya & Design Tokens
-   - Sifat global CSS, tiga lapisan pertahanan (awalan selektor, CSS Modules, Shadow DOM), larangan CSS reset di remote, design tokens di shell dengan nilai cadangan var(--x, #default), dan uji tabrakan gaya.
-6. Data, API, BFF & Autentikasi
-   - Aturan remote memanggil API miliknya sendiri, Backend for Frontend sebagai satu pintu agregasi, autentikasi global di shell (guard rute, ctx.token, cookie httpOnly), dan pembatalan request dengan AbortController.
-7. Build, Monorepo & Module Federation
-   - Susunan monorepo dengan CODEOWNERS dan pipeline per paket, remoteEntry.js dan exposes, shared dependencies singleton (mencegah dua kinstance React), manifest versi, content hash & cache CDN, serta strategi rollback.
-8. Pengujian, Error Boundary & Observability
-   - Empat lapis pengujian (unit, kontrak, integrasi, E2E/visual), penguji kontrak shared module, error boundary pada shell plus unhandledrejection, log ber-remoteId, anggaran performa, dan latihan kegagalan.
-9. Tim, CI/CD, Versioning & Migrasi
-   - Hukum Conway dan "you build it, you run it", pipeline CI/CD per remote dengan smoke test & rollback manifest, semantic versioning kontrak (MAJOR/MINOR/PATCH), pola strangler fig rute demi rute, dan pengukuran untuk memutuskan tetap atau mundur.
-10. Proyek Akhir TokoMicro
-    - Peta lengkap proyek examples/micro-frontend/, struktur folder per remote, lima langkah praktik (jalankan & amati, uji komunikasi, uji ketahanan, tambah remote keempat, bersihkan & ukur), serta ide pengembangan lanjutan dua tingkat (tanpa tooling dan dengan Module Federation + Playwright).
+1. Memahami Micro-Frontend dan Biayanya
+   - Definisi berbasis kepemilikan tim, perbandingan monolith, modular monolith, dan micro-frontend, tiga masalah organisasi yang dijawab, biaya operasional, kapan arsitektur ini ditolak, serta praktik menulis ADR dan tabel pembagian tim.
+2. Anatomi, Batas Tanggung Jawab, dan Tujuh Teknik Komposisi
+   - Peran shell, remote, shared module, dan kontrak; aturan batas yang tidak boleh dilanggar; perbandingan build-time package, runtime JS entry, Module Federation, Web Components, iframe, single-spa, dan server-side/ESI; latihan memilih teknik untuk tiga skenario.
+3. Menyiapkan Monorepo dan Lingkungan Kerja
+   - Node 18+, npm workspaces, struktur `apps/*` dan `packages/*`, TypeScript strict, `tsconfig.base.json`, Turbo, peta port 4173–4178, serta verifikasi `npm run typecheck` dan `npm run build`.
+4. Membangun Shell React TypeScript
+   - `BrowserRouter`, layout, peta rute, `AppContext`, boot manifest + sesi, lazy remote, toast, halaman 404, dan protected route; praktik menambah rute `/bantuan` serta verifikasi deep link.
+5. Remote Pertama dengan Module Federation
+   - Konfigurasi `exposes`, `remotes`, `remoteEntry.js`, shared singleton React/ReactDOM/react-router-dom, `MemoryRouter` untuk mode mandiri, CORS, dan cara debug dua React atau router null.
+6. Routing Bersarang dan Kontrak Remote
+   - Pembagian URL shell versus remote, rute `/katalog/*`, `/keranjang/*`, `/akun/*`, `<Routes>` bersarang, kontrak `AppContext`, deklarasi `declare module 'products/App'`, 404 remote, dan larangan router ganda.
+7. State Bersama dan Event Bus Bertipe
+   - Tiga tingkat komunikasi (URL, event, shared store), satu instance di `globalThis`, `useSyncExternalStore`, snapshot stabil, operasi keranjang, `CustomEvent` + Zod, `BroadcastChannel`, dan kapan memilih backend sebagai sumber kebenaran.
+8. Design System, Token, dan Isolasi Gaya
+   - Paket `@tokomicro/ui-kit`, token `--tm-*`, tema terang/gelap lewat `data-theme`, Button/Card/Badge, prefix kelas per remote, CSS Modules atau Shadow DOM, dan Storybook khusus design system.
+9. Data, API, BFF, dan Validasi Kontrak
+   - Fetch milik remote sendiri, `AbortController`, keadaan loading/error/empty, Zod `safeParse`, larangan memanggil API remote lain, BFF untuk agregasi, cache HTTP, dan CORS.
+10. Sekali Login, Token, dan Otorisasi
+    - Login hanya di shell, access token di memori, refresh token cookie `httpOnly` + `SameSite`, rotasi refresh, `ctx.getToken()`, protected route, peran admin, perbedaan 401 dan 403, serta logout yang benar.
+11. Manifest Dinamis dan Feature Flag
+    - `/api/remotes`, `cdn/manifest.json`, URL `/v/<versi>/assets/remoteEntry.js`, `remoteLoader.ts`, `virtual:__federation__`, fallback build-time, feature flag, canary, dan rollback.
+12. Error Boundary, Suspense, dan Isolasi Kegagalan
+    - Error boundary per slot, skeleton `Suspense`, retry terkendali, fallback header, timeout, pencatatan telemetry, dan praktik memblokir origin cart tanpa menjatuhkan shell.
+13. Menguji Micro-Frontend
+    - Piramida unit Vitest, contract test Zod, komponen Testing Library, E2E Playwright, uji visual, dan resilience; batas pengujian dari shell; praktik menjalankan seluruh rangkaian dan menambah satu test kontrak.
+14. Observability: Telemetry, Web Vitals, dan Status
+    - Event, error, dan metrik; `@tokomicro/telemetry`; `sendBeacon`; endpoint `/api/telemetry` dan `/api/metrics/summary`; LCP, CLS, INP, `boot_ms`, `remote_load_ms`; korelasi versi; privasi dan alert.
+15. Performa dan Budget Bundel
+    - Shared singleton, code splitting, lazy route, preload selektif, cache immutable, kompresi, budget gzip, dan `scripts/perf-report.mjs`; praktik mengukur sebelum mengoptimasi.
+16. Rilis Mandiri, CDN Berversi, dan Rollback
+    - Build per remote, `cdn/<remote>/<versi>`, penyajian `/v/<versi>/`, manifest atomik, cache aset versus manifest, rilis tanpa build shell, rollback, canary, dan urutan rilis aman.
+17. CI/CD dan Kepemilikan Tim
+    - Pipeline per remote, affected build, typecheck/test/build/E2E/perf, GitHub Actions, `workflow_dispatch` untuk rilis, artefak, branch protection, trunk-based, CODEOWNERS, dan versi kontrak.
+18. Migrasi Bertahap dari Aplikasi Legacy
+    - Strangler fig rute demi rute, iframe untuk isolasi, Web Components, import maps, Module Federation, dual-run, redirect, SEO, auth lintas aplikasi, dan kriteria menghapus legacy.
+19. Keamanan, Aksesibilitas, dan Tata Kelola
+    - CSP, SRI, CORS, supply chain, kebijakan dependensi, penanganan token dan XSS, aksesibilitas lintas remote, fokus/heading, design governance, RFC/ADR, dan on-call.
+20. Proyek Akhir: TokoMicro End-to-End
+    - Menjalankan seluruh proyek, alur belanja lengkap, rilis dan rollback, halaman status, seluruh perintah verifikasi, checklist produksi, rubrik penilaian, tiga lab pendamping, pilihan MF 2.0/Rspack/SSR, dan roadmap lanjutan.
+
+## Topik Mengenai HTTP
+
+Materi **HTTP** — protokol komunikasi client-server yang menjadi dasar web dan API — disusun dalam 19 pelajaran berbahasa Indonesia, lengkap dengan figur diagram, contoh kode, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti roadmap `http.md` dari Tahap 0 sampai Tahap 12. Setiap konsep diikuti praktik nyata memakai **laboratorium HTTP lokal** tanpa dependensi di `examples/http-lab/`: server Node.js, reverse proxy, pengujian otomatis, dan kumpulan request siap pakai. Lab menyediakan endpoint untuk method, status code, header, body, cookie/session, login bearer token, ETag/304, content negotiation, CORS, rate limit, timeout, range, kompresi, upload, HTTPS, dan simulasi upstream 502/504. Data lab disimpan di memori dan kredensialnya fiktif; lab **bukan** konfigurasi produksi.
+
+- Rujukan
+  - https://developer.mozilla.org/en-US/docs/Web/HTTP
+  - https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
+  - https://www.rfc-editor.org/rfc/rfc9110
+  - https://www.rfc-editor.org/rfc/rfc9111
+  - https://curl.se/docs/
+
+- Materi yang harus ada
+
+1. Persiapan Alat & Laboratorium HTTP
+   - Browser DevTools, terminal, curl, Node.js, dan editor; perjalanan URL → DNS → TCP → TLS → HTTP; menjalankan lab dan membaca response pertama.
+2. Fondasi HTTP
+   - Model request-response, client/server, stateless, perbedaan HTTP dengan HTTPS/DNS/TCP, versi protokol, serta peran RFC dan MDN.
+3. Membaca Request dan Response
+   - Request line, status line, header, blank line, dan body pada HTTP/1.1; curl -i, -v, --trace-ascii; mengapa HTTP/2 dan HTTP/3 tidak berupa teks biasa.
+4. URL, Query String, Body, dan Fragment
+   - Anatomi URL, percent-encoding, kapan memakai query vs body, dan mengapa fragment tidak dikirim ke server.
+5. Method dan Semantik
+   - GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS; safe vs idempotent; implementasi CRUD dan idempotency key di lab.
+6. Status Code
+   - Kelompok 1xx–5xx, status CRUD, 401 vs 403, 400 vs 422, 201 + Location, 204, 304, 429, serta 502/503/504.
+7. Header Penting
+   - Header representasi, negosiasi, cache, koneksi, keamanan, identitas, dan observability; forwarded headers dari proxy.
+8. Body, Media Type, dan Content Negotiation
+   - JSON, form, multipart, charset, gzip/Brotli, Content-Length vs framing, batas ukuran, Accept, 406, dan Vary.
+9. Cookie dan Session
+   - Set-Cookie/Cookie, atribut Secure/HttpOnly/SameSite/Path/Domain/Max-Age, cookie jar curl, session server vs token, dan logout.
+10. Autentikasi dan Otorisasi
+    - Basic auth, bearer token, JWT, access/refresh token, pencabutan akses, 401 vs 403, serta perbedaan autentikasi dan otorisasi.
+11. Caching dan Conditional Request
+    - Browser/shared/CDN cache, Cache-Control, ETag/Last-Modified, If-None-Match, 304, Vary, invalidasi, dan no-cache vs no-store.
+12. HTTPS, TLS, dan Sertifikat
+    - Kerahasiaan/integritas/autentikasi, certificate chain, hostname verification, expiry, HSTS, redirect ke HTTPS, TLS termination, dan sertifikat lokal.
+13. CORS dan Keamanan HTTP
+    - Same-origin policy, preflight, header CORS, credentials, kesalahan umum; CSRF, XSS, clickjacking, open redirect, SSRF, request smuggling, security headers, rate limit.
+14. HTTP/1.1, HTTP/2, dan HTTP/3
+    - Persistent connection, pipelining, chunked, binary framing, multiplexing, HPACK, head-of-line blocking, QUIC, ALPN, dan cara memeriksa protokol.
+15. Reverse Proxy, Load Balancer, dan CDN
+    - Forward/reverse proxy, load balancer, gateway, CDN, TLS termination, forwarded headers, connection pooling, timeout, retry+backoff+jitter, backpressure.
+16. Desain API dan Perilaku Lanjutan
+    - Resource-oriented URI, pagination/filter/sort, versioning, format error, idempotency, rate limit headers, range, Expect/Prefer/Link/Retry-After, serta SSE vs WebSocket.
+17. Debugging dengan curl dan DevTools
+    - Opsi curl, Copy as cURL, timing DNS/connect/TLS/TTFB/total, urutan diagnosis, correlation ID, traceparent, dan redaksi data sensitif.
+18. Pengujian dan Diagnosis
+    - Unit/integration/contract/E2E/load test, assertion status/header/body/efek samping, tes jalur gagal, observability, dan pemisahan sumber kegagalan.
+19. Proyek Akhir: API Katalog Produk
+    - Kontrak API, CRUD, validasi, session/token, otorisasi peran, CORS, ETag/304, rate limit, batas body, timeout, integration test, README, threat model, dan rubrik penilaian.
+
+- Cara menjalankan laboratorium
+  - `node examples/http-lab/server.js` lalu buka `http://localhost:8787/`.
+  - `node examples/http-lab/proxy.js` untuk latihan reverse proxy di port `8788`.
+  - `node --test examples/http-lab/lab.test.js` untuk menjalankan 13 pengujian otomatis.
+  - Akun demo: `nina/rahasia123` (user) dan `admin/admin123` (admin).

@@ -1,1335 +1,1706 @@
-# Roadmap Belajar Micro-Frontend dari Nol sampai Mahir
+# Panduan Micro-Frontend: Dari Nol sampai Produksi
 
-## Tujuan
+**Dari satu tim yang saling menunggu menjadi banyak tim yang bisa merilis sendiri.**
 
-Mampu membagi aplikasi frontend menjadi beberapa **micro-frontend** yang dibangun, diuji, dan dirilis secara mandiri, tanpa mengorbankan konsistensi tampilan dan pengalaman pengguna.
+Panduan ini adalah jalur belajar 20 bab untuk membangun micro-frontend yang benar-benar bisa dijalankan, diuji, dirilis, dan di-rollback. Semua praktik memakai **React 18 + TypeScript + Vite 5 + Module Federation**, dengan proyek rujukan **TokoMicro React** di [`examples/micro-frontend-react/`](examples/micro-frontend-react/).
 
-**Estimasi durasi:** 8–12 minggu
-**Waktu belajar:** 6–8 jam per minggu
-**Metode:** 25% teori, 75% praktik
-**Bahasa & tools:** HTML, CSS, JavaScript (ES Modules), Node.js, Vite, Module Federation, React (opsional), Docker, Playwright
-**Prasyarat:** sudah nyaman menulis JavaScript modern (`async/await`, modul ES), CSS layout (Flexbox/Grid), dan Git dasar. Materi prasyarat ada di Tahap 0.
+Kamu tidak perlu menghafal semua istilah. Yang penting adalah bisa menjalankan proyek, memahami batas tanggung jawab, dan tahu kapan arsitektur ini justru merugikan.
 
 ---
 
-## Peta Perjalanan
+## Daftar Isi
 
-1. Tahap 0 — Fondasi Frontend
-2. Tahap 1 — Monolith Frontend vs Micro-Frontend
-3. Tahap 2 — Anatomi dan teknik komposisi
-4. Tahap 3 — Shell, routing, dan lazy loading
-5. Tahap 4 — Komunikasi antar remote dan shared state
-6. Tahap 5 — Isolasi styling dan design system
-7. Tahap 6 — Data, API, dan autentikasi
-8. Tahap 7 — Build, monorepo, dan deployment
-9. Tahap 8 — Pengujian, ketahanan, dan observability
-10. Tahap 9 — Organisasi tim, CI/CD, dan versioning
-11. Tahap 10 — Jebakan umum dan kapan kembali ke monolith
-12. Proyek akhir dan contoh proyek lengkap
+**Bagian A — Fondasi**
+1. [Memahami Micro-Frontend dan Biayanya](#bab-1--memahami-micro-frontend-dan-biayanya)
+2. [Anatomi, Batas Tanggung Jawab, dan Tujuh Teknik Komposisi](#bab-2--anatomi-batas-tanggung-jawab-dan-tujuh-teknik-komposisi)
+3. [Menyiapkan Monorepo dan Lingkungan Kerja](#bab-3--menyiapkan-monorepo-dan-lingkungan-kerja)
 
----
+**Bagian B — Shell dan Remote**
+4. [Membangun Shell React TypeScript](#bab-4--membangun-shell-react-typescript)
+5. [Remote Pertama dengan Module Federation](#bab-5--remote-pertama-dengan-module-federation)
+6. [Routing Bersarang dan Kontrak Remote](#bab-6--routing-bersarang-dan-kontrak-remote)
 
-# Bagian A — Memahami Konsep
+**Bagian C — Kontrak dan Data**
+7. [State Bersama dan Event Bus Bertipe](#bab-7--state-bersama-dan-event-bus-bertipe)
+8. [Design System, Token, dan Isolasi Gaya](#bab-8--design-system-token-dan-isolasi-gaya)
+9. [Data, API, BFF, dan Validasi Kontrak](#bab-9--data-api-bff-dan-validasi-kontrak)
+10. [Sekali Login, Token, dan Otorisasi](#bab-10--sekali-login-token-dan-otorisasi)
 
-## Tahap 0 — Fondasi Frontend
+**Bagian D — Identitas dan Ketahanan**
+11. [Manifest Dinamis dan Feature Flag](#bab-11--manifest-dinamis-dan-feature-flag)
+12. [Error Boundary, Suspense, dan Isolasi Kegagalan](#bab-12--error-boundary-suspense-dan-isolasi-kegagalan)
 
-**Durasi:** 1 minggu
+**Bagian E — Kualitas dan Operasi**
+13. [Menguji Micro-Frontend](#bab-13--menguji-micro-frontend)
+14. [Observability: Telemetry, Web Vitals, dan Status](#bab-14--observability-telemetry-web-vitals-dan-status)
+15. [Performa dan Budget Bundel](#bab-15--performa-dan-budget-bundel)
+16. [Rilis Mandiri, CDN Berversi, dan Rollback](#bab-16--rilis-mandiri-cdn-biversi-dan-rollback)
+17. [CI/CD dan Kepemilikan Tim](#bab-17--cicd-dan-kepemilikan-tim)
 
-### Materi
+**Bagian F — Produksi dan Evolusi**
+18. [Migrasi Bertahap dari Aplikasi Legacy](#bab-18--migrasi-bertahap-dari-aplikasi-legacy)
+19. [Keamanan, Aksesibilitas, dan Tata Kelola](#bab-19--keamanan-aksesibilitas-dan-tata-kelola)
+20. [Proyek Akhir: TokoMicro End-to-End](#bab-20--proyek-akhir-tokomicro-end-to-end)
 
-- [ ] Struktur HTML semantik.
-- [ ] CSS: box model, Flexbox, Grid, custom properties (variabel CSS).
-- [ ] JavaScript: `let`/`const`, arrow function, destructuring, spread.
-- [ ] **ES Modules**: `import`/`export`, `import()` dinamis.
-- [ ] `fetch`, Promise, `async/await`, `AbortController`.
-- [ ] DOM: `createElement`, `appendChild`, `addEventListener`, `document.querySelector`.
-- [ ] Event: `click`, `input`, `hashchange`, CustomEvent.
-- [ ] npm dan `package.json` (hanya memakai, belum menulis tooling).
-- [ ] Git dasar: branch, commit, pull request.
-
-### Praktik
-
-- [ ] Buat halaman statis dengan tiga berkas terpisah (`index.html`, `style.css`, `app.js`).
-- [ ] Ubah `app.js` menjadi modul ES (`type="module"`) dan impor satu fungsi dari berkas lain.
-- [ ] Ambil data dari JSON palsu dengan `fetch`, tampilkan sebagai daftar, lalu tampilkan pesan galat bila request gagal.
-- [ ] Batalkan request yang menggantung dengan `AbortController` saat pengguna berpindah halaman.
-
-### Target
-
-Mampu memecah satu aplikasi kecil menjadi beberapa berkas modul yang saling terhubung tanpa bundler.
+**Lampiran**
+- [A. Peta perintah](#lampiran-a--peta-perintah)
+- [B. Glosarium](#lampiran-b--glosarium)
+- [C. Checklist produksi](#lampiran-c--checklist-produksi)
+- [D. Rujukan](#lampiran-d--rujukan)
 
 ---
 
-## Tahap 1 — Monolith Frontend vs Micro-Frontend
+## Sebelum Mulai
 
-**Durasi:** 2–3 hari
+### Prasyarat
 
-### Materi
+Kamu sudah nyaman dengan:
 
-**Apa itu micro-frontend?**
-Micro-frontend adalah arsitektur di mana sebuah *halaman atau aplikasi web* disusun dari beberapa aplikasi frontend kecil yang masing-masing:
+- JavaScript modern: modul ES, `async/await`, destructuring, `Promise`.
+- React: komponen, props, `useState`, `useEffect`, `React.lazy`, `Suspense`.
+- TypeScript dasar: tipe objek, union, `interface`, generics sederhana.
+- Terminal, npm, dan Git.
+- Dasar HTTP: request/response, status code, header, cookie.
 
-1. **dimiliki** oleh satu tim,
-2. **dirilis** secara mandiri (tanpa menunggu tim lain),
-3. **digabungkan** saat runtime oleh sebuah wadah yang disebut **shell** (juga dikenal sebagai *container*, *host*, atau *shell application*).
+Jika belum, pelajari dulu materi React, TypeScript, HTTP, dan Git di repositori ini. Micro-frontend bukan tempat pertama belajar React.
 
-Istilah ini dipopulerkan oleh Cam Jackson (ThoughtWorks). Prinsip utamanya bukan "memecah kode", melainkan **memecah kepemilikan tim**: setiap tim bebas memilih pustaka sendiri, asalkan hasilnya tetap menyatu di mata pengguna.
+### Yang akan kamu bangun
 
-**Contoh nyata:** sebuah e-commerce dengan tim berbeda untuk header/menu, katalog produk, keranjang, dan dasbor penjual. Setiap tim merilis kapan saja tanpa mengganggu tim lain.
+**TokoMicro** — toko daring kecil dengan enam origin:
 
-### Perbandingan langsung
-
-| Aspek | Monolith Frontend | Micro-Frontend |
+| Origin | Aplikasi | Tanggung jawab |
 | --- | --- | --- |
-| Rilis | satu pipeline untuk seluruh halaman | satu pipeline per modul |
-| Pemilik | satu tim besar | satu tim per modul |
-| Pustaka UI | seragam dipilih sekali | bebas per modul, dijembatani design system |
-| Kecepatan awal | cepat | lambat (perlu setup) |
-| Biaya kompleksitas | rendah | tinggi (routing, state, styling, deploy) |
-| Risiko kegagalan | satu bug mematikan seluruh halaman | kegagalan terisolasi per modul |
+| `4173` | shell | Layout, URL, login, manifest, error boundary, API |
+| `4174` | header | Navigasi, badge keranjang, tema, bahasa |
+| `4175` | products | Katalog dan detail produk |
+| `4176` | cart | Keranjang dan checkout |
+| `4177` | account | Profil, riwayat pesanan, dan halaman admin |
+| `4178` | legacy | Aplikasi lama untuk latihan migrasi |
 
-### Kapan micro-frontend COCOK
+Semua kode ada di [`examples/micro-frontend-react/`](examples/micro-frontend-react/).
 
-- [ ] Beberapa tim besar mengembangkan satu produk dan sering saling menunggu.
-- [ ] Bagian aplikasi punya ritme rilis berbeda (misalnya checkout sering, profil jarang).
-- [ ] Bagian lama perlu dimigrasi bertahap tanpa menulis ulang semuanya sekaligus.
-- [ ] Bagian aplikasi punya kebutuhan teknis berbeda (video editor vs halaman statis).
+### Cara memakai panduan ini
 
-### Kapan TIDAK cocok
+1. Baca konsep di bab.
+2. Jalankan praktiknya di proyek rujukan.
+3. Periksa bagian **Verifikasi** sebelum lanjut.
+4. Catat jebakan yang kamu temui.
+5. Kerjakan 3 soal kuis di aplikasi materi.
 
-- [ ] Tim hanya satu atau dua orang — biaya orkestrasi lebih besar dari manfaatnya.
-- [ ] Aplikasi masih berupa CRUD sederhana dengan sedikit halaman.
-- [ ] Konsistensi UX sangat ketat dan tim belum punya design system.
-- [ ] Belum ada otomatisasi CI/CD — rilis manual akan menjadi mimpi buruk.
-
-> **Aturan emas:** jangan memakai micro-frontend hanya karena sedang tren. Tambahkan kompleksitas hanya jika masalahnya benar-benar organisasional, bukan sekadar ingin "rapi".
-
-### Praktik
-
-- [ ] Buat diagram monolith frontend: satu build, satu deploy, satu tim.
-- [ ] Buat diagram micro-frontend: shell + 3 remote + tim yang memilikinya.
-- [ ] Tuliskan 3 alasan pro dan 3 alasan kontra untuk produk Anda sendiri.
-
-### Target
-
-Mampu menjelaskan kapan micro-frontend menyelesaikan masalah nyata dan kapan justru menambah masalah.
+Estimasi: 12–16 minggu, 5–8 jam per minggu. Bisa lebih cepat jika kamu sudah pernah memakai Module Federation.
 
 ---
 
-## Tahap 2 — Anatomi dan Teknik Komposisi
+## Bab 1 — Memahami Micro-Frontend dan Biayanya
 
-**Durasi:** 3–4 hari
+**Tujuan:** memutuskan apakah micro-frontend layak untuk masalahmu, bukan sekadar mengikuti tren.
+
+### Konsep inti
+
+**Micro-frontend** adalah pendekatan menyusun satu halaman dari beberapa aplikasi frontend kecil yang:
+
+1. **dimiliki satu tim**;
+2. **dibangun dan diuji sendiri**;
+3. **dirilis tanpa menunggu tim lain**;
+4. **digabungkan saat runtime** oleh sebuah shell.
+
+Kata “micro” menyangkut kepemilikan, bukan jumlah baris kode. Satu remote boleh berisi ribuan baris selama satu tim menguasainya.
+
+| Bentuk | Satu build? | Rilis mandiri? | Cocok untuk |
+| --- | --- | --- | --- |
+| Monolith frontend | Ya | Tidak | Tim kecil, produk awal |
+| Modular monolith | Ya | Tidak | Batas modul jelas, tim sedang |
+| Micro-frontend | Tidak | Ya | Banyak tim, ritme rilis berbeda |
+| Microservices | Tidak (backend) | Ya | Batas domain backend |
+
+### Tiga masalah yang dijawab
+
+- **Tim saling menunggu.** Perbaikan teks tombol tidak perlu menunggu build keranjang.
+- **Ritme rilis berbeda.** Checkout bisa rilis harian; profil cukup bulanan.
+- **Migrasi bertahap.** Satu rute lama bisa dipindahkan tanpa menulis ulang semuanya.
+
+### Biaya yang harus diterima
+
+- Kontrak antar remote harus dijaga.
+- Routing menjadi lebih rumit.
+- Shared state dan event perlu aturan.
+- CSS bisa bertabrakan.
+- Pengujian lintas aplikasi bertambah.
+- Versi, manifest, CDN, dan rollback harus dioperasikan.
+- Observability menjadi wajib, bukan opsional.
+
+### Kapan sebaiknya tidak
+
+- Hanya satu atau dua pengembang.
+- Aplikasi masih CRUD sederhana.
+- Belum ada CI/CD dan tes otomatis.
+- Tidak ada waktu merawat kontrak dan observability.
+- Konsistensi UX ketat tetapi belum ada design system.
+
+### Praktik: tulis ADR
+
+Buat `docs/adr/0001-micro-frontend.md`:
+
+```md
+# ADR 0001 — Memakai Micro-Frontend
+
+## Konteks
+- 4 tim, 3 zona rilis berbeda
+- rilis monolith tiap 2 minggu, checkout butuh harian
+- aplikasi lama akan dimigrasi bertahap
+
+## Keputusan
+Memakai micro-frontend dengan shell + remote per domain.
+
+## Konsekuensi positif
+- tim bisa rilis mandiri
+- migrasi bertahap
+- batas kepemilikan jelas
+
+## Konsekuensi negatif
+- perlu kontrak, manifest, observability
+- biaya CI naik
+- debugging lintas origin lebih sulit
+
+## Alternatif yang ditolak
+- modular monolith: rilis masih terkunci
+- iframe semua: isolasi terlalu ketat, UX sulit disatukan
+```
+
+### Verifikasi
+
+- [ ] Kamu bisa menjelaskan micro-frontend dalam satu kalimat tanpa kata “bundel kecil”.
+- [ ] Kamu bisa menyebut tiga masalah organisasi yang dijawab.
+- [ ] Kamu bisa menyebut tiga biaya nyata.
+- [ ] ADR memuat konteks, keputusan, konsekuensi, dan alternatif.
+
+### Jebakan
+
+- Memilih micro-frontend karena “biar modern”.
+- Menganggap micro-frontend otomatis mempercepat aplikasi. Belum tentu; tanpa disiplin, ia memperlambat.
+- Memecah berdasarkan komponen, bukan berdasarkan kepemilikan tim atau domain.
+
+### Ringkasan
+
+Micro-frontend membeli kecepatan rilis dengan kompleksitas. Pilih hanya jika masalahnya organisasional dan kamu siap merawat kontrak, versi, serta observability.
+
+---
+
+## Bab 2 — Anatomi, Batas Tanggung Jawab, dan Tujuh Teknik Komposisi
+
+**Tujuan:** memahami bagian-bagian sistem dan memilih teknik komposisi dengan alasan.
 
 ### Anatomi
 
-```text
+```
 ┌──────────────────────────────────────────────┐
-│ SHELL (aplikasi induk)                        │
-│  • layout, navigasi, routing, auth global     │
-│  • memuat remote sesuai URL                   │
-│  • menangani kegagalan (error boundary)       │
-├──────────────┬───────────────┬───────────────┤
-│ remote:header│ remote:products│ remote:cart   │
-│  milik Tim A │ milik Tim B    │ milik Tim C   │
-│  rilis sendiri│ rilis sendiri │ rilis sendiri │
-└──────────────┴───────────────┴───────────────┘
-              ▲
-   shared modules (state, event bus, design tokens,
-   pustaka UI yang disepakati bersama)
+│                   SHELL                      │
+│ URL · layout · login · manifest · boundary   │
+└───────────────┬──────────────────────────────┘
+                │ ctx + slot
+     ┌──────────┼──────────┬──────────┐
+     ▼          ▼          ▼          ▼
+  header     products     cart     account
+   :4174       :4175      :4176     :4177
+     └──────────┴────┬─────┴──────────┘
+                     ▼
+        contracts · shared · ui-kit · telemetry
 ```
 
-Tiga istilah yang wajib dikuasai:
+### Aturan batas
 
-- **Shell**: pemilik URL, layout, dan siklus hidup halaman.
-- **Remote** (mikro-frontend): aplikasi kecil yang dimount ke slot DOM yang disediakan shell.
-- **Shared module**: kode yang dipakai bersama (state, bus event, token CSS) dan hanya boleh berisi hal yang *benar-benar* disepakati semua tim.
+1. Shell tidak mengimpor berkas internal remote; hanya `remote/App`.
+2. Remote tidak punya halaman login sendiri.
+3. Remote tidak memanggil API remote lain.
+4. Gaya memakai token, bukan warna hard-coded.
+5. Setiap remote bisa berdiri sendiri untuk pengembangan.
 
-### Teknik komposisi (cara menggabungkan remote)
+### Tujuh teknik komposisi
 
-| Teknik | Cara kerja | Kelebihan | Kekurangan | Cocok untuk |
-| --- | --- | --- | --- | --- |
-| Build time (npm package) | remote dipaketkan lalu di-bundle shell | sederhana, cepat | rilis tetap tergantung shell | tim kecil, transisi awal |
-| Runtime JS entry | shell mengimpor berkas `entry.js` remote | mandiri & fleksibel | perlu kontrak & isolasi ketat | tim besar, rilis mandiri |
-| Web Components | remote mendaftarkan `<my-cart>` | tahan framework apa pun | styling & aksesibilitas perlu usaha | design system lintas framework |
-| Module Federation | bundler membagi & berbagi dependensi saat runtime | penghematan bundle, shared deps | terikat tooling bundler | React/Vue/Angular modern |
-| single-spa | kerangka komposisi dengan lifecycle baku | standar, banyak integrasi | kurva belajar | migrasi besar |
-| iframe | tiap remote halaman sendiri | isolasi sempurna | masalah sizing, SEO, UX terpecah | bagian legacy/eksternal |
-| Server-side (SSI/ESI/nginx) | remote digabung di server/CDN | TTFB cepat, SEO bagus | interaktivitas tetap di client | landing page, portal |
+| Teknik | Isolasi | Integrasi | Biaya utama |
+| --- | --- | --- | --- |
+| Build-time package | Rendah | Sangat mudah | Rilis terkunci |
+| Runtime JS entry | Sedang | Fleksibel | Kontrak runtime |
+| Module Federation | Sedang | Sangat fleksibel | Konfigurasi bundler |
+| Web Components | Tinggi | Sedang | Shadow DOM, event |
+| iframe | Sangat tinggi | Rendah | Layout, komunikasi, SEO |
+| single-spa | Sedang | Tinggi | Router orkestrasi |
+| Server-side/ESI | Tinggi | Sedang | Infrastruktur server |
 
-### Perbandingan tools populer
+### Memilih teknik
 
-| Tool | Jenis | Catatan |
-| --- | --- | --- |
-| Vite + `@originjs/vite-plugin-federation` | Module Federation | cepat, ringan, cocok untuk proyek baru |
-| Webpack 5 Module Federation | Module Federation | bawaan Webpack, paling matang |
-| single-spa | kerangka komposisi | lifecycle `bootstrap/mount/unmount`, integrasi banyak framework |
-| Piral | toolkit | sudah menyediakan shell, feed, dan portal bawaan |
-| Module Federation + Rspack/Rsbuild | Module Federation | build jauh lebih cepat untuk monorepo besar |
+- Butuh rilis mandiri + UX menyatu → **Module Federation**.
+- Aplikasi lama yang tidak boleh disentuh → **iframe** dulu.
+- Widget lintas framework → **Web Components**.
+- Prototipe tanpa bundler → **import map**.
+- Halaman yang SEO-nya kritis → pertimbangkan **SSR/ESI**, bukan CSR murni.
 
-### Praktik
+### Praktik: pilih teknik untuk tiga skenario
 
-- [ ] Rancang tiga remote untuk produk Anda: tentukan nama, pemilik tim, dan tanggung jawabnya.
-- [ ] Tentukan data yang dibutuhkan tiap remote dan siapa pemilik API-nya.
-- [ ] Pilih satu teknik komposisi dan tulis alasannya dalam satu paragraf (Architectural Decision Record).
+Tulis tabel keputusan:
 
-### Target
+```text
+Skenario A — dashboard internal, 3 tim, rilis mingguan
+  Pilihan: Module Federation
+  Alasan: butuh rilis mandiri, UX satu halaman
 
-Mampu memilih teknik komposisi yang sesuai dan menjelaskan konsekuensinya.
+Skenario B — aplikasi akuntansi lama, tim baru ingin menambah halaman
+  Pilihan: iframe / route terpisah
+  Alasan: risiko migrasi rendah, isolasi maksimal
 
----
-
-# Bagian B — Membangun
-
-## Tahap 3 — Shell, Routing, dan Lazy Loading
-
-**Durasi:** 4–5 hari
-
-### Materi
-
-- [ ] Shell menyediakan slot DOM (`#view`, `#mfe-header`).
-- [ ] Routing berbasis hash (`#/katalog`, `#/keranjang`) atau History API.
-- [ ] `import()` dinamis: satu bundel per remote.
-- [ ] Siklus hidup remote: `mount(container, ctx)` dan `unmount()`.
-- [ ] Cache modul agar remote tidak diimpor ulang saat berpindah rute.
-- [ ] Kerangka pemuatan (skeleton) agar shell tetap terasa responsif.
-- [ ] Deep link: buka URL langsung di remote tertentu harus tetap berfungsi.
-- [ ] Rute tidak dikenal: arahkan ke halaman utama atau halaman 404.
-
-### Praktik
-
-- [ ] Bangun shell dengan dua rute yang memuat dua remote berbeda.
-- [ ] Tambahkan kerangka pemuatan selama remote dimuat.
-- [ ] Uji deep link: `http://localhost:PORT/#/keranjang` langsung membuka keranjang.
-- [ ] Ukur jumlah berkas yang diunduh per rute di tab Network — pastikan remote lain tidak ikut terunduh.
-
-### Target
-
-Shell mampu memuat dan membongkar remote dengan bersih, dengan berkas terpisah per rute.
-
----
-
-## Tahap 4 — Komunikasi Antarmodul dan Shared State
-
-**Durasi:** 4–5 hari
-
-### Materi
-
-**Tiga cara berkomunikasi, dari yang paling longgar ke paling erat:**
-
-1. **Melalui URL** — parameter rute (`#/produk/p1`) adalah cara paling sederhana dan selalu tersedia.
-2. **Melalui event bus** — event `cart:change`, `route:change`, `toast`; pengirim tidak tahu siapa penerimanya.
-3. **Melalui shared store** — satu instance modul state dipakai bersama (setara *shared dependencies* pada Module Federation).
-
-Aturan main:
-
-- [ ] Remote tidak boleh mengimpor berkas internal remote lain.
-- [ ] Shared store hanya menyimpan state yang *benar-benar* bersama (misalnya keranjang, tema, bahasa, token).
-- [ ] Setiap langganan event **wajib** dibersihkan di `unmount()` — kalau tidak, terjadi *listener leak*.
-- [ ] Satu remote yang rusak tidak boleh membuat handler remote lain ikut gagal: bungkus handler dengan `try/catch`.
-
-### Praktik
-
-- [ ] Buat event bus kecil (maksimal 40 baris) dengan `on`, `off`, `emit`.
-- [ ] Buat shared store keranjang: `addItem`, `changeQty`, `removeItem`, `cartSummary`.
-- [ ] Tampilkan jumlah item di header (remote A) dan daftar item di halaman keranjang (remote B).
-- [ ] Bongkar remote keranjang, lalu periksa di DevTools → Event Listeners bahwa tidak ada listener yang tersisa.
-
-### Target
-
-State yang sama tampil konsisten di dua remote yang dibangun terpisah.
-
----
-
-## Tahap 5 — Isolasi Styling dan Design System
-
-**Durasi:** 3–4 hari
-
-### Materi
-
-- [ ] Awalan kelas CSS per remote (`.hd-`, `.pf-`, `.ct-`) — cara termurah dan efektif.
-- [ ] CSS Modules (`produk.module.css`) — isolasi otomatis oleh bundler.
-- [ ] Design tokens: variabel CSS (`--accent`, `--card`) ditentukan shell, dipakai semua remote.
-- [ ] Shadow DOM: isolasi paling kuat, cocok untuk komponen lintas framework.
-- [ ] Jangan letakkan *CSS reset* di dalam remote — itu merusak remote lain.
-- [ ] Jangan gunakan selektor global seperti `button {}` atau `h1 {}` di dalam remote.
-
-### Praktik
-
-- [ ] Pindahkan semua variabel warna ke `shell.css` lalu gunakan `var(--accent)` di semua remote.
-- [ ] Tambahkan remote baru dengan awalan kelas berbeda dan pastikan tampilannya tetap satu keluarga.
-- [ ] Uji: matikan `shell.css` — remote seharusnya masih terbaca (karena memakai nilai cadangan `var(--accent, #4f46e5)`).
-
-### Target
-
-Tiga remote dengan tiga gaya berbeda tetap terlihat sebagai satu produk.
-
----
-
-## Tahap 6 — Data, API, dan Autentikasi
-
-**Durasi:** 4–5 hari
-
-### Materi
-
-- [ ] Setiap remote memanggil API-nya sendiri, bukan API remote lain.
-- [ ] Bila perlu agregasi, buat **BFF** (Backend for Frontend) sebagai satu pintu.
-- [ ] Hindari remote memanggil remote lain langsung (HTTP antar-remote) — itu memunculkan *distributed monolith*.
-- [ ] Untuk kebutuhan lintas remote, pakai **event** atau **API gateway**.
-- [ ] Auth global di shell: simpan token, lalu shell menyediakan `ctx.getToken()`.
-- [ ] Silent refresh token agar pengguna tidak terus-terusan diminta login.
-- [ ] Proteksi rute: remote yang butuh login diperiksa shell sebelum `mount()`.
-- [ ] Konsistensi kontrak API: siapa pun boleh mengubah API asal tetap *backward compatible*.
-
-### Praktik
-
-- [ ] Simulasi token kadaluarsa: perbarui token diam-diam sebelum request berikutnya.
-- [ ] Buat halaman yang hanya bisa diakses setelah login, lalu uji deep link-nya.
-- [ ] Buat satu endpoint BFF yang menggabungkan data dua remote dalam satu respons.
-
-### Target
-
-Autentikasi terasa satu kali login untuk seluruh halaman, dan tidak ada remote yang saling memanggil langsung.
-
----
-
-## Tahap 7 — Build, Monorepo, dan Deployment
-
-**Durasi:** 5–6 hari
-
-### Materi
-
-- [ ] Struktur monorepo: `apps/shell`, `apps/products`, `packages/design-system`.
-- [ ] Build per remote: tiap remote menghasilkan `remoteEntry.js` sendiri.
-- [ ] Vite + Module Federation: `shared` dependencies (React sekali muat untuk semua remote).
-- [ ] `singleton: true` untuk pustaka yang tidak boleh dimuat dua kali.
-- [ ] Manifest rute/versi remote agar shell tahu entri terbaru.
-- [ ] Deployment: shell di origin utama, remote di CDN atau subdomain berbeda.
-- [ ] CORS: remote lintas origin butuh header yang benar.
-- [ ] Versioning remote: jangan pernah menimpa artefak versi lama (pakai hash nama berkas).
-
-### Contoh konfigurasi Vite + Module Federation
-
-`apps/products/vite.config.js`:
-
-```js
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
-
-export default defineConfig({
-  plugins: [
-    react(),
-    federation({
-      name: 'products',
-      filename: 'remoteEntry.js',          // berkas yang dimuat shell
-      exposes: {
-        './App': './src/App.jsx'           // fitur yang dipancarkan
-      },
-      shared: {
-        react: { singleton: true, requiredVersion: '^18.0.0' },
-        'react-dom': { singleton: true }
-      }
-    })
-  ],
-  build: { target: 'esnext', minify: false }
-});
+Skenario C — widget rekomendasi di 5 situs berbeda
+  Pilihan: Web Component
+  Alasan: lintas framework, gaya terisolasi
 ```
 
-`apps/shell/vite.config.js` (bagian federasi):
+### Verifikasi
 
-```js
+- [ ] Kamu bisa menggambar shell, remote, dan shared module.
+- [ ] Kamu bisa menyebut satu kelebihan dan satu biaya untuk tiga teknik.
+- [ ] Kamu bisa menjelaskan mengapa iframe bukan default untuk semua kasus.
+
+### Jebakan
+
+- Memakai iframe untuk semua hal lalu kesulitan menyatukan navigasi dan tema.
+- Memakai Module Federation tanpa kontrak sehingga remote saling mengetahui internal.
+- Menganggap Web Components selalu lebih aman; Shadow DOM tidak menyelesaikan masalah data dan auth.
+
+### Ringkasan
+
+Tidak ada teknik terbaik secara universal. Pilih berdasarkan isolasi yang dibutuhkan, tingkat integrasi UX, dan biaya operasi yang sanggup kamu rawat.
+
+---
+
+## Bab 3 — Menyiapkan Monorepo dan Lingkungan Kerja
+
+**Tujuan:** menyiapkan workspace yang bisa membangun banyak aplikasi tanpa saling mengganggu.
+
+### Struktur
+
+```
+apps/
+  shell/
+  header/
+  products/
+  cart/
+  account/
+  legacy/
+packages/
+  contracts/
+  shared/
+  ui-kit/
+  i18n/
+  telemetry/
+```
+
+`apps/*` adalah aplikasi yang di-deploy. `packages/*` adalah kode bersama yang tidak punya origin sendiri.
+
+### npm workspaces
+
+```json
+{
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run"
+  }
+}
+```
+
+### TypeScript strict
+
+`tsconfig.base.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+### Port
+
+| Aplikasi | Port |
+| --- | --- |
+| shell | 4173 |
+| header | 4174 |
+| products | 4175 |
+| cart | 4176 |
+| account | 4177 |
+| legacy | 4178 |
+
+### Praktik
+
+```bash
+cd examples/micro-frontend-react
+npm install
+npm run typecheck
+npm run build
+```
+
+Periksa bahwa setiap `apps/*/dist/assets/remoteEntry.js` ada:
+
+```bash
+ls apps/*/dist/assets/remoteEntry.js
+```
+
+### Verifikasi
+
+- [ ] `npm install` selesai tanpa error.
+- [ ] `npm run typecheck` lulus di semua workspace.
+- [ ] `npm run build` menghasilkan `dist` untuk lima aplikasi.
+- [ ] Tidak ada `node_modules` di dalam `apps/*` atau `packages/*`.
+
+### Jebakan
+
+- Lupa `packageManager` di root; Turbo menolak berjalan.
+- Dua versi React berbeda antar workspace.
+- Mengimpor source package tanpa konfigurasi `exports`.
+- Menjalankan `npm install` di dalam subfolder sehingga lockfile terpecah.
+
+### Ringkasan
+
+Monorepo menyatukan kode, bukan menyatukan rilis. Setiap aplikasi tetap punya build dan output sendiri.
+
+---
+
+## Bab 4 — Membangun Shell React TypeScript
+
+**Tujuan:** shell yang memiliki URL, layout, sesi, dan batas kegagalan.
+
+### Tanggung jawab shell
+
+- `BrowserRouter` dan peta rute.
+- Layout global dan slot remote.
+- Login, logout, refresh token.
+- Manifest remote dan feature flag.
+- Error boundary per slot.
+- Toast, halaman 404, halaman status.
+
+### Yang tidak boleh dilakukan shell
+
+- Mengimpor komponen internal remote.
+- Memanggil API bisnis milik remote.
+- Menyimpan state keranjang milik domain cart.
+- Menentukan markup detail di dalam remote.
+
+### Kerangka
+
+```tsx
+<BrowserRouter>
+  <App />
+</BrowserRouter>
+```
+
+Di dalam `App`:
+
+```tsx
+<Routes>
+  <Route path="/" element={<Navigate to="/katalog" replace />} />
+  <Route path="/katalog/*" element={<RemoteSlot name="products" />} />
+  <Route path="/keranjang/*" element={<RemoteSlot name="cart" />} />
+  <Route path="/akun/*" element={<ProtectedRoute><RemoteSlot name="account" /></ProtectedRoute>} />
+  <Route path="/masuk" element={<LoginView />} />
+  <Route path="/status" element={<StatusView />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
+
+### Boot shell
+
+Shell memuat tiga hal sekaligus:
+
+```ts
+const [manifest, flags, session] = await Promise.allSettled([
+  fetchManifest(),
+  fetchFlags(),
+  refreshSession()
+]);
+```
+
+Jika manifest gagal, shell memakai manifest bawaan. Jika sesi gagal, pengguna tetap bisa melihat katalog.
+
+### Praktik
+
+1. Buka `apps/shell/src/App.tsx`.
+2. Tambahkan rute `/bantuan` yang merender komponen lokal sederhana.
+3. Tambahkan tautan ke rute itu di header.
+4. Jalankan `npm run typecheck` dan `npm run build`.
+5. Buka `http://localhost:4173/bantuan` dan reload halaman.
+
+### Verifikasi
+
+- [ ] Deep link `/bantuan` tidak 404 setelah reload.
+- [ ] Navigasi tidak memuat ulang halaman.
+- [ ] Halaman 404 muncul untuk rute yang tidak dikenal.
+- [ ] Judul dokumen berubah sesuai rute.
+
+### Jebakan
+
+- Memasang `BrowserRouter` di dalam remote → dua router bertabrakan.
+- Lupa SPA fallback di server → deep link 404.
+- Menaruh seluruh state aplikasi di shell → shell menjadi monolith baru.
+- Tidak memfokuskan ulang konten setelah navigasi → pengguna screen reader kehilangan konteks.
+
+### Ringkasan
+
+Shell adalah pemilik halaman, bukan pemilik seluruh domain. Ia menyediakan konteks dan slot, lalu mundur dari urusan internal remote.
+
+---
+
+## Bab 5 — Remote Pertama dengan Module Federation
+
+**Tujuan:** mengekspos satu komponen remote dan memuatnya dari shell.
+
+### Konfigurasi remote
+
+```ts
 federation({
-  name: 'shell',
-  remotes: {
-    products: 'http://cdn.example.com/products/assets/remoteEntry.js',
-    cart: 'http://cdn.example.com/cart/assets/remoteEntry.js'
-  },
+  name: 'header',
+  filename: 'remoteEntry.js',
+  exposes: { './App': './src/App.tsx' },
   shared: {
-    react: { singleton: true, requiredVersion: '^18.0.0' },
-    'react-dom': { singleton: true }
+    react: { singleton: true, requiredVersion: '^18.2.0' },
+    'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
+    'react-router-dom': { singleton: true, requiredVersion: '^6.30.0' }
   }
 })
 ```
 
-### Praktik
+### Konfigurasi shell
 
-- [ ] Buat monorepo dengan shell + dua remote, masing-masing bisa dibangun mandiri.
-- [ ] Pastikan React hanya dimuat satu kali (cek tab Network: hanya ada satu bundel React).
-- [ ] Ubah kode remote products lalu rilis — halaman lain tidak perlu dibangun ulang.
-- [ ] Uji skenario gagal: arahkan shell ke URL remote yang salah dan pastikan tetap ada fallback.
-
-### Target
-
-Perubahan pada satu remote bisa dirilis tanpa menyentuh kode remote lain.
-
----
-
-## Tahap 8 — Pengujian, Ketahanan, dan Observability
-
-**Durasi:** 4–5 hari
-
-### Materi
-
-- [ ] Unit test per remote (fungsi murni: format rupiah, perhitungan total, validasi).
-- [ ] Component test dengan Testing Library.
-- [ ] Contract test: bentuk respons API dipastikan sama antar-tim.
-- [ ] End-to-end test untuk **alur komposisi** (Playwright/Cypress): buka halaman, tambah produk, checkout.
-- [ ] Visual regression test untuk menjaga konsistensi design system.
-- [ ] **Error boundary per remote**: satu remote gagal, shell dan remote lain tetap hidup.
-- [ ] Fallback UI: tampilkan tombol "Coba lagi" alih-alih halaman kosong.
-- [ ] Observability: catat nama remote, versi, dan lama waktu muat tiap mount.
-- [ ] Performance budget: misalnya shell maksimal 150 KB, remote maksimal 200 KB.
-
-### Praktik
-
-- [ ] Sengaja rusakkan satu remote lalu buka aplikasi — pastikan shell tetap berfungsi penuh.
-- [ ] Tulis satu E2E test alur tambah-ke-keranjang sampai pesanan dibuat.
-- [ ] Catat waktu `mount()` tiap remote ke `console`/endpoint logging.
-- [ ] Uji di koneksi lambat (DevTools → Slow 3G) dan pastikan skeleton muncul.
-
-### Target
-
-Kegagalan satu modul terisolasi, terdeteksi, dan bisa dipulihkan tanpa memuat ulang seluruh halaman.
-
----
-
-# Bagian C — Tingkat Mahir
-
-## Tahap 9 — Organisasi Tim, CI/CD, dan Versioning
-
-**Durasi:** 5–6 hari
-
-### Materi
-
-- [ ] Hukum Conway: struktur tim harus sejajar dengan potongan produk.
-- [ ] *You build it, you run on it* — tim remote bertanggung jawab sampai produksi.
-- [ ] Pipeline CI/CD per remote: lint → test → build → publish → deploy → smoke test.
-- [ ] Semantic versioning untuk kontrak (API dan komponen shared).
-- [ ] Halaman katalog remote: daftar remote, versi, pemilik, dan status rilis.
-- [ ] Canary release dan feature flag untuk remote baru.
-- [ ] Rollback cepat: simpan versi sebelumnya dan kembalikan pointer manifest.
-- [ ] Perubahan bersifat *backward compatible* — remote versi lama harus tetap jalan saat shell sudah baru.
-
-### Praktik
-
-- [ ] Buat pipeline untuk satu remote dengan smoke test setelah deploy.
-- [ ] Terbitkan dua versi remote, lalu buat shell memakai versi lama tanpa perubahan kode.
-- [ ] Buat halaman daftar remote (manifest) yang menampilkan versi aktif tiap modul.
-
-### Target
-
-Rilis satu remote tidak pernah membutuhkan koordinasi jadwal dengan tim lain.
-
----
-
-## Tahap 10 — Jebakan Umum dan Kapan Kembali ke Monolith
-
-**Durasi:** 2–3 hari
-
-### Jebakan yang paling sering terjadi
-
-| Jebakan | Gejala | Pencegahan |
-| --- | --- | --- |
-| Distributed monolith | rilis tetap menunggu tim lain | hilangkan dependensi rilis, pakai kontrak |
-| Duplikasi dependensi | bundle bloat, React dimuat dua kali | shared dependency dengan `singleton` |
-| CSS bocor | remote satu menimpa tampilan remote lain | awalan kelas, CSS Modules, Shadow DOM |
-| State bersama kebablasan | semua state dipindahkan ke shared | state lokal dulu, baru naik kelas bila perlu |
-| Inkonsistensi UX | tombol berbeda-beda bentuk | design tokens + komponen bersama |
-| Versi kacau | shell memuat remote yang sudah berubah kontrak | manifest versi + kontrak backward compatible |
-| Sulit debugging | galat muncul di lintas remote | logging dengan `remoteId` dan trace ID |
-| Performa menurun | terlalu banyak request kecil | gabungkan berkas, preload, cache |
-
-### Tanda harus kembali ke monolith (atau modular monolith)
-
-- [ ] Hanya satu tim yang benar-benar mengembangkan seluruh frontend.
-- [ ] Lebih dari separuh waktu habis untuk mengurus kontrak, bukan fitur.
-- [ ] Perubahan kecil selalu menyentuh banyak remote sekaligus.
-- [ ] Biaya hosting dan monitoring naik tanpa peningkatan kecepatan rilis.
-
-### Strategi migrasi (bila tetap melanjutkan)
-
-Gunakan pola **strangler fig**: bangun shell baru, pindahkan rute satu per satu dari aplikasi lama, dan buang modul lama setelah rute baru stabil. Jangan pernah memigrasi seluruh sekaligus.
-
-### Praktik
-
-- [ ] Audit aplikasi Anda: sebutkan tiga jebakan yang paling mungkin terjadi.
-- [ ] Tulis aturan "apa yang boleh masuk shared module" (maksimal satu halaman).
-
-### Target
-
-Mampu memutuskan, dengan alasan terukur, apakah arsitektur ini layak dipertahankan.
-
----
-
-# Proyek Akhir — Pasar Digital "TokoMicro"
-
-**Durasi:** 2 minggu atau lebih
-
-Bangun aplikasi e-commerce kecil yang terdiri atas empat micro-frontend.
-
-### Remote dan pemiliknya
-
-| Remote | Tanggung jawab | API yang dipakai |
-| --- | --- | --- |
-| `header` | logo, navigasi, badge keranjang, tema | — (membaca shared store) |
-| `products` | katalog, pencarian, filter kategori | `GET /api/products` |
-| `cart` | daftar item, jumlah, checkout | `GET/PATCH` keranjang, `POST /api/orders` |
-| `account` | profil dan riwayat pesanan | `GET /api/me`, `GET /api/orders` |
-
-### Persyaratan proyek
-
-- [ ] Shell memuat remote secara lazy, dengan skeleton dan error boundary.
-- [ ] Tiap remote punya CI/CD sendiri dan bisa dirilis mandiri.
-- [ ] State keranjang dipakai bersama oleh `header` dan `cart`.
-- [ ] Semua gaya memakai design tokens dari shell; tidak ada CSS global di remote.
-- [ ] Autentikasi sekali login untuk seluruh halaman.
-- [ ] Unit test, contract test, dan minimal satu alur E2E.
-- [ ] Metrik sederhana: waktu muat tiap remote tercatat.
-- [ ] Dokumentasi arsitektur: diagram shell + remote, daftar event, dan kontrak shared module.
-- [ ] Uji ketahanan: matikan satu remote, halaman tetap berfungsi.
-
-### Kriteria akhir
-
-Proyek dianggap berhasil bila dapat dijalankan dari repository, tiap remote dirilis mandiri tanpa membangun ulang yang lain, dan kegagalan satu remote tidak membuat aplikasi mati total.
-
----
-
-# Contoh Proyek Lengkap — TokoMicro
-
-Contoh berikut **bisa langsung dijalankan** tanpa framework dan tanpa build, agar konsepnya jelas sebelum Anda pindah ke Vite/Module Federation. Seluruh berkas juga tersedia di folder [`examples/micro-frontend/`](examples/micro-frontend/) pada repository ini.
-
-**Hasil akhir:** halaman katalog dengan filter kategori → tambah ke keranjang → badge header bertambah → checkout → nomor pesanan tampil.
-
-## Struktur proyek
-
-```text
-micro-frontend/
-├── server.js                  # server statis + API palsu (/api/products, /api/orders)
-├── shell/                     # aplikasi induk
-│   ├── index.html
-│   ├── shell.js
-│   └── shell.css
-├── shared/                    # modul bersama
-│   ├── bus.js
-│   └── store.js
-└── remotes/
-    ├── header/                # remote 1
-    │   ├── header.js
-    │   └── header.css
-    ├── products/              # remote 2
-    │   ├── products.js
-    │   └── products.css
-    └── cart/                  # remote 3
-        ├── cart.js
-        └── cart.css
+```ts
+federation({
+  name: 'shell',
+  remotes: {
+    header: 'http://localhost:4174/assets/remoteEntry.js',
+    products: 'http://localhost:4175/assets/remoteEntry.js',
+    cart: 'http://localhost:4176/assets/remoteEntry.js',
+    account: 'http://localhost:4177/assets/remoteEntry.js'
+  },
+  shared: {
+    react: { singleton: true, requiredVersion: '^18.2.0' },
+    'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
+    'react-router-dom': { singleton: true, requiredVersion: '^6.30.0' }
+  }
+})
 ```
 
-## Langkah menjalankan
+### Memuat remote
+
+```tsx
+const Header = lazy(() => import('header/App'));
+```
+
+Bungkus dengan `Suspense` dan `ErrorBoundary`.
+
+### Mode mandiri
+
+Remote memakai `MemoryRouter` saat dibuka sendiri:
+
+```tsx
+<MemoryRouter initialEntries={['/katalog']}>
+  <App ctx={mockCtx} />
+</MemoryRouter>
+```
+
+### Praktik
+
+1. Buat remote sederhana yang mengekspos `./App`.
+2. Tambahkan URL-nya ke konfigurasi shell.
+3. Build remote, lalu shell.
+4. Jalankan server dan buka shell.
+5. Buka juga origin remote secara langsung.
+
+### Verifikasi
+
+- [ ] `curl -I http://localhost:4174/assets/remoteEntry.js` menghasilkan 200.
+- [ ] Shell menampilkan remote tanpa error console.
+- [ ] Remote bisa dibuka sendiri.
+- [ ] Hanya ada satu React di halaman (cek `window.React` atau React DevTools).
+
+### Jebakan
+
+- Dua React karena `shared` tidak `singleton` → hook error.
+- `react-router-dom` tidak di-share → `useContext` null saat memakai `Link`.
+- CORS diblokir karena origin remote tidak mengizinkan shell.
+- `remoteEntry.js` di-cache terlalu lama → versi lama terus dipakai.
+- Build remote belum selesai tetapi shell sudah dijalankan.
+
+### Ringkasan
+
+Module Federation memungkinkan shell memuat kode yang tidak ia bangun. Kuncinya adalah kontrak yang stabil, shared dependency yang benar, dan origin yang bisa diakses.
+
+---
+
+## Bab 6 — Routing Bersarang dan Kontrak Remote
+
+**Tujuan:** membagi URL antara shell dan remote tanpa konflik.
+
+### Pembagian rute
+
+| URL | Pemilik |
+| --- | --- |
+| `/` | shell (redirect) |
+| `/katalog` | shell → remote products |
+| `/katalog/detail/:id` | remote products |
+| `/keranjang` | shell → remote cart |
+| `/keranjang/checkout` | remote cart |
+| `/akun` | shell → remote account (protected) |
+| `/masuk` | shell |
+| `/status` | shell |
+| `/katalog-lama` | shell (iframe legacy) |
+
+Shell hanya tahu prefix. Remote mengelola sisa URL dengan `<Routes>` bersarang.
+
+```tsx
+// remote products
+<Routes>
+  <Route index element={<ProductList />} />
+  <Route path="detail/:id" element={<ProductDetail />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+```
+
+### Kontrak `AppContext`
+
+```ts
+interface AppContext {
+  route: string;
+  params: URLSearchParams;
+  href(path: string): string;
+  navigate(path: string, options?: { replace?: boolean }): void;
+  toast(message: string, type?: 'info' | 'success' | 'error'): void;
+  user: User | null;
+  getToken(): Promise<string | null>;
+  login(username: string, password: string): Promise<User>;
+  logout(): void;
+  locale: 'id' | 'en';
+  setLocale(locale: 'id' | 'en'): void;
+  t(key: string, vars?: Record<string, string | number>): string;
+  flags: Record<string, boolean>;
+  telemetry: Telemetry;
+  theme: 'light' | 'dark';
+  toggleTheme(): void;
+}
+```
+
+### Deklarasi tipe remote
+
+```ts
+declare module 'products/App' {
+  import type { ComponentType } from 'react';
+  import type { RemoteAppProps } from './index';
+  const App: ComponentType<RemoteAppProps>;
+  export default App;
+}
+```
+
+### Praktik
+
+1. Tambahkan rute `detail/:id` di remote products.
+2. Tambahkan rute 404 di dalam remote.
+3. Tambahkan tombol kembali yang memakai `Link to=".."`.
+4. Uji URL langsung dan tombol back browser.
+
+### Verifikasi
+
+- [ ] `/katalog/detail/kb-01` merender detail.
+- [ ] Reload URL detail tetap bekerja.
+- [ ] Rute remote yang tidak dikenal menampilkan 404 remote, bukan blank.
+- [ ] Shell tidak perlu tahu parameter `id`.
+
+### Jebakan
+
+- Remote memakai `window.location.hash` sementara shell memakai History API.
+- Remote memasang `BrowserRouter` sendiri.
+- Shell menangani rute detail, sehingga remote kehilangan otonomi.
+- Tautan absolut ke `/katalog` dari dalam remote yang sedang standalone.
+
+### Ringkasan
+
+URL adalah kontrak. Shell memiliki prefix; remote memiliki sisanya. Jangan ada dua router yang bersaing.
+
+---
+
+## Bab 7 — State Bersama dan Event Bus Bertipe
+
+**Tujuan:** berbagi state tanpa menyalin data dan tanpa impor antar remote.
+
+### Tiga tingkat komunikasi
+
+| Kebutuhan | Mekanisme |
+| --- | --- |
+| Navigasi, filter, deep link | URL |
+| Kabar “sesuatu terjadi” | Event bus |
+| Data yang dibaca banyak remote | Shared store |
+
+### Shared store
+
+`@tokomicro/shared` menyimpan keranjang di `globalThis`:
+
+```ts
+const namespace = (globalThis.__TOKOMICRO__ ??= {});
+if (!namespace.cart) namespace.cart = { items: [], listeners: new Set() };
+```
+
+Mengapa `globalThis`? Karena setiap remote membundel modulnya sendiri. Tanpa satu objek global, header dan cart bisa memiliki salinan state berbeda.
+
+### React binding
+
+```tsx
+const items = useSyncExternalStore(subscribe, getSnapshot);
+```
+
+`getSnapshot` harus mengembalikan referensi yang stabil sampai data berubah.
+
+### Event bus
+
+```ts
+emitAddToCart({
+  productId: 'kb-01',
+  name: 'Keyboard Mekanik',
+  price: 850_000,
+  qty: 1,
+  at: new Date().toISOString()
+});
+```
+
+Penerima memvalidasi payload dengan Zod. Payload rusak diabaikan, bukan dipercaya.
+
+### Kapan tidak memakai shared store
+
+- Data hanya dipakai satu remote.
+- Data adalah sumber kebenaran backend dan harus selalu segar.
+- Data besar yang tidak perlu dimuat semua remote.
+
+Gunakan API/BFF untuk data bisnis yang perlu konsistensi kuat.
+
+### Praktik
+
+1. Tambahkan event `tokomicro:wishlist-added`.
+2. Buat skema Zod untuk payload-nya.
+3. Kirim event dari remote products.
+4. Tampilkan toast di shell saat event diterima.
+5. Kirim payload rusak dan pastikan diabaikan.
+
+### Verifikasi
+
+- [ ] Badge header berubah tanpa reload.
+- [ ] Payload tidak valid memunculkan warning, bukan crash.
+- [ ] Listener dibersihkan saat unmount.
+- [ ] Tidak ada impor langsung dari remote products ke remote cart.
+
+### Jebakan
+
+- Menyimpan state di module scope tanpa `globalThis` → salinan ganda.
+- `getSnapshot` membuat objek baru setiap render → infinite loop.
+- Event tanpa versi/skema → perubahan payload memecahkan penerima.
+- Shared store dipakai untuk data yang seharusnya berasal dari server.
+
+### Ringkasan
+
+Gunakan URL untuk alamat, event untuk kabar, dan shared store hanya untuk state kecil yang memang milik bersama.
+
+---
+
+## Bab 8 — Design System, Token, dan Isolasi Gaya
+
+**Tujuan:** tampilan konsisten tanpa CSS remote saling menimpa.
+
+### Tiga lapis pertahanan
+
+1. **Token** — warna, radius, font berasal dari `--tm-*`.
+2. **Prefix kelas** — `.hd-`, `.pf-`, `.ct-`, `.ac-`.
+3. **Isolasi kuat** — CSS Modules atau Shadow DOM bila benar-benar perlu.
+
+### Token
+
+```css
+:root,
+[data-theme='light'] {
+  --tm-bg: #f5f7fb;
+  --tm-card: #ffffff;
+  --tm-text: #1c2333;
+  --tm-accent: #4f46e5;
+}
+
+[data-theme='dark'] {
+  --tm-bg: #0f1420;
+  --tm-card: #171e2e;
+  --tm-text: #eef2ff;
+  --tm-accent: #818cf8;
+}
+```
+
+Remote memakai:
+
+```css
+.card {
+  background: var(--tm-card);
+  color: var(--tm-text);
+  border: 1px solid var(--tm-border);
+}
+```
+
+### Tema
+
+Shell memegang `useTheme` dan menulis `document.documentElement.dataset.theme`. Remote hanya membaca token; tidak perlu tahu bagaimana tema disimpan.
+
+### Design system
+
+`packages/ui-kit` berisi `Button`, `Card`, `Badge`, dan token. Storybook hanya untuk paket ini, bukan untuk remote, agar batas tanggung jawab jelas.
+
+### Praktik
+
+1. Tambahkan komponen `PriceTag` di `packages/ui-kit`.
+2. Gunakan token, bukan warna literal.
+3. Tambahkan story `PriceTag.stories.tsx`.
+4. Jalankan `npm run storybook:build`.
+5. Ganti tema dan pastikan kontras tetap terbaca.
+
+### Verifikasi
+
+- [ ] Tidak ada warna hard-coded di remote.
+- [ ] Tema gelap mengubah seluruh halaman.
+- [ ] Storybook berhasil di-build.
+- [ ] Tidak ada reset global di CSS remote.
+
+### Jebakan
+
+- Remote menulis `body { ... }` → mengubah seluruh halaman.
+- Memakai `!important` untuk menang melawan shell.
+- Token diberi nama generik (`--primary`) lalu bertabrakan dengan library lain.
+- Shadow DOM dipakai tanpa strategi tema dan event.
+
+### Ringkasan
+
+Konsistensi datang dari token dan komponen bersama; isolasi datang dari prefix dan batas CSS yang disiplin.
+
+---
+
+## Bab 9 — Data, API, BFF, dan Validasi Kontrak
+
+**Tujuan:** setiap remote mengambil datanya sendiri dengan aman dan dapat diprediksi.
+
+### Aturan
+
+- Remote memiliki endpoint-nya sendiri.
+- Remote tidak memanggil API remote lain.
+- Bentuk respons divalidasi.
+- Request dibatalkan saat komponen unmount.
+- Loading, error, dan empty adalah keadaan yang dirancang.
+
+### Fetch yang benar
+
+```tsx
+useEffect(() => {
+  const controller = new AbortController();
+
+  (async () => {
+    try {
+      const response = await fetch('/api/products', { signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      const parsed = productSchema.array().safeParse(data.products);
+      if (!parsed.success) throw new Error('Bentuk data tidak sesuai kontrak');
+      setProducts(parsed.data);
+    } catch (error) {
+      if (!controller.signal.aborted) setError(error);
+    }
+  })();
+
+  return () => controller.abort();
+}, []);
+```
+
+### BFF
+
+Jika satu halaman butuh data dari beberapa layanan, jangan menyambungkannya di browser. Buat endpoint BFF:
+
+```
+GET /api/home
+  → produk populer
+  → status pesanan
+  → rekomendasi
+```
+
+BFF juga tempat yang tepat untuk menggabungkan auth, cache, dan transformasi respons.
+
+### Praktik
+
+1. Tambahkan filter kategori dari API.
+2. Rusak sengaja bentuk respons (ubah `products` menjadi string).
+3. Pastikan UI menampilkan error yang bisa dipahami, bukan blank.
+4. Tambahkan tombol “Coba lagi”.
+
+### Verifikasi
+
+- [ ] Request dibatalkan saat pindah halaman.
+- [ ] Respons rusak tidak meruntuhkan remote.
+- [ ] Empty state muncul saat data kosong.
+- [ ] Tidak ada `fetch` ke origin remote lain.
+
+### Jebakan
+
+- Mempercayai `response.json()` tanpa validasi.
+- Menampilkan `error.message` mentah ke pengguna.
+- Tidak membedakan 401 (belum masuk) dan 500 (server rusak).
+- Cache data sensitif di service worker tanpa aturan.
+
+### Ringkasan
+
+Data adalah milik domain. Validasi di batas masuk, tangani semua keadaan, dan gunakan BFF untuk agregasi.
+
+---
+
+## Bab 10 — Sekali Login, Token, dan Otorisasi
+
+**Tujuan:** satu sesi untuk semua remote tanpa membocorkan token.
+
+### Alur
+
+```
+1. Pengguna login di shell → POST /api/login
+2. Server mengembalikan access token + Set-Cookie refresh (httpOnly)
+3. Shell menyimpan access token di memori
+4. Remote meminta token lewat ctx.getToken()
+5. Saat token hampir kedaluwarsa, shell memanggil /api/refresh
+6. Refresh token dirotasi; cookie lama tidak berlaku
+7. Logout menghapus cookie dan token di server
+```
+
+### Mengapa access token di memori?
+
+- Tidak bisa dibaca JavaScript lain lewat `localStorage`.
+- Hilang saat tab ditutup, tetapi sesi dipulihkan lewat cookie httpOnly.
+- XSS tetap berbahaya, tetapi dampaknya lebih terbatas.
+
+### Refresh token
+
+```
+Set-Cookie: tm_refresh=...; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800
+```
+
+Jangan menaruh refresh token di `localStorage`, URL, atau response body yang bisa dibaca klien.
+
+### Remote meminta token
+
+```ts
+const token = await ctx.getToken();
+if (!token) {
+  ctx.navigate('/masuk?next=%2Fkeranjang%2Fcheckout');
+  return;
+}
+```
+
+### Otorisasi
+
+- **401** — belum terautentikasi.
+- **403** — sudah masuk, tetapi tidak berhak.
+- Role diperiksa di server, bukan hanya di UI.
+- Route terproteksi di shell adalah kenyamanan UX, bukan pengganti otorisasi server.
+
+### Praktik
+
+1. Buka `/akun/admin`; halaman ini hanya boleh diakses role `admin`.
+2. Login sebagai `demo` → harus ditolak oleh guard shell dan endpoint `scope=all`.
+3. Login sebagai `admin` → daftar seluruh pesanan tampil.
+4. Reload halaman → sesi tetap ada.
+5. Logout → cookie hilang dan remote tidak bisa checkout.
+
+### Verifikasi
+
+- [ ] Access token tidak ada di `localStorage`.
+- [ ] Refresh token tidak terlihat di JavaScript.
+- [ ] Customer tidak bisa mengakses endpoint admin.
+- [ ] Setelah reload, sesi pulih.
+- [ ] Logout benar-benar menghapus sesi server.
+
+### Jebakan
+
+- Menyimpan token di `localStorage` karena “lebih mudah”.
+- Hanya menyembunyikan tombol tanpa memeriksa server.
+- Refresh token tidak dirotasi.
+- Cookie `SameSite=None` tanpa `Secure` di produksi.
+- Remote menyimpan token sendiri lalu lupa membersihkannya.
+
+### Ringkasan
+
+Auth adalah tanggung jawab shell dan server. Remote hanya meminta token dan menangani 401/403 dengan benar.
+
+---
+
+## Bab 11 — Manifest Dinamis dan Feature Flag
+
+**Tujuan:** mengganti versi remote dan menyalakan fitur tanpa build ulang shell.
+
+### Manifest
+
+`cdn/manifest.json`:
+
+```json
+{
+  "remotes": {
+    "products": {
+      "version": "1.0.1",
+      "owner": "Tim Katalog",
+      "status": "stable",
+      "releasedAt": "2026-10-27T10:00:00.000Z"
+    }
+  }
+}
+```
+
+Server membentuk URL:
+
+```
+http://localhost:4175/v/1.0.1/assets/remoteEntry.js
+```
+
+### Runtime override
+
+```ts
+__federation_method_setRemote('products', {
+  url: () => Promise.resolve(manifest.remotes.products.url),
+  format: 'esm',
+  from: 'vite'
+});
+const module = await __federation_method_getRemote('products', './App');
+```
+
+### Feature flag
+
+```ts
+const flags = await fetch('/api/flags').then((r) => r.json());
+if (flags.newCheckout) {
+  // render checkout baru
+}
+```
+
+Flag harus bisa dimatikan tanpa deploy. Jangan memakai flag untuk selamanya; hapus setelah fitur stabil.
+
+### Rilis dan rollback
 
 ```bash
-cd examples/micro-frontend
-node server.js
-# buka http://localhost:4173
+npm run build
+node scripts/release.mjs products 1.0.1
+curl -s http://localhost:4173/api/remotes | python3 -m json.tool
+node scripts/rollback.mjs products
 ```
 
-## 1. `server.js` — server statis + API palsu
+### Praktik
 
-Menyediakan file frontend dan dua endpoint. Header CORS dibuka lebar karena pada skenario nyata tiap remote dilayani oleh server/CDN berbeda.
+1. Rilis products 1.0.0.
+2. Rilis products 1.0.1.
+3. Muat ulang shell dan cek URL di `/status`.
+4. Rollback ke 1.0.0.
+5. Pastikan shell tidak di-build ulang.
+
+### Verifikasi
+
+- [ ] `/api/remotes` menunjuk versi baru.
+- [ ] Halaman status menampilkan versi yang sama.
+- [ ] Rollback mengubah URL tanpa menyentuh build shell.
+- [ ] Flag bisa diubah dari server dan langsung terlihat setelah reload.
+
+### Jebakan
+
+- Manifest di-cache lama → pengguna terjebak versi usang.
+- URL versi lama dihapus sebelum yakin tidak ada pengguna aktif.
+- Canary tanpa metrik → tidak tahu apakah versi baru lebih buruk.
+- Flag dievaluasi di build, bukan runtime.
+
+### Ringkasan
+
+Manifest memisahkan rilis remote dari rilis shell. Flag memisahkan aktivasi fitur dari deploy. Keduanya membutuhkan observability agar aman.
+
+---
+
+## Bab 12 — Error Boundary, Suspense, dan Isolasi Kegagalan
+
+**Tujuan:** satu remote gagal, sisanya tetap hidup.
+
+### Lapisan pelindung
+
+```tsx
+<ErrorBoundary name="cart" fallback={<RemoteError />}>
+  <Suspense fallback={<Skeleton />}>
+    <Cart ctx={ctx} />
+  </Suspense>
+</ErrorBoundary>
+```
+
+- `Suspense` menangani loading.
+- `ErrorBoundary` menangani gagal unduh dan gagal render.
+- Tombol “Coba lagi” menaikkan `attempt` untuk membuat komponen lazy baru.
+
+### Retry
+
+```tsx
+const [attempt, setAttempt] = useState(0);
+const Remote = useMemo(
+  () => createRemoteComponent(name, manifestRef, onLoaded),
+  [name, attempt]
+);
+```
+
+Jangan retry tanpa batas. Setelah beberapa kali, tampilkan fallback permanen dan arahkan pengguna ke halaman status.
+
+### Uji isolasi
 
 ```js
-'use strict';
-
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-
-const ROOT = __dirname;
-const PORT = process.env.PORT || 4173;
-
-const MIME = {
-  '.html': 'text/html; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8'
-};
-
-const products = [
-  { id: 'p1', name: 'Keyboard Mekanik', category: 'Aksesori', price: 750000, emoji: '⌨️' },
-  { id: 'p2', name: 'Mouse Nirkabel', category: 'Aksesori', price: 320000, emoji: '🖱️' },
-  { id: 'p3', name: 'Layar 27 inci', category: 'Monitor', price: 2450000, emoji: '🖥️' },
-  { id: 'p4', name: 'Kursi Ergonomis', category: 'Furnitur', price: 1890000, emoji: '🪑' },
-  { id: 'p5', name: 'Lampu Meja LED', category: 'Furnitur', price: 210000, emoji: '💡' },
-  { id: 'p6', name: 'Headset Stereo', category: 'Aksesori', price: 540000, emoji: '🎧' }
-];
-
-const orders = [];
-let orderSeq = 1;
-
-function json(res, status, body) {
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
-  res.end(JSON.stringify(body));
-}
-
-const server = http.createServer((req, res) => {
-  const url = decodeURIComponent(req.url.split('?')[0]);
-
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
-
-  if (url === '/api/products' && req.method === 'GET') {
-    json(res, 200, products);
-    return;
-  }
-
-  if (url === '/api/orders' && req.method === 'POST') {
-    let body = '';
-    req.on('data', (chunk) => { body += chunk; });
-    req.on('end', () => {
-      let payload;
-      try { payload = JSON.parse(body || '{}'); }
-      catch { json(res, 400, { error: 'Payload bukan JSON yang sah.' }); return; }
-
-      if (!Array.isArray(payload.items) || payload.items.length === 0) {
-        json(res, 400, { error: 'Keranjang kosong — pesanan tidak dibuat.' });
-        return;
-      }
-      const total = payload.items.reduce((sum, i) => sum + i.price * i.qty, 0);
-      const order = {
-        id: 'ORD-' + String(orderSeq++).padStart(4, '0'),
-        items: payload.items,
-        total,
-        createdAt: new Date().toISOString()
-      };
-      orders.push(order);
-      json(res, 201, order);
-    });
-    return;
-  }
-
-  const file = path.join(ROOT, url === '/' ? 'shell/index.html' : url);
-  if (!file.startsWith(ROOT)) { res.writeHead(403); res.end('Terlarang'); return; }
-
-  fs.readFile(file, (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 — tidak ditemukan: ' + url);
-      return;
-    }
-    res.writeHead(200, {
-      'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream',
-      'Cache-Control': 'no-cache'
-    });
-    res.end(data);
-  });
-});
-
-server.listen(PORT, () => console.log(`TokoMicro berjalan di http://localhost:${PORT}`));
+await page.route('http://localhost:4176/**', (route) => route.abort());
+await page.goto('/keranjang');
+// header dan shell harus tetap tampil
 ```
 
-## 2. `shared/bus.js` — penghubung antar remote
+### Praktik
 
-```js
-const listeners = new Map();
+1. Blokir origin cart di DevTools.
+2. Buka `/keranjang`.
+3. Pastikan header, navigasi, dan remote lain tetap bekerja.
+4. Klik “Coba lagi” setelah blokir dilepas.
 
-export function on(name, handler) {
-  if (!listeners.has(name)) listeners.set(name, new Set());
-  listeners.get(name).add(handler);
-  return () => off(name, handler);
-}
+### Verifikasi
 
-export function off(name, handler) {
-  const set = listeners.get(name);
-  if (set) set.delete(handler);
-}
+- [ ] Shell tidak blank saat satu remote mati.
+- [ ] Pesan galat menyebut modul yang gagal.
+- [ ] Tombol retry berfungsi.
+- [ ] Error tercatat di telemetry.
 
-export function emit(name, payload) {
-  const set = listeners.get(name);
-  if (!set) return;
-  for (const handler of [...set]) {
-    try {
-      handler(payload);
-    } catch (err) {
-      console.error(`[bus] penangan event "${name}" gagal:`, err);
-    }
-  }
-}
+### Jebakan
+
+- Satu error boundary membungkus seluruh aplikasi → semua ikut mati.
+- Fallback menampilkan stack trace ke pengguna.
+- Retry otomatis tanpa henti → banjir request.
+- Remote gagal karena shared dependency, bukan jaringan; retry tidak akan menolong.
+
+### Ringkasan
+
+Kegagalan harus terkurung di slotnya. Shell menyediakan fallback yang jujur, tombol retry yang terkendali, dan catatan untuk tim terkait.
+
+---
+
+## Bab 13 — Menguji Micro-Frontend
+
+**Tujuan:** membangun kepercayaan tanpa menguji semuanya di setiap lapisan.
+
+### Piramida
+
+| Lapisan | Alat | Fokus |
+| --- | --- | --- |
+| Unit | Vitest | fungsi murni, store, skema |
+| Komponen | Testing Library | perilaku UI |
+| Kontrak | Zod | bentuk data dan event |
+| E2E | Playwright | alur lintas remote |
+| Visual | Playwright screenshot | tampilan utama |
+| Resilience | Playwright route abort | isolasi kegagalan |
+
+### Yang diuji di mana
+
+- **Shared** — penambahan item, qty, total, event valid/invalid.
+- **Contracts** — produk, pesanan, manifest, event.
+- **UI kit** — tombol, card, badge, aksesibilitas dasar.
+- **E2E** — katalog → keranjang → login → checkout → akun.
+- **Shell** — 404, protected route, remote gagal.
+
+Jangan menguji implementasi internal remote dari shell. Uji kontraknya.
+
+### Perintah
+
+```bash
+npm test
+npm run test:e2e
+npm run test:visual
 ```
 
-## 3. `shared/store.js` — state keranjang yang dipakai bersama
+### Praktik
 
-```js
-import { emit } from './bus.js';
+1. Tambahkan satu test kontrak untuk event `wishlist-added`.
+2. Tambahkan satu test komponen untuk `PriceTag`.
+3. Jalankan semua tes.
+4. Perbaiki tes yang gagal tanpa menurunkan cakupan.
 
-const state = { items: [] };
+### Verifikasi
 
-export function getCart() {
-  return state.items;
-}
+- [ ] Unit test lulus.
+- [ ] E2E lulus tanpa error console.
+- [ ] Tes kegagalan remote lulus.
+- [ ] Screenshot terang/gelap/mobile dihasilkan.
 
-export function addItem(product) {
-  const found = state.items.find((i) => i.id === product.id);
-  if (found) found.qty += 1;
-  else state.items.push({ ...product, qty: 1 });
-  emit('cart:change', getCart());
-}
+### Jebakan
 
-export function changeQty(id, delta) {
-  const item = state.items.find((i) => i.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) return removeItem(id);
-  emit('cart:change', getCart());
-}
+- E2E bergantung pada teks yang sering berubah.
+- Tes visual membandingkan pixel tanpa toleransi.
+- Menjalankan E2E tanpa build terbaru.
+- Tes menguji detail implementasi, bukan perilaku.
 
-export function removeItem(id) {
-  const index = state.items.findIndex((i) => i.id === id);
-  if (index === -1) return;
-  state.items.splice(index, 1);
-  emit('cart:change', getCart());
-}
+### Ringkasan
 
-export function clearCart() {
-  state.items = [];
-  emit('cart:change', getCart());
-}
+Uji kontrak dan alur, bukan struktur internal. E2E adalah jaring pengaman terakhir, bukan satu-satunya alat.
 
-export function cartSummary() {
-  const qty = state.items.reduce((sum, i) => sum + i.qty, 0);
-  const total = state.items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  return { qty, total };
-}
+---
 
-export function rupiah(n) {
-  return 'Rp' + n.toLocaleString('id-ID');
-}
+## Bab 14 — Observability: Telemetry, Web Vitals, dan Status
+
+**Tujuan:** tahu apa yang terjadi di produksi tanpa menebak.
+
+### Tiga sinyal
+
+- **Event** — login, add to cart, checkout.
+- **Error** — remote gagal dimuat, API error, render error.
+- **Metrik** — `boot_ms`, `remote_load_ms`, LCP, CLS, INP.
+
+### Telemetry
+
+```ts
+ctx.telemetry.event('checkout_completed', { orderId, total });
+ctx.telemetry.metric('checkout_ms', duration);
+ctx.telemetry.error(error, { remote: 'cart' });
 ```
 
-## 4. `shell/index.html` — kerangka halaman
+Implementasi memakai `navigator.sendBeacon` bila tersedia, lalu fallback ke `fetch` dengan `keepalive`.
 
-```html
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TokoMicro — Contoh Micro-Frontend</title>
-  <link rel="stylesheet" href="/shell/shell.css">
-</head>
-<body>
-  <div id="mfe-header"></div>
-  <main id="view" class="view" tabindex="-1"></main>
-  <div id="toast-root" class="toast-root" aria-live="polite"></div>
-  <script type="module" src="/shell/shell.js"></script>
-</body>
-</html>
+### Halaman status
+
+`/status` menampilkan:
+
+- versi dan pemilik setiap remote;
+- URL remote yang sedang aktif;
+- jumlah event, error, dan metrik;
+- ringkasan per aplikasi.
+
+### Privasi
+
+- Jangan kirim password, token, atau data pribadi.
+- Hash atau buang identifier yang tidak perlu.
+- Sediakan kebijakan retensi.
+- Hormati preferensi pengguna.
+
+### Praktik
+
+1. Buka `/status`.
+2. Tambahkan metrik `checkout_ms` di remote cart.
+3. Lakukan checkout.
+4. Muat ulang status dan pastikan metrik bertambah.
+
+### Verifikasi
+
+- [ ] Event login dan checkout tercatat.
+- [ ] Error remote tercatat dengan nama remote.
+- [ ] Web Vitals muncul sebagai metrik.
+- [ ] Tidak ada token di payload telemetry.
+
+### Jebakan
+
+- Mengirim seluruh objek error yang berisi data sensitif.
+- Telemetry memblokir UI saat jaringan lambat.
+- Tidak ada korelasi antara error dan versi remote.
+- Metrik dikumpulkan tetapi tidak pernah dibaca.
+
+### Ringkasan
+
+Observability adalah bagian dari arsitektur, bukan tambahan setelah rilis. Catat secukupnya, lindungi privasi, dan hubungkan dengan versi.
+
+---
+
+## Bab 15 — Performa dan Budget Bundel
+
+**Tujuan:** menjaga aplikasi tetap cepat saat remote bertambah.
+
+### Sumber berat
+
+- React dan ReactDOM terduplikasi.
+- `react-router-dom` dibundel di setiap remote.
+- Library tanggal/grafik besar.
+- Shared module yang menyeret dependensi ke semua remote.
+- Terlalu banyak remote dimuat di awal.
+
+### Strategi
+
+1. **Shared singleton** untuk React, ReactDOM, dan router.
+2. **Lazy load** remote per rute.
+3. **Preload** hanya remote yang akan segera dibuka.
+4. **Cache immutable** untuk aset ber-hash.
+5. **Budget** di CI.
+6. **Ukur** sebelum optimasi.
+
+### Budget
+
+`scripts/perf-report.mjs` menghitung ukuran gzip dan membandingkan dengan budget:
+
+```bash
+npm run perf
 ```
 
-## 5. `shell/shell.js` — inti aplikasi induk
+Contoh keluaran:
 
-```js
-import { emit } from '/shared/bus.js';
-
-/* Peta rute → entry remote. Di produksi datang dari build manifest. */
-const routes = {
-  katalog: '/remotes/products/products.js',
-  keranjang: '/remotes/cart/cart.js'
-};
-
-const registry = new Map();
-let activeRemote = null;
-
-function currentRoute() {
-  const name = location.hash.replace(/^#\/?/, '').split('/')[0];
-  return routes[name] ? name : 'katalog';
-}
-
-async function loadRemote(url) {
-  if (registry.has(url)) return registry.get(url);
-  const mod = await import(url);            // dinamis = bundel terpisah
-  registry.set(url, mod);
-  return mod;
-}
-
-function toast(message, type = 'info') {
-  const root = document.getElementById('toast-root');
-  const el = document.createElement('div');
-  el.className = 'toast toast-' + type;
-  el.textContent = message;
-  root.appendChild(el);
-  setTimeout(() => el.remove(), 2600);
-}
-
-function createContext(route) {
-  return { route, navigate: (hash) => { location.hash = hash; }, toast };
-}
-
-async function render() {
-  const name = currentRoute();
-  const host = document.getElementById('view');
-
-  emit('route:change', { name });
-
-  /* 1. bongkar remote lama */
-  if (activeRemote) {
-    try { activeRemote.unmount?.(); } catch (err) { console.error('[shell] unmount gagal:', err); }
-    activeRemote = null;
-  }
-
-  /* 2. kerangka pemuatan */
-  host.innerHTML = '<div class="skeleton"><span></span><span></span><span></span></div>';
-
-  /* 3. muat & pasang remote */
-  try {
-    const mod = await loadRemote(routes[name]);
-    host.innerHTML = '';
-    const slot = document.createElement('div');
-    slot.className = 'mfe-slot';
-    host.appendChild(slot);
-    mod.mount(slot, createContext(name));
-    activeRemote = mod;
-    host.focus({ preventScroll: true });
-  } catch (err) {
-    /* 4. error boundary */
-    console.error(`[shell] remote "${name}" gagal dimuat:`, err);
-    host.innerHTML = `
-      <div class="error-box" role="alert">
-        <h2>Modul ${name} tidak dapat dimuat</h2>
-        <p>Kerusakan terisolasi di satu micro-frontend — modul lain tetap berfungsi.</p>
-        <button class="btn" data-retry>Coba lagi</button>
-      </div>`;
-    host.querySelector('[data-retry]').addEventListener('click', () => {
-      registry.delete(routes[name]);
-      render();
-    });
-  }
-}
-
-async function mountHeader() {
-  const slot = document.getElementById('mfe-header');
-  try {
-    const mod = await loadRemote('/remotes/header/header.js');
-    mod.mount(slot, createContext('header'));
-  } catch (err) {
-    console.error('[shell] remote header gagal:', err);
-    slot.innerHTML = '<div class="hd hd-fallback"><a href="#/katalog">TokoMicro</a></div>';
-  }
-}
-
-window.addEventListener('hashchange', render);
-
-window.addEventListener('unhandledrejection', (e) => {
-  console.error('[shell] promise gagal:', e.reason);
-  toast('Terjadi kesalahan pada salah satu modul. Periksa konsol.', 'error');
-});
-
-mountHeader();
-render();
+```
+shell     141.6 kB / 320 kB  ok
+header    134.8 kB / 140 kB  ok
+products  136.1 kB / 140 kB  ok
 ```
 
-## 6. `shell/shell.css` — design tokens + tata letak
+### Praktik
 
-```css
-:root {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #1c2333;
-  --text-2: #525a6b;
-  --muted: #7b8494;
-  --border: #e3e8f0;
-  --accent: #4f46e5;
-  --accent-soft: #eef2ff;
-  --green: #16a34a;
-  --red: #dc2626;
-  --radius: 12px;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
+1. Jalankan `npm run perf`.
+2. Catat ukuran setiap aplikasi.
+3. Hapus satu dependensi yang tidak terpakai dari remote.
+4. Build ulang dan bandingkan.
+5. Turunkan budget sedikit demi sedikit.
 
-* { box-sizing: border-box; }
-body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
-a { color: var(--accent); text-decoration: none; }
-a:hover { text-decoration: underline; }
+### Verifikasi
 
-.view { max-width: 960px; margin: 0 auto; padding: 24px 20px 64px; outline: none; }
-.mfe-slot { animation: mfe-in .25s ease; }
-@keyframes mfe-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+- [ ] Semua bundel di bawah budget.
+- [ ] Remote tidak memuat React dua kali saat berjalan di shell.
+- [ ] Halaman awal tidak memuat remote yang belum dibutuhkan.
+- [ ] LCP dan INP tercatat di telemetry.
 
-.skeleton { display: grid; gap: 12px; }
-.skeleton span {
-  display: block; height: 86px; border-radius: var(--radius);
-  background: linear-gradient(90deg, #e9edf6 25%, #f4f7fd 37%, #e9edf6 63%);
-  background-size: 400% 100%; animation: shimmer 1.3s ease infinite;
-}
-@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+### Jebakan
 
-.error-box {
-  border: 1px solid color-mix(in srgb, var(--red) 35%, var(--border));
-  background: #fef2f2; border-radius: var(--radius); padding: 22px;
-}
-.error-box h2 { margin: 0 0 6px; font-size: 17px; color: var(--red); }
-.error-box p { margin: 0 0 14px; font-size: 14px; color: var(--text-2); }
+- Mengoptimasi tanpa mengukur.
+- Memindahkan semua kode ke shared module → semua remote ikut berat.
+- Preload semua remote → menghilangkan manfaat lazy.
+- Budget terlalu ketat sampai tim mematikan fitur.
 
-.btn {
-  border: 1px solid var(--border); background: var(--card); color: var(--text);
-  padding: 8px 16px; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer;
-}
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { filter: brightness(1.06); color: #fff; }
+### Ringkasan
 
-.toast-root {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-  display: grid; gap: 8px; z-index: 100;
-}
-.toast {
-  padding: 10px 18px; border-radius: 99px; font-size: 13.5px; font-weight: 600;
-  background: var(--text); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.18);
-  animation: mfe-in .2s ease;
-}
-.toast-error { background: var(--red); }
-.toast-success { background: var(--green); }
+Performa adalah anggaran yang dijaga, bukan hasil sekali kerja. Ukur, potong, dan pantau terus.
 
-.hd-fallback { padding: 14px 20px; background: var(--card); border-bottom: 1px solid var(--border); font-weight: 700; }
+---
+
+## Bab 16 — Rilis Mandiri, CDN Berversi, dan Rollback
+
+**Tujuan:** merilis satu remote tanpa menyentuh shell dan bisa kembali dengan cepat.
+
+### Alur rilis
+
+```bash
+npm run build
+node scripts/release.mjs products 1.0.1
 ```
 
-## 7. Remote `header`
+Skrip:
 
-```js
-import { on } from '/shared/bus.js';
-import { cartSummary } from '/shared/store.js';
+1. menyalin `apps/products/dist` ke `cdn/products/1.0.1`;
+2. memperbarui `cdn/manifest.json` secara atomik;
+3. tidak menyentuh build shell.
 
-const CSS_URL = '/remotes/header/header.css';
-let root = null;
-const disposers = [];
+### Penyajian versi
 
-function ensureStyles() {
-  if (document.querySelector(`link[href="${CSS_URL}"]`)) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = CSS_URL;
-  document.head.appendChild(link);
-}
-
-export function mount(container, ctx) {
-  ensureStyles();
-
-  root = document.createElement('header');
-  root.className = 'hd';
-  root.innerHTML = `
-    <div class="hd-inner">
-      <a class="hd-brand" href="#/katalog">🛍️ TokoMicro</a>
-      <nav class="hd-nav" aria-label="Navigasi utama">
-        <a href="#/katalog"   data-nav="katalog">Katalog</a>
-        <a href="#/keranjang" data-nav="keranjang">Keranjang <span class="hd-badge" data-badge hidden>0</span></a>
-      </nav>
-    </div>`;
-  container.appendChild(root);
-
-  const paintBadge = () => {
-    const { qty } = cartSummary();
-    const badge = root.querySelector('[data-badge]');
-    badge.textContent = qty;
-    badge.hidden = qty === 0;
-  };
-
-  const paintActive = (name) => {
-    root.querySelectorAll('[data-nav]').forEach((a) => {
-      a.classList.toggle('is-active', a.dataset.nav === name);
-    });
-  };
-
-  paintBadge();
-  paintActive(ctx.route);
-
-  disposers.push(on('cart:change', paintBadge));
-  disposers.push(on('route:change', (e) => paintActive(e.name)));
-}
-
-export function unmount() {
-  disposers.splice(0).forEach((dispose) => dispose());
-  root?.remove();
-  root = null;
-}
+```
+/v/1.0.0/assets/remoteEntry.js
+/v/1.0.1/assets/remoteEntry.js
 ```
 
-```css
-.hd { background: var(--card, #fff); border-bottom: 1px solid var(--border, #e3e8f0); position: sticky; top: 0; z-index: 50; }
-.hd-inner { max-width: 960px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.hd-brand { font-size: 17px; font-weight: 800; color: var(--text, #1c2333); }
-.hd-nav { display: flex; gap: 6px; }
-.hd-nav a { padding: 7px 12px; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--text-2, #525a6b); }
-.hd-nav a:hover { background: var(--accent-soft, #eef2ff); text-decoration: none; }
-.hd-nav a.is-active { background: var(--accent-soft, #eef2ff); color: var(--accent, #4f46e5); }
-.hd-badge { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 99px; background: var(--accent, #4f46e5); color: #fff; font-size: 11px; font-weight: 800; text-align: center; line-height: 18px; }
-.hd-badge[hidden] { display: none; }
+Aset ber-hash memakai cache `immutable`. Manifest memakai `no-store` agar perubahan cepat terlihat.
+
+### Rollback
+
+```bash
+node scripts/rollback.mjs products
 ```
 
-## 8. Remote `products`
+Rollback hanya mengganti manifest ke versi lama. Tidak ada build ulang.
 
-```js
-import { addItem, rupiah } from '/shared/store.js';
+### Urutan rilis aman
 
-const CSS_URL = '/remotes/products/products.css';
-const API_URL = '/api/products';
+1. Rilis versi baru sebagai canary.
+2. Pantau error dan Web Vitals.
+3. Naikkan ke stable.
+4. Simpan versi lama minimal satu siklus rilis.
+5. Hapus versi lama setelah yakin tidak ada pengguna aktif.
 
-let root = null;
-let controller = null;
+### Praktik
 
-function ensureStyles() {
-  if (document.querySelector(`link[href="${CSS_URL}"]`)) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = CSS_URL;
-  document.head.appendChild(link);
-}
+1. Rilis products 1.0.0.
+2. Rilis products 1.0.1.
+3. Buka `/status` dan catat URL.
+4. Rollback.
+5. Muat ulang dan pastikan URL kembali.
 
-function card(p) {
-  return `
-    <article class="pf-card">
-      <div class="pf-emoji" aria-hidden="true">${p.emoji}</div>
-      <span class="pf-cat">${p.category}</span>
-      <h3 class="pf-name">${p.name}</h3>
-      <p class="pf-price">${rupiah(p.price)}</p>
-      <button class="btn btn-primary pf-add" data-id="${p.id}">Tambah ke keranjang</button>
-    </article>`;
-}
+### Verifikasi
 
-export async function mount(container, ctx) {
-  ensureStyles();
+- [ ] Manifest berubah tanpa build shell.
+- [ ] Versi lama masih bisa diakses.
+- [ ] Rollback selesai dalam hitungan detik.
+- [ ] Cache aset tidak membuat versi baru tertahan.
 
-  root = document.createElement('section');
-  root.className = 'pf';
-  root.innerHTML = `
-    <div class="pf-head">
-      <h1>Katalog Produk</h1>
-      <p>Data diambil dari <code>${API_URL}</code> oleh remote ini secara mandiri.</p>
-      <div class="pf-filter" data-filter></div>
-    </div>
-    <div class="pf-grid" data-grid>Memuat produk…</div>`;
-  container.appendChild(root);
+### Jebakan
 
-  /* Batalkan request yang menggantung saat remote dibongkar. */
-  controller = new AbortController();
+- Menghapus versi lama terlalu cepat.
+- Manifest di-cache oleh CDN.
+- Perubahan kontrak tanpa versi → remote lama tidak kompatibel.
+- Rollback tanpa memeriksa kompatibilitas data.
 
-  let products = [];
-  try {
-    const res = await fetch(API_URL, { signal: controller.signal });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    products = await res.json();
-  } catch (err) {
-    if (err.name === 'AbortError') return;
-    root.querySelector('[data-grid]').innerHTML =
-      `<p class="pf-error">Gagal memuat produk: ${err.message}</p>`;
-    return;
-  }
+### Ringkasan
 
-  const categories = ['Semua', ...new Set(products.map((p) => p.category))];
-  const filterBox = root.querySelector('[data-filter]');
-  filterBox.innerHTML = categories
-    .map((c, i) => `<button class="pf-chip${i === 0 ? ' is-active' : ''}" data-cat="${c}">${c}</button>`)
-    .join('');
+Rilis mandiri membutuhkan versi yang alamatnya stabil, manifest yang atomik, dan rollback yang benar-benar dicoba.
 
-  const grid = root.querySelector('[data-grid]');
-  const paint = (cat) => {
-    const list = cat === 'Semua' ? products : products.filter((p) => p.category === cat);
-    grid.innerHTML = list.map(card).join('');
-  };
-  paint('Semua');
+---
 
-  filterBox.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-cat]');
-    if (!btn) return;
-    filterBox.querySelectorAll('.pf-chip').forEach((c) => c.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    paint(btn.dataset.cat);
-  });
+## Bab 17 — CI/CD dan Kepemilikan Tim
 
-  grid.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-id]');
-    if (!btn) return;
-    const product = products.find((p) => p.id === btn.dataset.id);
-    if (!product) return;
-    addItem(product);
-    ctx.toast(`${product.name} masuk keranjang`, 'success');
-  });
-}
+**Tujuan:** membuat rilis mandiri aman dan dapat diulang.
 
-export function unmount() {
-  controller?.abort();
-  controller = null;
-  root?.remove();
-  root = null;
-}
+### Pipeline minimum
+
+```yaml
+- npm ci
+- npm run typecheck
+- npm test
+- npm run build
+- npx playwright install --with-deps chromium
+- npm run test:e2e
+- npm run perf
 ```
 
-```css
-.pf-head h1 { margin: 0 0 4px; font-size: 24px; }
-.pf-head p { margin: 0 0 14px; font-size: 13.5px; color: var(--muted, #7b8494); }
-.pf-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-.pf-chip { border: 1px solid var(--border, #e3e8f0); background: var(--card, #fff); color: var(--text-2, #525a6b); padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.pf-chip.is-active { background: var(--accent, #4f46e5); border-color: var(--accent, #4f46e5); color: #fff; }
-.pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
-.pf-card { background: var(--card, #fff); border: 1px solid var(--border, #e3e8f0); border-radius: var(--radius, 12px); padding: 18px; display: grid; gap: 6px; }
-.pf-emoji { font-size: 34px; }
-.pf-cat { justify-self: start; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent, #4f46e5); background: var(--accent-soft, #eef2ff); padding: 2px 8px; border-radius: 99px; }
-.pf-name { margin: 2px 0 0; font-size: 16px; }
-.pf-price { margin: 0 0 10px; font-size: 15px; font-weight: 700; }
-.pf-error { color: var(--red, #dc2626); font-size: 14px; }
-```
+### Pipeline per remote
 
-## 9. Remote `cart`
+- Filter `paths` agar perubahan di `apps/cart/**` tidak membangun semua aplikasi.
+- Jalankan tes kontrak bersama.
+- Build hanya remote yang berubah.
+- Publikasikan artefak versi.
+- Perbarui manifest lewat job terpisah yang bisa di-approve.
 
-```js
-import { on } from '/shared/bus.js';
-import { getCart, changeQty, removeItem, clearCart, cartSummary, rupiah } from '/shared/store.js';
+### Kepemilikan
 
-const CSS_URL = '/remotes/cart/cart.css';
-const API_URL = '/api/orders';
+- Satu remote satu tim.
+- `CODEOWNERS` menentukan reviewer.
+- Perubahan kontrak membutuhkan review tim konsumen.
+- ADR untuk keputusan besar.
+- On-call untuk remote yang kamu miliki.
 
-let root = null;
-let controller = null;
-const disposers = [];
+### Praktik
 
-function ensureStyles() {
-  if (document.querySelector(`link[href="${CSS_URL}"]`)) return;
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = CSS_URL;
-  document.head.appendChild(link);
-}
+1. Baca `.github/workflows/ci.yml`.
+2. Tambahkan langkah `npm run perf`.
+3. Buat PR yang sengaja merusak tipe.
+4. Pastikan pipeline gagal sebelum merge.
+5. Perbaiki dan pastikan pipeline hijau.
 
-function emptyState() {
-  return `
-    <div class="ct-empty">
-      <p>🧺 Keranjang masih kosong.</p>
-      <a class="btn btn-primary" href="#/katalog">Pilih produk dulu</a>
-    </div>`;
-}
+### Verifikasi
 
-function listHtml() {
-  const items = getCart();
-  if (items.length === 0) return emptyState();
+- [ ] CI berjalan pada PR.
+- [ ] Typecheck, unit, build, E2E, dan perf dijalankan.
+- [ ] Artefak build tersimpan.
+- [ ] Release workflow meminta versi dan remote.
 
-  const rows = items.map((i) => `
-    <li class="ct-item">
-      <span class="ct-emoji" aria-hidden="true">${i.emoji}</span>
-      <div class="ct-info"><b>${i.name}</b><span>${rupiah(i.price)} / item</span></div>
-      <div class="ct-qty">
-        <button class="ct-btn" data-dec="${i.id}" aria-label="Kurangi">−</button>
-        <span>${i.qty}</span>
-        <button class="ct-btn" data-inc="${i.id}" aria-label="Tambah">+</button>
-      </div>
-      <b class="ct-sub">${rupiah(i.price * i.qty)}</b>
-      <button class="ct-remove" data-del="${i.id}" aria-label="Hapus ${i.name}">✕</button>
-    </li>`).join('');
+### Jebakan
 
-  const { total } = cartSummary();
-  return `
-    <ul class="ct-list">${rows}</ul>
-    <div class="ct-summary"><span>Total</span><b>${rupiah(total)}</b></div>
-    <button class="btn btn-primary ct-checkout" data-checkout>Buat pesanan</button>`;
-}
+- Semua tim memakai satu pipeline monolith → kembali saling menunggu.
+- Tidak ada branch protection.
+- Rilis manual tanpa catatan versi.
+- Tes E2E memakai server yang tidak di-build ulang.
 
-export function mount(container, ctx) {
-  ensureStyles();
+### Ringkasan
 
-  root = document.createElement('section');
-  root.className = 'ct';
-  root.innerHTML = `
-    <div class="ct-head">
-      <h1>Keranjang</h1>
-      <p>State keranjang berasal dari <code>shared/store.js</code> — satu sumber untuk semua remote.</p>
-    </div>
-    <div data-body></div>`;
-  container.appendChild(root);
+CI/CD adalah tempat aturan arsitektur ditegakkan. Tanpa pipeline yang cepat dan tepercaya, rilis mandiri hanya teori.
 
-  const body = root.querySelector('[data-body]');
-  const paint = () => { body.innerHTML = listHtml(); };
-  paint();
-  disposers.push(on('cart:change', paint));
+---
 
-  controller = new AbortController();
+## Bab 18 — Migrasi Bertahap dari Aplikasi Legacy
 
-  body.addEventListener('click', async (e) => {
-    const t = e.target;
-    if (t.matches('[data-inc]')) return changeQty(t.dataset.inc, 1);
-    if (t.matches('[data-dec]')) return changeQty(t.dataset.dec, -1);
-    if (t.matches('[data-del]')) {
-      removeItem(t.dataset.del);
-      return ctx.toast('Item dihapus dari keranjang.', 'info');
-    }
-    if (!t.matches('[data-checkout]')) return;
+**Tujuan:** memindahkan aplikasi lama tanpa big bang rewrite.
 
-    const items = getCart();
-    const button = t;
-    button.disabled = true;
-    button.textContent = 'Mengirim…';
+### Strangler fig
 
-    try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
-        signal: controller.signal
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
+1. Petakan rute lama.
+2. Pilih satu rute bernilai tinggi dan risiko rendah.
+3. Bangun remote baru untuk rute itu.
+4. Arahkan sebagian trafik.
+5. Bandingkan metrik.
+6. Hapus rute lama setelah yakin.
 
-      clearCart();
-      body.innerHTML = `
-        <div class="ct-done">
-          <h2>✅ Pesanan ${data.id} diterima</h2>
-          <p>Total ${rupiah(data.total)} · ${items.length} jenis produk</p>
-          <a class="btn btn-primary" href="#/katalog">Belanja lagi</a>
-        </div>`;
-      ctx.toast(`Pesanan ${data.id} berhasil dibuat`, 'success');
-    } catch (err) {
-      if (err.name === 'AbortError') return;
-      button.disabled = false;
-      button.textContent = 'Buat pesanan';
-      ctx.toast('Gagal membuat pesanan: ' + err.message, 'error');
-    }
-  });
-}
+### Teknik sementara
 
-export function unmount() {
-  disposers.splice(0).forEach((dispose) => dispose());
-  controller?.abort();
-  controller = null;
-  root?.remove();
-  root = null;
-}
-```
+- **iframe** — isolasi maksimal, komunikasi terbatas.
+- **Web Component** — widget lintas framework.
+- **Import map** — prototipe tanpa bundler.
+- **Route terpisah** — redirect ke aplikasi lama selama transisi.
 
-```css
-.ct-head h1 { margin: 0 0 4px; font-size: 24px; }
-.ct-head p { margin: 0 0 18px; font-size: 13.5px; color: var(--muted, #7b8494); }
-.ct-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.ct-item { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 14px; background: var(--card, #fff); border: 1px solid var(--border, #e3e8f0); border-radius: var(--radius, 12px); padding: 12px 16px; }
-.ct-emoji { font-size: 26px; }
-.ct-info { display: grid; }
-.ct-info span { font-size: 12.5px; color: var(--muted, #7b8494); }
-.ct-qty { display: flex; align-items: center; gap: 8px; font-weight: 700; }
-.ct-btn { width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border, #e3e8f0); background: var(--card, #fff); cursor: pointer; }
-.ct-sub { min-width: 96px; text-align: right; }
-.ct-remove { border: 0; background: transparent; color: var(--muted, #7b8494); cursor: pointer; }
-.ct-summary { display: flex; justify-content: space-between; margin: 18px 0 14px; padding: 14px 18px; border-radius: var(--radius, 12px); background: var(--accent-soft, #eef2ff); }
-.ct-empty, .ct-done { text-align: center; padding: 42px 20px; background: var(--card, #fff); border: 1px dashed var(--border, #e3e8f0); border-radius: var(--radius, 12px); }
-```
+### Yang harus dijaga
 
-## 10. Uji coba mandiri
+- URL lama tetap bekerja (redirect 301 bila perlu).
+- Sesi login tidak hilang saat berpindah.
+- Tema dan bahasa konsisten.
+- SEO tidak hancur.
+- Analitik tetap mengumpulkan data.
 
-Coba lakukan lima percobaan berikut untuk memastikan Anda memahami arsitekturnya:
+### Praktik
 
-1. **Alur utama** — buka `http://localhost:4173`, tambahkan dua produk, buka keranjang, ubah jumlah, lalu buat pesanan. Nomor pesanan (`ORD-0001`) muncul.
-2. **Perubahan mandiri** — ubah teks tombol di `remotes/products/products.js`, muat ulang halaman. Hanya katalog yang berubah.
-3. **Isolasi kegagalan** — ubah isi `remotes/products/products.js` menjadi `export function mount(` (sintaks rusak), muat ulang. Header dan keranjang tetap berfungsi, hanya area konten yang menampilkan kotak galat dan tombol **Coba lagi**.
-4. **Kebersihan listener** — buka DevTools → Event Listener Blocks, berpindah rute berkali-kali, lalu pastikan jumlah listener tidak terus bertambah.
-5. **Jaringan** — pada tab Network, perhatikan `products.js` baru diunduh saat rute katalog dibuka, bukan di awal halaman.
+1. Buka `/katalog-lama`.
+2. Amati iframe dan keterbatasannya.
+3. Pindahkan satu rute lama ke remote products.
+4. Tambahkan redirect dari URL lama.
+5. Hapus tautan ke iframe setelah semua rute pindah.
 
-## 11. Langkah lanjutan: pindah ke Vite + Module Federation
+### Verifikasi
 
-Setelah konsepnya jelas, pindahkan proyek ini ke tooling produksi. Contoh React
-lengkapnya **sudah tersedia** di folder [`examples/micro-frontend-react/`](examples/micro-frontend-react/)
-— shell + tiga remote (`header`, `products`, `cart`) yang dibangun mandiri lalu
-digabungkan saat runtime dengan Module Federation:
+- [ ] URL lama mengarah ke halaman baru.
+- [ ] Pengguna tetap login.
+- [ ] Tidak ada halaman kosong saat JavaScript gagal.
+- [ ] Metrik kunjungan tetap tercatat.
+
+### Jebakan
+
+- Menulis ulang semuanya sekaligus.
+- Mematikan aplikasi lama sebelum migrasi selesai.
+- Tidak mengukur apakah rute baru lebih baik.
+- Mengabaikan bookmark dan tautan eksternal.
+
+### Ringkasan
+
+Migrasi adalah perjalanan, bukan acara. Pindahkan satu irisan, ukur, lalu lanjutkan.
+
+---
+
+## Bab 19 — Keamanan, Aksesibilitas, dan Tata Kelola
+
+**Tujuan:** menjaga sistem tetap aman, bisa dipakai semua orang, dan tidak menjadi liar saat tim bertambah.
+
+### Keamanan
+
+- CSP yang membatasi script dan koneksi.
+- SRI untuk aset pihak ketiga bila memungkinkan.
+- CORS hanya untuk origin yang dikenal.
+- Jangan menaruh token di URL atau `localStorage`.
+- Validasi input di server.
+- Audit dependensi (`npm audit`, Dependabot).
+- Batasi remote yang boleh dimuat lewat manifest tepercaya.
+
+### Aksesibilitas lintas remote
+
+- Satu `h1` per halaman.
+- Fokus dipindahkan setelah navigasi.
+- `aria-live` untuk toast.
+- Kontras warna memadai di tema terang dan gelap.
+- Navigasi keyboard berfungsi di semua remote.
+- Jangan mengandalkan warna saja untuk status.
+
+### Tata kelola
+
+- Katalog remote: pemilik, versi, status, kontak.
+- Kebijakan versi kontrak: patch, minor, major.
+- RFC/ADR untuk perubahan besar.
+- Jadwal audit dependensi.
+- Definition of Done mencakup aksesibilitas dan observability.
+
+### Praktik
+
+1. Audit satu remote dengan checklist aksesibilitas.
+2. Periksa header keamanan di `curl -I`.
+3. Cari token di `localStorage` dan URL.
+4. Catat temuan di `docs/audit.md`.
+5. Perbaiki satu temuan dan buktikan dengan tes.
+
+### Verifikasi
+
+- [ ] Tidak ada token di storage yang bisa dibaca JavaScript.
+- [ ] Semua halaman bisa dinavigasi dengan keyboard.
+- [ ] Kontras teks memadai di dua tema.
+- [ ] Dependensi tidak memiliki kerentanan kritis.
+
+### Jebakan
+
+- Menganggap iframe otomatis aman.
+- CSP terlalu longgar (`unsafe-inline`, `*`).
+- Aksesibilitas hanya diuji di shell, bukan remote.
+- Tidak ada pemilik untuk audit keamanan.
+
+### Ringkasan
+
+Keamanan dan aksesibilitas adalah properti sistem, bukan properti satu remote. Tata kelola membuat keduanya bertahan saat tim berganti.
+
+---
+
+## Bab 20 — Proyek Akhir: TokoMicro End-to-End
+
+**Tujuan:** membuktikan bahwa kamu bisa menjalankan, menguji, merilis, dan menjelaskan seluruh sistem.
+
+### Jalankan
 
 ```bash
 cd examples/micro-frontend-react
-npm install       # sekali saja, seluruh workspace
-npm run build     # shell + 3 remote dibangun terpisah
-npm start         # shell di :4173, remote di :4174–:4176
-# buka http://localhost:4173
+npm install
+npm run build
+npm start
 ```
 
-Bentuk proyeknya:
+Buka `http://localhost:4173`.
 
-```text
-micro-frontend-react/
-├── server.js              # 4 origin terpisah + API palsu (CORS terbuka)
-├── packages/shared/       # @tokomicro/shared — state keranjang (tanpa React)
-└── apps/
-    ├── shell/             # routing hash, React.lazy remote, error boundary
-    ├── header/            # badge keranjang dari state bersama
-    ├── products/          # katalog + fetch sendiri + AbortController
-    └── cart/              # keranjang + checkout
-```
+### Alur yang harus berhasil
 
-Poin perubahan penting dari contoh tanpa build:
+1. Katalog memuat 8 produk.
+2. Tambah produk → badge header berubah.
+3. Buka detail produk.
+4. Buka keranjang → checkout.
+5. Checkout tanpa login → diarahkan ke login.
+6. Login `demo/demo123` → kembali ke checkout.
+7. Buat pesanan → nomor pesanan muncul.
+8. Reload → sesi tetap ada.
+9. Buka akun → profil dan riwayat pesanan.
+10. Ganti tema → bertahan setelah reload.
+11. Buka status → empat remote tampil.
+12. Buka katalog lama → iframe berfungsi.
+13. Blokir satu origin remote → shell tetap hidup.
+14. Rilis lalu rollback → manifest berubah tanpa build shell.
 
-- `mount`/`unmount` diganti dengan komponen React biasa: shell memuatnya
-  lewat `lazy(() => import('products/App'))`, sehingga *siklus hidup* remote
-  diurus React (Suspense untuk skeleton, error boundary untuk galat).
-- `shared/store.js` menjadi paket `@tokomicro/shared` yang dipakai bersama;
-  state diletakkan di `globalThis` agar tetap satu instance walau tiap remote
-  menggandakannya ke bundel sendiri — alternatifnya mendaftarkan paket itu di
-  `shared` Module Federation dengan `singleton: true`.
-- Setiap remote dibangun menghasilkan `remoteEntry.js` sendiri, lalu didaftarkan
-  di shell melalui `remotes` pada `vite.config.js` (alamatnya bisa diganti lewat
-  variabel lingkungan, bukan lewat kode shell).
-- Shell tetap bertugas: routing, layout, `ctx` (navigasi & toast), serta
-  error boundary per remote.
-
-Bila harus menulis konfigurasi sendiri dari nol, kerangkanya seperti berikut.
+### Perintah verifikasi
 
 ```bash
-npm create vite@latest apps/shell -- --template react
-npm create vite@latest apps/products -- --template react
-npm create vite@latest apps/cart -- --template react
-npm install -D @originjs/vite-plugin-federation
+npm run typecheck
+npm test
+npm run build
+npm run test:e2e
+npm run test:visual
+npm run perf
+npm run storybook:build
 ```
 
-Poin perubahan penting:
+### Lab lanjutan
 
-- `mount`/`unmount` diganti dengan lifecycle single-spa atau lifecycle bawaan plugin federasi.
-- `shared/store.js` dipindahkan ke `packages/shared` dan di-*bundle* oleh shell sebagai *shared dependency* (`singleton: true`).
-- Setiap remote dibangun menghasilkan `remoteEntry.js`, lalu didaftarkan di shell melalui manifest.
-- Shell tetap bertugas: routing, layout, auth global, dan error boundary.
+| Lab | Fokus | Kapan dipakai |
+| --- | --- | --- |
+| `examples/micro-frontend-techniques` | iframe, Web Component, import map | membandingkan teknik |
+| `examples/micro-frontend-webpack` | Webpack 5 + Rspack | tim yang sudah memakai Webpack |
+| `examples/micro-frontend-ssr` | CSR vs SSR + hydration | SEO dan first paint |
+
+Module Federation 2.0 dan Rspack sengaja dipisah dari proyek utama agar kamu bisa mempelajarinya tanpa mengganggu alur yang sudah stabil.
+
+### Rubrik penilaian
+
+| Aspek | Bobot | Bukti |
+| --- | --- | --- |
+| Batas tanggung jawab | 20% | shell tidak mengimpor internal remote |
+| Kontrak dan tipe | 15% | `contracts`, Zod, deklarasi remote |
+| Ketahanan | 15% | error boundary, retry, isolasi |
+| Pengujian | 15% | unit, E2E, visual, resilience |
+| Operasi | 15% | manifest, rilis, rollback, telemetry |
+| Aksesibilitas & keamanan | 10% | audit, keyboard, token |
+| Dokumentasi | 10% | README, ADR, catatan rilis |
+
+### Tugas pengembangan
+
+- Tambahkan remote `wishlist` di port 4179.
+- Tambahkan pencarian produk dengan debounce.
+- Tambahkan halaman admin dengan role.
+- Tambahkan BFF `/api/home`.
+- Tambahkan canary 10% untuk remote cart.
+- Tambahkan audit aksesibilitas otomatis.
+
+### Verifikasi akhir
+
+- [ ] Semua perintah di atas lulus.
+- [ ] Kamu bisa menjelaskan setiap keputusan tanpa membaca catatan.
+- [ ] Kamu bisa merilis satu remote tanpa menyentuh shell.
+- [ ] Kamu bisa rollback dan menjelaskan risikonya.
+- [ ] Kamu tahu kapan harus kembali ke modular monolith.
+
+### Ringkasan
+
+Micro-frontend yang baik bukan yang paling banyak remote, tetapi yang batasnya jelas, rilisnya aman, dan kegagalannya terkurung.
 
 ---
 
-# Checklist Kesiapan Mahir
+## Lampiran A — Peta Perintah
 
-- [ ] Mampu menjelaskan micro-frontend dengan bahasa bisnis, bukan istilah teknis.
-- [ ] Mampu memilih teknik komposisi dan mempertimbangkan biayanya.
-- [ ] Mampu membangun shell dengan routing, lazy loading, dan error boundary.
-- [ ] Mampu mendesain event bus dan shared state yang kecil tapi cukup.
-- [ ] Mampu menjaga isolasi CSS di banyak remote.
-- [ ] Mampu mengatur autentikasi sekali login untuk banyak remote.
-- [ ] Mampu membangun dan merilis satu remote secara mandiri.
-- [ ] Mampu menulis unit, contract, dan end-to-end test untuk komposisi.
-- [ ] Mampu memantau performa dan kegagalan per remote.
-- [ ] Mampu mengevaluasi ulang dan menyarankan kembali ke monolith bila sudah tidak layak.
+| Perintah | Fungsi |
+| --- | --- |
+| `npm install` | Pasang dependensi workspace |
+| `npm run build` | Build semua aplikasi |
+| `npm start` | Jalankan enam origin |
+| `npm run typecheck` | TypeScript seluruh workspace |
+| `npm test` | Unit test Vitest |
+| `npm run test:e2e` | E2E Playwright |
+| `npm run test:visual` | Tangkapan layar utama |
+| `npm run perf` | Laporan ukuran bundel |
+| `npm run storybook` | Storybook ui-kit |
+| `npm run storybook:build` | Build Storybook statis |
+| `node scripts/release.mjs products 1.1.0` | Rilis remote |
+| `node scripts/rollback.mjs products` | Rollback remote |
 
 ---
 
-# Referensi Resmi
+## Lampiran B — Glosarium
 
-### Konsep dan praktik
+| Istilah | Arti |
+| --- | --- |
+| **Shell** | Aplikasi induk pemilik layout, URL, login, dan pemuatan remote. |
+| **Remote** | Micro-frontend yang diekspos dan dimuat shell. |
+| **remoteEntry.js** | Berkas entri yang memberi tahu shell modul apa yang diekspos remote. |
+| **Module Federation** | Mekanisme berbagi modul dan dependensi saat runtime. |
+| **Shared singleton** | Satu instance dependensi untuk semua remote, misalnya React. |
+| **Manifest** | Daftar versi dan URL remote yang aktif. |
+| **Canary** | Rilis ke sebagian kecil pengguna sebelum stable. |
+| **Rollback** | Mengembalikan manifest ke versi sebelumnya. |
+| **BFF** | Backend for Frontend; agregasi API untuk kebutuhan UI. |
+| **Error boundary** | Komponen React yang menangkap error di bawahnya. |
+| **Feature flag** | Saklar runtime untuk menyalakan/mematikan fitur. |
+| **Strangler fig** | Pola migrasi bertahap dengan menggantikan bagian lama satu per satu. |
 
-- https://martinfowler.com/articles/micro-frontends.html
-- https://microfrontends.io/
-- https://module-federation.io/
-- https://single-spa.org/
-- https://12factor.net/
+---
 
-### Tooling dan build
+## Lampiran C — Checklist Produksi
 
-- https://vite.dev/guide/
-- https://github.com/originjs/vite-plugin-federation
-- https://webpack.js.org/concepts/module-federation/
-- https://nx.dev/
-- https://turbo.build/repo/docs
+**Arsitektur**
 
-### Pengujian dan observability
+- [ ] Batas shell dan remote tertulis.
+- [ ] Kontrak `AppContext` berversi.
+- [ ] Tidak ada impor internal antar remote.
+- [ ] ADR tersedia.
 
-- https://playwright.dev/docs/intro
-- https://testing-library.com/docs/
-- https://opentelemetry.io/docs/
-- https://web.dev/vitals/
+**Keamanan**
 
-### Referensi Bahasa Indonesia
+- [ ] Access token di memori.
+- [ ] Refresh token httpOnly + Secure + SameSite.
+- [ ] CSP dan CORS dikonfigurasi.
+- [ ] Dependensi diaudit.
+- [ ] Tidak ada secret di bundle.
 
-- https://developer.mozilla.org/id/
-- https://react.dev/ (dokumentasi resmi, tersedia terjemahan otomatis)
+**Kualitas**
+
+- [ ] Typecheck lulus.
+- [ ] Unit, kontrak, E2E, visual lulus.
+- [ ] Error boundary diuji.
+- [ ] Aksesibilitas diaudit.
+
+**Operasi**
+
+- [ ] Manifest atomik.
+- [ ] Versi lama masih tersedia.
+- [ ] Rollback diuji.
+- [ ] Telemetry dan Web Vitals aktif.
+- [ ] Budget performa dijaga.
+- [ ] On-call dan pemilik jelas.
+
+---
+
+## Lampiran D — Rujukan
+
+- [Micro Frontends — Martin Fowler](https://martinfowler.com/articles/micro-frontends.html)
+- [Micro Frontends in Action — Cam Jackson](https://www.manning.com/books/micro-frontends-in-action)
+- [Module Federation — Webpack](https://webpack.js.org/concepts/module-federation/)
+- [@originjs/vite-plugin-federation](https://github.com/originjs/vite-plugin-federation)
+- [React — useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)
+- [Vite Documentation](https://vite.dev/guide/)
+- [Playwright Documentation](https://playwright.dev/docs/intro)
+- [MDN — Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components)
+- [single-spa](https://single-spa.js.org/docs/getting-started-overview/)
+- [Rspack](https://rspack.dev/)
+- [Storybook](https://storybook.js.org/docs)
+- [web.dev — Web Vitals](https://web.dev/articles/vitals)
+
+---
+
+**Selamat membangun.** Mulailah dari satu shell dan satu remote. Tambahkan kompleksitas hanya ketika masalahnya benar-benar muncul.

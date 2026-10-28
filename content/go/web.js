@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 14: Web Development & REST API
+   Pelajaran Go — Bab 16: Web Development & REST API
    (topik info.md:
     - "HTTP Server dasar menggunakan net/http"
     - "Routing / Multiplexer (Standard Library vs Framework seperti Gin, Echo, atau Fiber)"
@@ -12,7 +12,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 32: HTTP Server & Routing ---------- */
+/* ---------- Pelajaran 34: HTTP Server & Routing ---------- */
 window.GO_LESSONS.push({
   id: 'http-server',
   title: 'HTTP Server & Routing dengan net/http',
@@ -254,7 +254,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 33: Middleware & Validasi Request ---------- */
+/* ---------- Pelajaran 35: Middleware & Validasi Request ---------- */
 window.GO_LESSONS.push({
   id: 'middleware-validasi',
   title: 'Middleware & Validasi Request',
@@ -497,7 +497,7 @@ func main() {
   ]
 });
 
-/* ---------- Pelajaran 34: Integrasi Database ---------- */
+/* ---------- Pelajaran 36: Integrasi Database ---------- */
 window.GO_LESSONS.push({
   id: 'database',
   title: 'Integrasi Database',

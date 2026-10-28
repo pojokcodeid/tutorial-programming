@@ -1,0 +1,154 @@
+/* Semua gaya berawalan .ac- dan memakai token design system. */
+.ac-shell {
+  font-family: var(--tm-font);
+}
+
+.ac-tabs {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 18px 20px 0;
+  display: flex;
+  gap: 6px;
+}
+
+.ac-tabs a {
+  padding: 7px 14px;
+  border-radius: var(--tm-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tm-text-2);
+}
+
+.ac-tabs a:hover {
+  background: var(--tm-accent-soft);
+  text-decoration: none;
+}
+
+.ac-tabs a.is-active {
+  background: var(--tm-accent-soft);
+  color: var(--tm-accent);
+}
+
+.ac-view {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 18px 20px 64px;
+}
+
+.ac-view h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.ac-lead {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--tm-muted);
+  max-width: 680px;
+}
+
+.ac-lead code {
+  font-family: var(--tm-mono);
+}
+
+.ac-note {
+  color: var(--tm-muted);
+  font-size: 14px;
+}
+
+.ac-empty {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  padding: 26px;
+  background: var(--tm-card);
+  border: 1px dashed var(--tm-border);
+  border-radius: var(--tm-radius);
+  font-size: 14px;
+  color: var(--tm-text-2);
+}
+
+.ac-empty p {
+  margin: 0;
+}
+
+.ac-list {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.ac-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ac-list dt {
+  color: var(--tm-muted);
+}
+
+.ac-list dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.ac-links {
+  margin: 18px 0 0;
+  font-size: 13.5px;
+}
+
+.ac-orders {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.ac-order-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tm-mono);
+  font-size: 14px;
+}
+
+.ac-order-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13.5px;
+}
+
+.ac-order-items li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ac-order-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--tm-muted);
+}
+
+.ac-error {
+  border: 1px solid color-mix(in srgb, var(--tm-red) 35%, var(--tm-border));
+  background: color-mix(in srgb, var(--tm-red) 7%, var(--tm-card));
+  border-radius: var(--tm-radius);
+  padding: 18px;
+}
+
+.ac-error p {
+  margin: 0 0 12px;
+  color: var(--tm-red);
+  font-size: 14px;
+}

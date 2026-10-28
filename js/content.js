@@ -80,6 +80,26 @@ const CONTENT = (() => {
       ]
     },
 
+    http: {
+      id: 'http',
+      title: 'HTTP',
+      tagline: 'Protokol Web dari Nol sampai Mahir',
+      icon: 'assets/logos/http.svg',
+      color: '#0F766E',
+      desc: 'Belajar HTTP dari nol hingga mahir: request-response, method, status code, header, body, cookie, autentikasi, cache, HTTPS, CORS, HTTP/2 dan HTTP/3, proxy, desain API, debugging, pengujian, hingga proyek akhir — lengkap dengan laboratorium lokal tanpa dependensi.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.HTTP_LESSONS || []).slice(),
+      quizPool: (window.HTTP_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'MDN Web Docs — HTTP', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP' },
+        { label: 'MDN — HTTP Messages', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages' },
+        { label: 'RFC 9110 — HTTP Semantics', url: 'https://www.rfc-editor.org/rfc/rfc9110' },
+        { label: 'RFC 9111 — HTTP Caching', url: 'https://www.rfc-editor.org/rfc/rfc9111' },
+        { label: 'curl Documentation', url: 'https://curl.se/docs/' }
+      ]
+    },
+
     git: {
       id: 'git',
       title: 'Git & GitHub',
@@ -159,7 +179,7 @@ const CONTENT = (() => {
       tagline: 'Bahasa Cepat untuk Backend & Cloud',
       icon: 'assets/logos/go.svg',
       color: '#00ADD8',
-      desc: 'Belajar Go dari nol: dasar bahasa, struct, interface, error handling, concurrency, logging & observability, web & REST API, microservices, hingga Docker & keamanan.',
+      desc: 'Belajar Go dari nol: dasar bahasa, struct, interface, error handling, concurrency, unit testing, logging & observability, web & REST API, microservices, hingga Docker & keamanan.',
       status: 'ready',
       sequential: true,
       lessons: (window.GO_LESSONS || []).slice(),
@@ -385,7 +405,7 @@ const CONTENT = (() => {
       tagline: 'Frontend Banyak Tim, Satu Aplikasi',
       icon: 'assets/logos/microfrontend.svg',
       color: '#6366F1',
-      desc: 'Belajar arsitektur micro-frontend dari nol hingga proyek nyata: konsep & teknik komposisi, shell dengan routing dan lazy loading, event bus serta shared state, isolasi gaya dengan design tokens, data/API/BFF/autentikasi, build monorepo & Module Federation, pengujian dan error boundary, tim CI/CD dengan migrasi strangler fig, ditutup proyek contoh TokoMicro yang bisa langsung dijalankan.',
+      desc: 'Belajar micro-frontend dengan React 18, TypeScript, dan Vite dari nol sampai produksi: konsep dan biayanya, anatomi serta tujuh teknik komposisi, monorepo npm workspaces, shell dengan BrowserRouter dan kontrak ctx, empat remote Module Federation, state bersama dan event bus bertipe, design system serta Storybook, data/API/BFF dan validasi Zod, autentikasi sekali login dengan refresh token httpOnly, manifest dinamis, feature flag, error boundary, pengujian unit/E2E/visual, observability dan Web Vitals, performa, rilis CDN berversi, rollback, CI/CD, migrasi legacy, tata kelola, dan proyek akhir TokoMicro React yang bisa langsung dijalankan.',
       status: 'ready',
       sequential: true,
       lessons: (window.MICROFRONTEND_LESSONS || []).slice(),
@@ -394,9 +414,15 @@ const CONTENT = (() => {
         { label: 'Micro Frontends — Martin Fowler', url: 'https://martinfowler.com/articles/micro-frontends.html' },
         { label: 'Cam Jackson — Micro Frontends in Action (Manning)', url: 'https://www.manning.com/books/micro-frontends-in-action' },
         { label: 'Module Federation Documentation', url: 'https://webpack.js.org/concepts/module-federation/' },
-        { label: 'MDN — Web Components', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_components' },
+        { label: 'React — useSyncExternalStore', url: 'https://react.dev/reference/react/useSyncExternalStore' },
         { label: 'Vite Documentation', url: 'https://vite.dev/guide/' },
-        { label: 'Single-spa Documentation', url: 'https://single-spa.js.org/docs/getting-started-overview/' }
+        { label: '@originjs/vite-plugin-federation', url: 'https://github.com/originjs/vite-plugin-federation' },
+        { label: 'Playwright Documentation', url: 'https://playwright.dev/docs/intro' },
+        { label: 'MDN — Web Components', url: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_components' },
+        { label: 'Single-spa Documentation', url: 'https://single-spa.js.org/docs/getting-started-overview/' },
+        { label: 'Rspack Documentation', url: 'https://rspack.dev/' },
+        { label: 'Storybook Documentation', url: 'https://storybook.js.org/docs' },
+        { label: 'web.dev — Web Vitals', url: 'https://web.dev/articles/vitals' }
       ]
     },
 
@@ -462,5 +488,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

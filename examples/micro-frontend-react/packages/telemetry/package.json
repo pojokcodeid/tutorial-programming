@@ -1,0 +1,21 @@
+{
+  "name": "@tokomicro/telemetry",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pelaporan error, event, dan metrik untuk shell dan remote.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tokomicro/contracts": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Katalog Lama — TokoMicro</title>
+    <style>
+      :root {
+        --bg: #fdf8ef;
+        --card: #fffdf8;
+        --text: #33291c;
+        --muted: #7a6a55;
+        --border: #e6d9c4;
+        --accent: #b45309;
+        --radius: 10px;
+        --font: Georgia, 'Times New Roman', serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        line-height: 1.6;
+      }
+
+      header {
+        border-bottom: 2px solid var(--border);
+        background: var(--card);
+      }
+
+      .bar {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .badge {
+        font-family: ui-monospace, monospace;
+        font-size: 11px;
+        border: 1px solid var(--border);
+        border-radius: 99px;
+        padding: 2px 9px;
+        color: var(--muted);
+      }
+
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 26px;
+      }
+
+      .lead {
+        margin: 0 0 22px;
+        color: var(--muted);
+        font-size: 14px;
+        max-width: 640px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+
+      .card h2 {
+        margin: 6px 0 4px;
+        font-size: 16px;
+      }
+
+      .card p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .price {
+        display: block;
+        margin-top: 10px;
+        font-weight: 700;
+      }
+
+      .emoji {
+        font-size: 26px;
+      }
+
+      .note {
+        margin-top: 26px;
+        padding: 16px;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      code {
+        font-family: ui-monospace, monospace;
+        font-size: 12.5px;
+      }
+
+      .error {
+        color: #b91c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="bar">
+        <span class="brand">🏚️ TokoMicro Lama</span>
+        <span class="badge">origin :4178 · tanpa bundler</span>
+      </div>
+    </header>
+
+    <main>
+      <h1>Katalog versi lama</h1>
+      <p class="lead">
+        Halaman ini sengaja dibiarkan sebagai aplikasi statis di origin terpisah.
+        Shell memuatnya lewat iframe di rute <code>/katalog-lama</code>. Inilah titik
+        awal migrasi bertahap: pindahkan satu rute ke remote baru, lalu hapus rute
+        lama setelah yakin tidak ada tautan yang tertinggal.
+      </p>
+
+      <div id="grid" class="grid" aria-live="polite">
+        <p>Memuat produk…</p>
+      </div>
+
+      <div class="note">
+        <strong>Batasan yang terlihat:</strong> halaman ini tidak berbagi state
+        keranjang, token, tema, atau router dengan shell. Komunikasi hanya lewat
+        <code>postMessage</code> atau URL. Itu sebabnya migrasi ke remote lebih
+        nyaman begitu alurnya stabil.
+        <br />
+        <a href="http://localhost:4173/katalog">Buka katalog baru →</a>
+      </div>
+    </main>
+
+    <script>
+      const grid = document.getElementById('grid');
+
+      function rupiah(value) {
+        return 'Rp' + value.toLocaleString('id-ID');
+      }
+
+      fetch('http://localhost:4173/api/products')
+        .then((response) => {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.json();
+        })
+        .then((data) => {
+          const products = data.products ?? [];
+          grid.innerHTML = products
+            .map(
+              (product) => `
+                <article class="card">
+                  <span class="emoji" aria-hidden="true">${product.emoji ?? '📦'}</span>
+                  <h2>${product.name}</h2>
+                  <p>${product.category}</p>
+                  <span class="price">${rupiah(product.price)}</span>
+                </article>`
+            )
+            .join('');
+        })
+        .catch((error) => {
+          grid.innerHTML =
+            '<p class="error">Gagal memuat produk: ' + error.message + '</p>';
+        });
+    </script>
+  </body>
+</html>

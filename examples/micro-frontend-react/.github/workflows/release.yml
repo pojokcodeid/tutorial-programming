@@ -1,0 +1,67 @@
+name: Rilis Remote
+
+on:
+  workflow_dispatch:
+    inputs:
+      remote:
+        description: Remote yang dirilis
+        required: true
+        type: choice
+        options:
+          - header
+          - products
+          - cart
+          - account
+      version:
+        description: Versi semver (misalnya 1.1.0)
+        required: true
+        type: string
+      canary:
+        description: Tandai sebagai canary
+        required: false
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    working-directory: examples/micro-frontend-react
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: examples/micro-frontend-react/package-lock.json
+
+      - name: Instal dependensi
+        run: npm ci
+
+      - name: Verifikasi
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Rilis ke CDN lokal
+        run: |
+          node scripts/release.mjs "${{ inputs.remote }}" "${{ inputs.version }}" ${{ inputs.canary && '--canary' || '' }}
+
+      - name: Simpan artefak rilis
+        uses: actions/upload-artifact@v4
+        with:
+          name: rilis-${{ inputs.remote }}-${{ inputs.version }}
+          path: |
+            examples/micro-frontend-react/cdn/${{ inputs.remote }}/${{ inputs.version }}
+            examples/micro-frontend-react/cdn/manifest.json
+
+      # Di produksi, langkah berikutnya adalah mengunggah folder versi ke CDN
+      # dan mengganti manifest. Rollback = mengganti manifest ke versi lama.

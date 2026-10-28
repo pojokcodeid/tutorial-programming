@@ -1,0 +1,21 @@
+{
+  "name": "@tokomicro/i18n",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kamus terjemahan kecil untuk shell dan seluruh remote.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tokomicro/contracts": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,5 +1,11 @@
 node_modules/
 dist/
-.env
-*.log
+storybook-static/
+coverage/
+cdn/*/
+!cdn/manifest.json
 .DS_Store
+*.log
+tests/screenshots/
+tests/e2e-server.log
+.turbo/

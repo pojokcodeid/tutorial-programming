@@ -1,0 +1,65 @@
+/* Shell iframe: tema gelap, sudut membulat, aksen biru. */
+
+.demo-iframe {
+  --accent: #7dd3fc;
+}
+
+.demo-intro {
+  max-width: 760px;
+  padding: 1rem 0 2rem;
+}
+
+.demo-intro h1 {
+  margin: 0.35rem 0 0.75rem;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  letter-spacing: -0.04em;
+}
+
+.iframe-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.panel-remote {
+  padding: 1rem;
+}
+
+.bingkai-iframe {
+  overflow: hidden;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #fff7ed;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.bingkai-iframe iframe {
+  display: block;
+  width: 100%;
+  height: 740px;
+  border: 0;
+  background: #fff7ed;
+}
+
+.iframe-catatan {
+  margin: 0.9rem 0;
+}
+
+.kecil-panel h3 {
+  margin: 0 0 0.5rem;
+}
+
+.kecil-panel p {
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .iframe-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bingkai-iframe iframe {
+    height: 580px;
+  }
+}

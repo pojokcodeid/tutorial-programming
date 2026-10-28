@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-27T16:37:45.633Z",
+  "remotes": {
+    "header": {
+      "version": "1.0.0",
+      "owner": "Tim Chrome",
+      "status": "stable",
+      "releasedAt": "2026-10-27T16:14:08.327Z"
+    },
+    "products": {
+      "version": "1.0.0",
+      "owner": "Tim Katalog",
+      "status": "stable",
+      "releasedAt": "2026-10-27T16:14:22.452Z"
+    },
+    "cart": {
+      "version": "1.0.0",
+      "owner": "Tim Transaksi",
+      "status": "stable",
+      "releasedAt": "2026-10-27T16:14:09.517Z"
+    },
+    "account": {
+      "version": "1.0.1",
+      "owner": "Tim Akun",
+      "status": "stable",
+      "releasedAt": "2026-10-27T16:37:45.634Z"
+    }
+  }
+}

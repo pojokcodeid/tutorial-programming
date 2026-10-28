@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 18: DevOps, Deployment & Security
+   Pelajaran Go — Bab 20: DevOps, Deployment & Security
    (topik info.md:
     - "Containerization menggunakan Docker
        (Multi-stage build untuk binary yang kecil)"
@@ -11,7 +11,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 41: Docker, CI/CD & Keamanan ---------- */
+/* ---------- Pelajaran 43: Docker, CI/CD & Keamanan ---------- */
 window.GO_LESSONS.push({
   id: 'devops-security',
   title: 'Docker, CI/CD & Keamanan',

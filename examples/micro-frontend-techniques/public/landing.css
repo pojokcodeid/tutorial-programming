@@ -1,0 +1,144 @@
+/* Gaya khusus halaman utama lab. */
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem 0 3rem;
+}
+
+.hero h1 {
+  max-width: 15ch;
+  margin: 0.4rem 0 1rem;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  letter-spacing: -0.045em;
+}
+
+.hero .lede {
+  font-size: 1.08rem;
+}
+
+.hero__aksi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.hero__meta span {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.hero__kode {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hero__kode .panel__kepala {
+  margin: 0;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.titik {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 12px #34d399;
+}
+
+.alur {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: langkah;
+}
+
+.alur li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(13, 21, 38, 0.58);
+  color: var(--muted);
+}
+
+.alur li::before {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(125, 211, 252, 0.12);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+  counter-increment: langkah;
+  content: counter(langkah);
+}
+
+.alur strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--text);
+}
+
+.kontrak {
+  display: grid;
+  gap: 1rem;
+}
+
+.kontrak article {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(5, 9, 20, 0.55);
+}
+
+.kontrak h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+}
+
+.kontrak pre {
+  padding: 0.75rem;
+}
+
+.kontrak pre code {
+  font-size: 0.76rem;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 1rem;
+  }
+
+  .hero h1 {
+    max-width: 18ch;
+  }
+}

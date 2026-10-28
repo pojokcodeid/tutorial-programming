@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo import map: memuat modul remote dengan import() dinamis tanpa bundler.">
+  <title>Demo Import Map — Lab Micro-Frontend</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/import-map/shell.css">
+
+  <!-- Import map harus ada sebelum modul apa pun yang memakainya dimuat. -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@lab/remote": "/import-map/remote.js",
+        "@lab/remote-rusak": "/import-map/remote-rusak.js"
+      }
+    }
+  </script>
+</head>
+<body class="demo-im">
+  <header class="lab-header">
+    <div class="lab-header__inner">
+      <a class="merek" href="/">
+        <span class="merek__tanda">MF</span>
+        <span>Lab Micro-Frontend</span>
+      </a>
+      <nav class="lab-nav" aria-label="Navigasi lab">
+        <a href="/iframe/">iframe</a>
+        <a href="/web-component/">Web Component</a>
+        <a href="/import-map/" aria-current="page">Import map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lab-main">
+    <section class="demo-intro">
+      <p class="eyebrow">Teknik 03 · Import map</p>
+      <h1>Modul remote tanpa bundler.</h1>
+      <p class="lede">
+        Shell memetakan nama <code>@lab/remote</code> ke berkas <code>/import-map/remote.js</code>,
+        lalu memanggil <code>import('@lab/remote')</code> saat tombol ditekan. Tidak ada bundler,
+        tetapi juga tidak ada isolasi gaya atau global scope.
+      </p>
+    </section>
+
+    <div class="im-grid">
+      <section class="panel" aria-labelledby="judul-shell">
+        <div class="panel__kepala">
+          <div>
+            <h2 id="judul-shell">Shell</h2>
+            <p class="kecil">Kontrol pemuatan modul dan keranjang.</p>
+          </div>
+          <span id="status" class="status status--idle" role="status">idle</span>
+        </div>
+
+        <p id="status-teks" class="status-teks">Remote belum dimuat. Klik “Muat remote” untuk memulai.</p>
+
+        <div class="aksi">
+          <button id="muat" class="tombol tombol--utama" type="button">Muat remote</button>
+          <button id="bongkar" class="tombol tombol--hantu" type="button" disabled>Bongkar</button>
+          <button id="rusak" class="tombol tombol--bahaya" type="button">Coba modul rusak</button>
+        </div>
+
+        <div class="im-kode">
+          <p class="kecil">Import map yang dipakai halaman ini:</p>
+          <pre><code>&lt;script type="importmap"&gt;
+{
+  "imports": {
+    "@lab/remote": "/import-map/remote.js"
+  }
+}
+&lt;/script&gt;</code></pre>
+          <p class="kecil">Panggilan di shell: <code>await import('@lab/remote')</code></p>
+        </div>
+
+        <div id="log" class="log" aria-live="polite" aria-label="Log pemuatan modul"></div>
+
+        <div class="im-keranjang">
+          <div class="panel__kepala">
+            <h3>Keranjang shell</h3>
+            <span id="jumlah-item" class="badge">0 item</span>
+          </div>
+          <p class="kecil">
+            Modul remote memanggil <code>opsi.onTambah(produk)</code>; shell yang mengelola
+            state keranjang.
+          </p>
+          <ul id="keranjang" class="keranjang"></ul>
+          <div class="keranjang__total">
+            <span>Total</span>
+            <strong id="total">Rp 0</strong>
+          </div>
+          <p id="status-keranjang" class="sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="judul-slot">
+        <div class="panel__kepala">
+          <div>
+            <h2 id="judul-slot">Slot remote</h2>
+            <p class="kecil">Modul memanggil <code>mount(slot, opsi)</code> dan mengembalikan <code>unmount()</code>.</p>
+          </div>
+          <span class="badge">mount()</span>
+        </div>
+
+        <div id="slot" class="im-slot">
+          <div class="im-kosong">
+            <p><strong>Belum ada modul yang dipasang.</strong></p>
+            <p class="kecil">
+              Klik <strong>Muat remote</strong>. Shell akan mengimpor modul secara dinamis,
+              menampilkan status memuat, lalu memasang hasilnya ke slot ini.
+            </p>
+          </div>
+        </div>
+
+        <div class="im-catatan">
+          <h3>Yang perlu kamu amati</h3>
+          <ul class="daftar-ringkas">
+            <li>Status berubah dari <code>idle</code> ke <code>memuat</code>, lalu <code>siap</code> atau <code>gagal</code>.</li>
+            <li>Tombol “Coba modul rusak” memicu error, tetapi shell tetap hidup.</li>
+            <li>Modul remote berbagi dokumen yang sama — tidak ada Shadow DOM atau iframe.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="lab-footer">
+    <div class="lab-footer__inner">
+      <a href="/">← Kembali ke halaman utama</a>
+      <span>Import map · ESM · dynamic import</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/import-map/shell.js"></script>
+</body>
+</html>

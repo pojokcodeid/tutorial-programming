@@ -1,22 +1,44 @@
 {
   "name": "tokomicro-react",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Contoh micro-frontend React: shell + 3 remote dengan Vite + Module Federation.",
+  "packageManager": "npm@11.19.1",
+  "description": "Contoh micro-frontend React + TypeScript: shell, empat remote, design system, manifest dinamis, dan pipeline rilis mandiri.",
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "turbo run build",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "node e2e-smoke.mjs",
+    "test:visual": "node tests/visual.mjs",
+    "storybook": "npm run storybook -w @tokomicro/ui-kit",
+    "storybook:build": "npm run storybook:build -w @tokomicro/ui-kit",
     "start": "node server.js",
-    "demo": "npm run build && node server.js"
+    "demo": "npm run build && node server.js",
+    "release": "node scripts/release.mjs",
+    "rollback": "node scripts/rollback.mjs",
+    "perf": "node scripts/perf-report.mjs"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "playwright": "^1.64.1"
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.64.1",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

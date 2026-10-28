@@ -1,23 +1,129 @@
-/* Semua gaya berawalan .hd- dan memakai token milik shell dengan cadangan. */
+/* Semua gaya berawalan .hd- dan memakai token design system. */
 .hd {
-  background: var(--card, #fff);
-  border-bottom: 1px solid var(--border, #e3e8f0);
-  position: sticky; top: 0; z-index: 50;
+  background: var(--tm-card);
+  border-bottom: 1px solid var(--tm-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
+
 .hd-inner {
-  max-width: 960px; margin: 0 auto; padding: 12px 20px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.hd-brand { font-size: 17px; font-weight: 800; color: var(--text, #1c2333); }
-.hd-nav { display: flex; gap: 6px; }
+
+.hd-brand {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--tm-text);
+}
+
+.hd-brand:hover {
+  text-decoration: none;
+}
+
+.hd-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .hd-nav a {
-  padding: 7px 12px; border-radius: 9px; font-size: 14px; font-weight: 600;
-  color: var(--text-2, #525a6b);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: var(--tm-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tm-text-2);
 }
-.hd-nav a:hover { background: var(--accent-soft, #eef2ff); text-decoration: none; }
-.hd-nav a.is-active { background: var(--accent-soft, #eef2ff); color: var(--accent, #4f46e5); }
-.hd-badge {
-  display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px;
-  border-radius: 99px; background: var(--accent, #4f46e5); color: #fff;
-  font-size: 11px; font-weight: 800; text-align: center; line-height: 18px;
+
+.hd-nav a:hover {
+  background: var(--tm-accent-soft);
+  text-decoration: none;
+}
+
+.hd-nav a.is-active {
+  background: var(--tm-accent-soft);
+  color: var(--tm-accent);
+}
+
+.hd-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hd-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--tm-radius-sm);
+  border: 1px solid var(--tm-border);
+  background: var(--tm-card);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.hd-icon:hover {
+  border-color: var(--tm-accent);
+}
+
+.hd-locale {
+  height: 32px;
+  border-radius: var(--tm-radius-sm);
+  border: 1px solid var(--tm-border);
+  background: var(--tm-card);
+  color: var(--tm-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+}
+
+.hd-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hd-user__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tm-text-2);
+}
+
+.hd-sub {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 20px 8px;
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+}
+
+.hd-sub a {
+  color: var(--tm-muted);
+}
+
+.hd-sub a:hover {
+  color: var(--tm-accent);
+}
+
+@media (max-width: 640px) {
+  .hd-inner {
+    gap: 10px;
+  }
+
+  .hd-user__name {
+    display: none;
+  }
 }

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo Web Component: custom element dengan Shadow DOM dan event add-to-cart.">
+  <title>Demo Web Component — Lab Micro-Frontend</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/web-component/shell.css">
+</head>
+<body class="demo-wc">
+  <header class="lab-header">
+    <div class="lab-header__inner">
+      <a class="merek" href="/">
+        <span class="merek__tanda">MF</span>
+        <span>Lab Micro-Frontend</span>
+      </a>
+      <nav class="lab-nav" aria-label="Navigasi lab">
+        <a href="/iframe/">iframe</a>
+        <a href="/web-component/" aria-current="page">Web Component</a>
+        <a href="/import-map/">Import map</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="lab-main">
+    <section class="demo-intro">
+      <p class="eyebrow">Teknik 02 · Web Component</p>
+      <h1>Satu elemen, gaya yang tidak bisa diganggu.</h1>
+      <p class="lede">
+        Remote dibungkus sebagai <code>&lt;tokomicro-product-card&gt;</code> dengan Shadow DOM.
+        Shell cukup mengisi atribut <code>nama</code> dan <code>harga</code>, lalu mendengarkan
+        event <code>add-to-cart</code>. Gaya internal kartu tetap utuh meskipun CSS global shell
+        mencoba menimpanya.
+      </p>
+    </section>
+
+    <div class="wc-grid">
+      <section class="panel" aria-labelledby="judul-katalog">
+        <div class="panel__kepala">
+          <div>
+            <h2 id="judul-katalog">Katalog dari API</h2>
+            <p class="kecil">Setiap kartu adalah custom element yang dibuat oleh shell.</p>
+          </div>
+          <span id="status-produk" class="status status--memuat" role="status">Memuat…</span>
+        </div>
+
+        <div id="daftar-produk" class="daftar-produk" aria-live="polite"></div>
+      </section>
+
+      <aside class="panel wc-samping" aria-labelledby="judul-keranjang">
+        <div class="panel__kepala">
+          <h2 id="judul-keranjang">Keranjang shell</h2>
+          <span id="jumlah-item" class="badge">0 item</span>
+        </div>
+        <p class="kecil">
+          Shell mendengarkan event <code>add-to-cart</code> yang menembus batas Shadow DOM
+          karena dikirim dengan <code>composed: true</code>.
+        </p>
+
+        <ul id="keranjang" class="keranjang"></ul>
+
+        <div class="keranjang__total">
+          <span>Total</span>
+          <strong id="total">Rp 0</strong>
+        </div>
+
+        <button id="kosongkan" class="tombol tombol--hantu tombol--kecil" type="button" disabled>
+          Kosongkan keranjang
+        </button>
+
+        <hr>
+
+        <h3>Uji isolasi gaya</h3>
+        <p class="kecil">
+          Nyalakan serangan CSS global. Kartu HTML biasa di bawah akan berubah warna,
+          sementara isi custom element tetap memakai gaya Shadow DOM-nya.
+        </p>
+        <button id="serang" class="tombol tombol--bahaya" type="button" aria-pressed="false">
+          Nyalakan serangan gaya
+        </button>
+        <p id="indikator-serangan" class="kecil" role="status">CSS global: normal</p>
+
+        <p id="status-keranjang" class="sr-only" aria-live="polite"></p>
+      </aside>
+    </div>
+
+    <section class="bagian" aria-labelledby="judul-banding">
+      <div class="bagian__kepala">
+        <div>
+          <p class="eyebrow">Bukti visual</p>
+          <h2 id="judul-banding">Kartu biasa vs Shadow DOM</h2>
+        </div>
+        <p class="muted">
+          Dua kartu ini sengaja dibuat mirip. Setelah serangan gaya aktif, hanya kartu kiri
+          yang berubah.
+        </p>
+      </div>
+
+      <section class="panel" aria-label="Perbandingan kartu biasa dan custom element">
+        <div class="perbandingan__grid">
+          <div class="bingkai-perbandingan">
+            <span class="label-perbandingan">HTML biasa — tanpa Shadow DOM</span>
+            <div class="kartu-biasa" data-nama="Kartu Pembanding" data-harga="125000">
+              <span class="kartu-biasa__kategori">Contoh</span>
+              <h3>Kartu Pembanding</h3>
+              <p>Gaya kartu ini berasal dari CSS global shell.</p>
+              <span class="kartu-biasa__harga">Rp 125.000</span>
+              <button type="button" class="tombol tombol--utama">Tambah ke keranjang</button>
+            </div>
+          </div>
+
+          <div class="bingkai-perbandingan">
+            <span class="label-perbandingan">Custom element — Shadow DOM</span>
+            <tokomicro-product-card
+              nama="Kartu Contoh"
+              harga="125000"
+              stok="4"
+              emoji="🧪"
+              kategori="Contoh"></tokomicro-product-card>
+          </div>
+        </div>
+
+        <p class="kecil perbandingan__catatan">
+          Kamu tetap bisa mengubah gaya dari luar lewat <code>::part()</code>, misalnya
+          <code>tokomicro-product-card::part(tombol)</code>. Perbedaannya, itu akses yang
+          sengaja kamu buka — bukan kebocoran CSS global.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="lab-footer">
+    <div class="lab-footer__inner">
+      <a href="/">← Kembali ke halaman utama</a>
+      <span>Web Component · Shadow DOM · CustomEvent</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/web-component/product-card.js"></script>
+  <script type="module" src="/web-component/shell.js"></script>
+</body>
+</html>

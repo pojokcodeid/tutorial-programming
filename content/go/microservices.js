@@ -1,5 +1,5 @@
 /* ============================================================
-   Pelajaran Go — Bab 16: Microservices & Distributed Systems
+   Pelajaran Go — Bab 18: Microservices & Distributed Systems
    (topik info.md:
     - "gRPC & Protocol Buffers (protobuf)"
     - "Message Broker integration (RabbitMQ, Apache Kafka, NATS)"
@@ -9,7 +9,7 @@
 
 window.GO_LESSONS = window.GO_LESSONS || [];
 
-/* ---------- Pelajaran 36: gRPC, Message Broker & Observability ---------- */
+/* ---------- Pelajaran 38: gRPC, Message Broker & Observability ---------- */
 window.GO_LESSONS.push({
   id: 'microservices',
   title: 'Microservices: gRPC, Message Broker & Observability',

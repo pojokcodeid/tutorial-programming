@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-labelledby="http-title">
+  <title id="http-title">HTTP</title>
+  <rect width="48" height="48" rx="12" fill="#0F766E"/>
+  <circle cx="24" cy="24" r="14" fill="none" stroke="#ffffff" stroke-width="2.4"/>
+  <path d="M10 24h28M24 10c4.2 4.6 6.2 9.2 6.2 14S28.2 33.4 24 38c-4.2-4.6-6.2-9.2-6.2-14S19.8 14.6 24 10z" fill="none" stroke="#ffffff" stroke-width="2.2"/>
+  <path d="M31 15.5l5.5 4.2-5.5 4.2" fill="none" stroke="#99F6E4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 32.5L11.5 28.3l5.5-4.2" fill="none" stroke="#99F6E4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
