@@ -100,6 +100,26 @@ const CONTENT = (() => {
       ]
     },
 
+    restfulapi: {
+      id: 'restfulapi',
+      title: 'Dasar RESTful API',
+      tagline: 'Pahami API dari Nol dengan Bahasa Manusia',
+      icon: 'assets/logos/restful.svg',
+      color: '#1D4ED8',
+      desc: 'Belajar RESTful API dari nol untuk pemula: apa itu API, anatomi request dan response, URL endpoint, method, status code, JSON, penempatan data, header, enam prinsip REST, perancangan endpoint, format response yang konsisten, safe & idempotent, hingga praktik memanggil API lewat Postman, cURL, Fetch, Axios, dan proyek mini.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.RESTFULAPI_LESSONS || []).slice(),
+      quizPool: (window.RESTFULAPI_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'REST API Tutorial — restfulapi.net', url: 'https://restfulapi.net/' },
+        { label: 'MDN Web Docs — HTTP', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP' },
+        { label: 'JSONPlaceholder — API latihan', url: 'https://jsonplaceholder.typicode.com/' },
+        { label: 'PokéAPI — API latihan', url: 'https://pokeapi.co/' },
+        { label: 'Postman Learning Center', url: 'https://learning.postman.com/' }
+      ]
+    },
+
     git: {
       id: 'git',
       title: 'Git & GitHub',
@@ -488,5 +508,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
 })();

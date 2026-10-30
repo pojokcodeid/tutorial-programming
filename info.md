@@ -863,3 +863,47 @@ Materi **HTTP** — protokol komunikasi client-server yang menjadi dasar web dan
   - `node examples/http-lab/proxy.js` untuk latihan reverse proxy di port `8788`.
   - `node --test examples/http-lab/lab.test.js` untuk menjalankan 13 pengujian otomatis.
   - Akun demo: `nina/rahasia123` (user) dan `admin/admin123` (admin).
+
+## Topik Dasar RESTful API
+
+Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru mengenal dunia backend dan API — disusun dalam 15 pelajaran berbahasa Indonesia dengan kuis 40 soal. Cakupannya mengikuti roadmap `roadmap-belajar-restful-api.md` Fase 1 sampai Fase 3 (dengan pengantar Fase 4 berupa proyek mini), tanpa mengulang materi HTTP mendalam (cookie, cache, CORS, HTTPS) yang sudah dibahas di materi HTTP. Penjelasan memakai analogi sehari-hari (restoran, surat, antrean, struk) agar mudah dipahami orang awam, dilengkapi latihan interaktif "Coba sendiri" yang berjalan offline.
+
+- Rujukan
+  - https://restfulapi.net/
+  - https://developer.mozilla.org/en-US/docs/Web/HTTP
+  - https://jsonplaceholder.typicode.com/
+  - https://pokeapi.co/
+  - https://learning.postman.com/
+
+- Materi yang harus ada
+
+1. Apa Itu API? Kenapa Aplikasi Butuh API
+   - Analogi restoran, perantara resmi dua program, perbedaan website dengan API, aktivitas harian yang memakai API.
+2. Client, Server, Request, dan Response
+   - Anatomi request (method, URL, header, body) dan response (status, header, body), analogi surat, pengamatan lewat DevTools Network.
+3. URL dan Endpoint: Alamat Rumah untuk Data
+   - Anatomi URL (skema, domain, path, query), endpoint sebagai URL + method, DNS/IP singkat, penamaan berbasis kata benda.
+4. HTTP Method: GET, POST, PUT, PATCH, DELETE
+   - Pemetaan CRUD ke method, tabel endpoint + status sukses, HEAD/OPTIONS, aturan method = aksi dan path = resource.
+5. Status Code: Kode Balasan Server
+   - Kelompok 2xx/3xx/4xx/5xx, kode yang paling sering muncul, 401 vs 403, mengapa API tidak boleh selalu membalas 200.
+6. Mengenal JSON: Bahasa Data Web
+   - Objek, array, pasangan kunci-nilai, JSON bersarang, kenapa JSON mendominasi API modern, perbandingan singkat dengan XML.
+7. Path, Query, dan Body: Di Mana Data Diletakkan
+   - Path = menunjuk resource, query = mengatur cara membaca (filter/halaman), body = isi data, larangan menaruh rahasia di query.
+8. HTTP Headers: Amplop yang Menyimpan Instruksi
+   - Content-Type, Accept, Authorization, User-Agent, Cache-Control; membaca header di DevTools dan Postman.
+9. Apa Itu REST? Enam Prinsipnya
+   - REST karya Roy Fielding (2000), client–server, stateless, cacheable, uniform interface, layered system, code on demand.
+10. Merancang Endpoint yang Enak Dibaca
+    - Kata benda jamak, kebab-case, resource bersarang maksimal 2–3 level, versi /api/v1, tabel endpoint contoh toko.
+11. Format Response dan Error yang Konsisten
+    - Contoh respons sukses dan gagal, pesan error yang aman dan jelas, field bantu meta untuk daftar data.
+12. Safe, Idempotent, dan Kesalahan Desain yang Sering Terjadi
+    - Safe (GET/HEAD/OPTIONS), idempotent (GET/PUT/DELETE), POST tidak idempotent, kesalahan umum desain endpoint.
+13. Mencoba API Sungguhan: Postman dan cURL
+    - Anatomi request di Postman, perintah cURL, API publik latihan (JSONPlaceholder, PokéAPI, ReqRes), menangani 404/500/koneksi putus.
+14. Memanggil API dari Program
+    - Fetch API, Axios, requests (Python), pemeriksaan res.ok/status_code, penanganan error, pengantar asynchronous.
+15. Proyek Mini dan Rangkuman
+    - Rangkuman seluruh bab, Proyek Mini A konsumsi API publik, Proyek Mini B perancangan API toko, checklist lanjut ke Fase 4.

@@ -120,6 +120,22 @@ async function main() {
     'content/http/17-debugging-curl.js',
     'content/http/18-testing-diagnosis.js',
     'content/http/19-proyek-akhir.js',
+    'content/restfulapi/quiz-questions.js',
+    'content/restfulapi/01-apa-itu-api.js',
+    'content/restfulapi/02-client-server-request-response.js',
+    'content/restfulapi/03-url-endpoint.js',
+    'content/restfulapi/04-http-method.js',
+    'content/restfulapi/05-status-code.js',
+    'content/restfulapi/06-json.js',
+    'content/restfulapi/07-path-query-body.js',
+    'content/restfulapi/08-http-headers.js',
+    'content/restfulapi/09-apa-itu-rest.js',
+    'content/restfulapi/10-merancang-endpoint.js',
+    'content/restfulapi/11-format-response-error.js',
+    'content/restfulapi/12-safe-idempotent.js',
+    'content/restfulapi/13-postman-curl.js',
+    'content/restfulapi/14-panggil-api-dari-kode.js',
+    'content/restfulapi/15-proyek-mini-rangkuman.js',
     'content/git/quiz-questions.js',
     'content/git/pengenalan.js',
     'content/git/instalasi.js',
@@ -385,6 +401,49 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'assets/logos/http.svg')));
   check('logo HTTP berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/http.svg'), 'utf8').includes('<svg'));
+
+  // 4a2) konten Dasar RESTful API: 15 pelajaran + 40 soal kuis
+  const rstC = CONTENT.get('restfulapi');
+  check('Dasar RESTful API terdaftar & status ready', !!rstC && rstC.status === 'ready');
+  check('15 pelajaran Dasar RESTful API', rstC.lessons.length === 15);
+  const rstIds = rstC.lessons.map(l => l.id);
+  check('id pelajaran Dasar RESTful API unik', new Set(rstIds).size === rstIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Dasar RESTful API terisi',
+    rstC.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && l.intro && l.intro.length && l.objectives && l.objectives.length &&
+      l.recap && l.recap.length));
+  let rstBadSection = 0;
+  for (const l of rstC.lessons) {
+    if (!l.sections.some(s => s.type === 'example' && s.code && s.output === false)) rstBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && s.items.length >= 5)) rstBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) rstBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example' && (!s.explain || s.explain.length < 2)) rstBadSection++;
+      if (s.type === 'live' &&
+        (s.lang !== 'html' || !/<!DOCTYPE/i.test(s.initial || '') || !s.hint)) rstBadSection++;
+    }
+  }
+  check('struktur section pelajaran Dasar RESTful API valid (contoh + vocab + tip/warn + live)',
+    rstBadSection === 0);
+  check('latihan interaktif (live) tersebar di semua pelajaran Dasar RESTful API',
+    rstC.lessons.every(l => l.sections.some(s => s.type === 'live')));
+  check('40 soal kuis Dasar RESTful API lengkap (4 opsi, jawaban & penjelasan) & id unik restfulNN',
+    rstC.quizPool.length === 40 &&
+    new Set(rstC.quizPool.map(q => q.id)).size === rstC.quizPool.length &&
+    rstC.quizPool.every(q => /^restful\d{2}$/.test(q.id)) &&
+    !rstC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const rstRefs = (rstC.refs || []).map(r => r.url);
+  check('rujukan Dasar RESTful API (restfulapi.net, MDN, JSONPlaceholder, PokéAPI, Postman)',
+    ['https://restfulapi.net/',
+     'https://developer.mozilla.org/en-US/docs/Web/HTTP',
+     'https://jsonplaceholder.typicode.com/',
+     'https://pokeapi.co/',
+     'https://learning.postman.com/']
+      .every(u => rstRefs.includes(u)));
+  check('logo restful.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/restful.svg'), 'utf8').includes('<svg'));
 
   // 4b) konten CSS: 18 pelajaran = 18 topik di info.md, terdaftar & siap
   check('CSS status ready', CONTENT.css.status === 'ready');
