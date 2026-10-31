@@ -145,7 +145,7 @@ const CONTENT = (() => {
       tagline: 'API yang Menjawab Persis yang Kamu Minta',
       icon: 'assets/logos/graphql.svg',
       color: '#E10098',
-      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, hingga arsitektur microservices dengan Apollo Federation.',
+      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, arsitektur microservices dengan Apollo Federation, hingga membangun server GraphQL dengan Go (GQLGen + GORM).',
       status: 'ready',
       sequential: true,
       lessons: (window.GRAPHQL_LESSONS || []).slice(),

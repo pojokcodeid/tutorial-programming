@@ -1,0 +1,50 @@
+# graph/schema.graphqls — sumber kebenaran API blog GraphQL.
+# Ubah file ini lalu jalankan: go run github.com/99designs/gqlgen generate
+# (atau binary: gqlgen generate)
+
+scalar DateTime
+
+type User {
+  id: Int!
+  name: String!
+  email: String!
+  "Peran pengguna: USER atau ADMIN — dipakai otorisasi"
+  role: String!
+  createdAt: DateTime!
+  posts: [Post!]!
+}
+
+type Post {
+  id: Int!
+  title: String!
+  content: String!
+  published: Boolean!
+  createdAt: DateTime!
+  author: User!
+}
+
+type Query {
+  "Daftar post; filter opsional published=true/false"
+  posts(published: Boolean): [Post!]!
+  "Detail satu post berdasarkan id; null bila tidak ada"
+  post(id: Int!): Post
+  "Semua pengguna beserta postnya"
+  users: [User!]!
+  "Jumlah total post (untuk indikator dashboard)"
+  postCount: Int!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  authorID: Int!
+}
+
+type Mutation {
+  "Buat post baru (Published default false — draf)"
+  createPost(input: CreatePostInput!): Post!
+  "Terbitkan post (published -> true)"
+  publishPost(id: Int!): Post!
+  "Hapus post; hanya boleh penulisnya atau admin"
+  deletePost(id: Int!): Boolean!
+}

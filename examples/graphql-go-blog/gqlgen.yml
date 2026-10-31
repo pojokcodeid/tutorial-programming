@@ -1,0 +1,37 @@
+# gqlgen.yml — konfigurasi GQLGen
+# Sesuaikan setelah menjalankan perintah generate pertama kali.
+
+# Lokasi skema GraphQL (kontrak API)
+schema:
+  - graph/*.graphqls
+
+# Executable Schema — hasil generate, jangan diedit manual
+exec:
+  filename: graph/generated/generated.go
+  package: generated
+
+# Struct model — hasil generate dari schema
+model:
+  filename: graph/model/models_gen.go
+  package: model
+
+# Optional: arahkan tipe tertentu ke struct milikmu sendiri
+# dengan menambahkan blok models di sini (lihat README).
+models:
+  # Agar CreatedAt cocok dengan kolom DATETIME MariaDB & time.Time GORM
+  DateTime:
+    model: github.com/99designs/gqlgen/graphql.Time
+  # Struct GORM milik kita (dengan tag relasi) — lihat graph/model/post.go
+  Post:
+    model: example.com/graphql-go-blog/graph/model.Post
+  User:
+    model: example.com/graphql-go-blog/graph/model.User
+
+autobind: []
+
+# Resolvers
+resolver:
+  layout: follow-schema
+  dir: graph
+  package: graph
+  filename_template: "{name}.resolvers.go"

@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, dan **GraphQL (14 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, dan **GraphQL (15 pelajaran)**
 - ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
@@ -60,6 +60,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── examples/go-todo-app/ # contoh proyek desktop Go + Fyne + database bebas (dari materi gogui)
 ├── examples/react-project/ # contoh proyek React nyata (dari materi reactproject)
 ├── examples/cfml-mvc-framework/  # contoh proyek framework MVC (dari materi luceemvc)
+├── examples/graphql-go-blog/ # contoh proyek nyata server GraphQL + Go: GQLGen + GORM + MariaDB (dari materi graphql)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
 ├── content/kubernetes/   # materi tutorial Kubernetes dengan Podman (Bahasa Indonesia)
 ├── content/jenkins/      # materi tutorial Jenkins CI/CD (Bahasa Indonesia)

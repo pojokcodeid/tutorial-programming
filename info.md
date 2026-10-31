@@ -910,7 +910,7 @@ Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru menge
 
 ## Topik Mengenai GraphQL
 
-Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan persis data yang dibutuhkan — disusun dalam 14 pelajaran berbahasa Indonesia lengkap dengan contoh kode, latihan simulasi interaktif, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti roadmap `roadmap_belajar_graphql.md` (Fase 1–6) dan plan `plan/belajar_graphql.md`, dari konsep dasar hingga arsitektur microservices. Praktik backend memakai **Node.js + Apollo Server + Prisma + MariaDB** dengan koneksi `localhost:3306` (user `root`, password `rootpassword`), frontend memakai React + Apollo Client dengan normalized cache dan GraphQL Code Generator.
+Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan persis data yang dibutuhkan — disusun dalam 15 pelajaran berbahasa Indonesia lengkap dengan contoh kode, latihan simulasi interaktif, tip, peringatan, kosakata, dan kuis 46 soal. Materi mengikuti roadmap `roadmap_belajar_graphql.md` (Fase 1–6) dan plan `plan/belajar_graphql.md`, dari konsep dasar hingga arsitektur microservices. Praktik backend memakai **Node.js + Apollo Server + Prisma + MariaDB** dengan koneksi `localhost:3306` (user `root`, password `rootpassword`), frontend memakai React + Apollo Client dengan normalized cache dan GraphQL Code Generator.
 
 - Rujukan
   - https://graphql.org/
@@ -942,3 +942,5 @@ Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan 
    - GraphQL Subscriptions real-time: tipe Subscription di SDL, PubSub publish/subscribe, konfigurasi graphql-ws di Apollo Server v4, useSubscription + split link di klien, catatan scaling dengan Redis PubSub.
 6. Arsitektur Skala Besar (Fase 6)
    - Schema Stitching vs Apollo Federation: supergraph, subgraph, @key directive, entity reference (__resolveReference), gateway menggabungkan query plan; kapan memakai Federation vs tetap monolitik.
+7. GraphQL dengan Go (bab tambahan)
+   - Membangun server GraphQL dengan Go: perbandingan library (GQLGen, graphql-go, graph-gophers), inisialisasi proyek (go mod init, gqlgen init), penulisan schema.graphqls, code generation (gqlgen generate), koneksi GORM ke MariaDB (DSN root:rootpassword@tcp(localhost:3306)/blog_go?parseTime=True), implementasi resolver Query & Mutation (posts, post, users, createPost, publishPost), server main.go dengan Playground, pengujian lewat cURL, alur request lima tahap, serta peringatan file generated tidak boleh diedit manual.

@@ -324,6 +324,7 @@ async function main() {
     'content/graphql/12-keamanan-otorisasi.js',
     'content/graphql/13-subscriptions-realtime.js',
     'content/graphql/14-apollo-federation.js',
+    'content/graphql/15-graphql-dengan-go.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -1007,7 +1008,7 @@ async function main() {
   // 4n) konten GraphQL: 14 pelajaran sesuai roadmap_belajar_graphql.md + 40 soal kuis
   const gqlC = CONTENT.get('graphql');
   check('GraphQL terdaftar & status ready', !!gqlC && gqlC.status === 'ready');
-  check('14 pelajaran GraphQL', gqlC.lessons.length === 14);
+  check('15 pelajaran GraphQL', gqlC.lessons.length === 15);
   const gqlIds = gqlC.lessons.map(l => l.id);
   check('id pelajaran GraphQL unik', new Set(gqlIds).size === gqlIds.length);
   check('judul, durasi, bab, intro, objectives & recap GraphQL terisi',
@@ -1015,9 +1016,10 @@ async function main() {
       l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
       Array.isArray(l.objectives) && l.objectives.length >= 4 &&
       Array.isArray(l.recap) && l.recap.length >= 5));
-  check('enam bab roadmap GraphQL terwakili',
+  check('enam bab roadmap GraphQL + bab GraphQL dengan Go terwakili',
     ['Konsep Dasar', 'Sintaksis Klien', 'Membangun GraphQL Server',
-     'Frontend Integration', 'Teknik Lanjutan', 'Arsitektur Skala Besar']
+     'Frontend Integration', 'Teknik Lanjutan', 'Arsitektur Skala Besar',
+     'GraphQL dengan Go']
       .every(c => gqlC.lessons.some(l => l.chapter === c)));
   let gqlBadSection = 0;
   for (const l of gqlC.lessons) {
@@ -1039,8 +1041,8 @@ async function main() {
     gqlBadSection === 0);
   check('latihan simulasi (live) tersebar di semua pelajaran GraphQL',
     gqlC.lessons.every(l => l.sections.some(s => s.type === 'live')));
-  check('40 soal kuis GraphQL lengkap (4 opsi, jawaban & penjelasan) & id unik gqlNN',
-    gqlC.quizPool.length === 40 &&
+  check('46 soal kuis GraphQL lengkap (4 opsi, jawaban & penjelasan) & id unik gqlNN',
+    gqlC.quizPool.length === 46 &&
     new Set(gqlC.quizPool.map(q => q.id)).size === gqlC.quizPool.length &&
     gqlC.quizPool.every(q => /^gql\d{2}$/.test(q.id)) &&
     !gqlC.quizPool.some(q =>
