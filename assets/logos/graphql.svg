@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-labelledby="graphql-title">
+  <title id="graphql-title">GraphQL</title>
+  <rect width="48" height="48" rx="12" fill="#E10098"/>
+  <!-- Sisi heksagon (graph outline) -->
+  <path d="M24 9.6 L35.2 16.07 M35.2 16.07 L35.2 29.01 M35.2 29.01 L24 35.47 M24 35.47 L12.8 29.01 M12.8 29.01 L12.8 16.07 M12.8 16.07 L24 9.6"
+        fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Berkas menuju lingkaran tengah -->
+  <path d="M24 9.6 L24 16.4 M24 35.47 L24 28.7 M12.8 16.07 L18.7 19.5 M35.2 16.07 L29.3 19.5 M12.8 29.01 L18.7 25.6 M35.2 29.01 L29.3 25.6"
+        fill="none" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <!-- Lingkaran tengah -->
+  <circle cx="24" cy="22.54" r="6.2" fill="#E10098" stroke="#ffffff" stroke-width="2.2"/>
+  <!-- Node pada setiap sudut heksagon -->
+  <circle cx="24" cy="9.6" r="2.9" fill="#ffffff"/>
+  <circle cx="35.2" cy="16.07" r="2.9" fill="#ffffff"/>
+  <circle cx="35.2" cy="29.01" r="2.9" fill="#ffffff"/>
+  <circle cx="24" cy="35.47" r="2.9" fill="#ffffff"/>
+  <circle cx="12.8" cy="29.01" r="2.9" fill="#ffffff"/>
+  <circle cx="12.8" cy="16.07" r="2.9" fill="#ffffff"/>
+</svg>

@@ -309,6 +309,21 @@ async function main() {
     'content/micro-frontend/18-migrasi-legacy.js',
     'content/micro-frontend/19-governance.js',
     'content/micro-frontend/20-proyek-akhir.js',
+    'content/graphql/quiz-questions.js',
+    'content/graphql/01-pengenalan-graphql.js',
+    'content/graphql/02-tiga-operasi-graphql.js',
+    'content/graphql/03-menulis-query.js',
+    'content/graphql/04-mutation-dan-variables.js',
+    'content/graphql/05-schema-sdl.js',
+    'content/graphql/06-resolvers.js',
+    'content/graphql/07-setup-server-prisma.js',
+    'content/graphql/08-pagination-dan-filtering.js',
+    'content/graphql/09-apollo-client-react.js',
+    'content/graphql/10-normalized-cache-codegen.js',
+    'content/graphql/11-n-plus-1-dataloader.js',
+    'content/graphql/12-keamanan-otorisasi.js',
+    'content/graphql/13-subscriptions-realtime.js',
+    'content/graphql/14-apollo-federation.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -988,6 +1003,62 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'examples/micro-frontend/remotes/cart/cart.js')));
   check('logo microfrontend.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/microfrontend.svg'), 'utf8').includes('<svg'));
+
+  // 4n) konten GraphQL: 14 pelajaran sesuai roadmap_belajar_graphql.md + 40 soal kuis
+  const gqlC = CONTENT.get('graphql');
+  check('GraphQL terdaftar & status ready', !!gqlC && gqlC.status === 'ready');
+  check('14 pelajaran GraphQL', gqlC.lessons.length === 14);
+  const gqlIds = gqlC.lessons.map(l => l.id);
+  check('id pelajaran GraphQL unik', new Set(gqlIds).size === gqlIds.length);
+  check('judul, durasi, bab, intro, objectives & recap GraphQL terisi',
+    gqlC.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
+      Array.isArray(l.objectives) && l.objectives.length >= 4 &&
+      Array.isArray(l.recap) && l.recap.length >= 5));
+  check('enam bab roadmap GraphQL terwakili',
+    ['Konsep Dasar', 'Sintaksis Klien', 'Membangun GraphQL Server',
+     'Frontend Integration', 'Teknik Lanjutan', 'Arsitektur Skala Besar']
+      .every(c => gqlC.lessons.some(l => l.chapter === c)));
+  let gqlBadSection = 0;
+  for (const l of gqlC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 4) gqlBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) gqlBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) gqlBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) gqlBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) gqlBadSection++;
+      }
+      if (s.type === 'live') {
+        if (s.lang !== 'html' || !/<!DOCTYPE/i.test(s.initial || '') || !s.hint) gqlBadSection++;
+      }
+    }
+  }
+  check('struktur section pelajaran GraphQL valid (contoh + vocab + tip/warn + live)',
+    gqlBadSection === 0);
+  check('latihan simulasi (live) tersebar di semua pelajaran GraphQL',
+    gqlC.lessons.every(l => l.sections.some(s => s.type === 'live')));
+  check('40 soal kuis GraphQL lengkap (4 opsi, jawaban & penjelasan) & id unik gqlNN',
+    gqlC.quizPool.length === 40 &&
+    new Set(gqlC.quizPool.map(q => q.id)).size === gqlC.quizPool.length &&
+    gqlC.quizPool.every(q => /^gql\d{2}$/.test(q.id)) &&
+    !gqlC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const gqlRefs = (gqlC.refs || []).map(r => r.url);
+  check('rujukan GraphQL (graphql.org, Apollo docs, Prisma docs, Odyssey, Codegen)',
+    ['https://graphql.org/',
+     'https://www.apollographql.com/docs/',
+     'https://www.prisma.io/docs/',
+     'https://odyssey.apollographql.com/',
+     'https://the-guild.dev/graphql/codegen']
+      .every(u => gqlRefs.includes(u)));
+  check('contoh koneksi MariaDB memakai localhost:3306 root/rootpassword',
+    gqlC.lessons.some(l => l.sections.some(s => s.type === 'example' &&
+      /localhost:3306/.test(s.code || '') && /rootpassword/.test(s.code || ''))));
+  check('logo graphql.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/graphql.svg'), 'utf8').includes('<svg'));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

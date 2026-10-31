@@ -499,6 +499,27 @@ const CONTENT = (() => {
         { label: 'CommandBox Book — Ortus Solutions', url: 'https://commandbox.ortusbooks.com/' },
         { label: 'cfml-mvc-framework — GitHub (pojokcodeid)', url: 'https://github.com/pojokcodeid/cfml-mvc-framework' }
       ]
+    },
+
+    graphql: {
+      id: 'graphql',
+      title: 'GraphQL',
+      tagline: 'API yang Menjawab Persis yang Kamu Minta',
+      icon: 'assets/logos/graphql.svg',
+      color: '#E10098',
+      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, hingga arsitektur microservices dengan Apollo Federation.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.GRAPHQL_LESSONS || []).slice(),
+      quizPool: (window.GRAPHQL_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi GraphQL', url: 'https://graphql.org/' },
+        { label: 'Apollo Server & Client Docs', url: 'https://www.apollographql.com/docs/' },
+        { label: 'Prisma Docs (ORM untuk MariaDB)', url: 'https://www.prisma.io/docs/' },
+        { label: 'GraphQL Yoga — alternatif Apollo', url: 'https://the-guild.dev/graphql/yoga-server' },
+        { label: 'Apollo Odyssey — tutorial interaktif', url: 'https://odyssey.apollographql.com/' },
+        { label: 'GraphQL Code Generator', url: 'https://the-guild.dev/graphql/codegen' }
+      ]
     }
   };
 
@@ -508,5 +529,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, all, get, readyList };
 })();

@@ -907,3 +907,38 @@ Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru menge
     - Fetch API, Axios, requests (Python), pemeriksaan res.ok/status_code, penanganan error, pengantar asynchronous.
 15. Proyek Mini dan Rangkuman
     - Rangkuman seluruh bab, Proyek Mini A konsumsi API publik, Proyek Mini B perancangan API toko, checklist lanjut ke Fase 4.
+
+## Topik Mengenai GraphQL
+
+Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan persis data yang dibutuhkan — disusun dalam 14 pelajaran berbahasa Indonesia lengkap dengan contoh kode, latihan simulasi interaktif, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti roadmap `roadmap_belajar_graphql.md` (Fase 1–6) dan plan `plan/belajar_graphql.md`, dari konsep dasar hingga arsitektur microservices. Praktik backend memakai **Node.js + Apollo Server + Prisma + MariaDB** dengan koneksi `localhost:3306` (user `root`, password `rootpassword`), frontend memakai React + Apollo Client dengan normalized cache dan GraphQL Code Generator.
+
+- Rujukan
+  - https://graphql.org/
+  - https://www.apollographql.com/docs/
+  - https://www.prisma.io/docs/
+  - https://the-guild.dev/graphql/yoga-server
+  - https://odyssey.apollographql.com/
+  - https://the-guild.dev/graphql/codegen
+
+- Materi yang harus ada
+
+1. Konsep Dasar (Fase 1)
+   - Pengenalan GraphQL: sejarah di Facebook (2012) hingga open source (2015), masalah over-fetching & under-fetching REST, perbandingan REST vs GraphQL, satu endpoint vs banyak endpoint, kapan memilih masing-masing.
+   - Tiga operasi GraphQL: Query (baca), Mutation (ubah), Subscription (real-time via WebSocket) beserta karakteristik masing-masing.
+2. Sintaksis Klien (Fase 2)
+   - Menulis query: selection sets, arguments, aliases (hindari konflik nama field), fragments (reuse field group).
+   - Mutation & variables: anti-pattern nilai hardcode vs best practice variabel, input types untuk argument, directives @include dan @skip untuk query kondisional.
+3. Membangun GraphQL Server (Fase 3)
+   - Schema SDL: scalar types, custom types, enums, input types, non-null (!) dan lists, contoh schema lengkap blog (User, Post, Comment).
+   - Resolvers: fungsi (parent, args, context, info), execution flow per level, context sebagai "tas belanja" bersama, pengantar N+1 problem.
+   - Setup server dengan Apollo Server + Prisma + MariaDB: struktur folder, tsconfig, .env DATABASE_URL (mysql://root:rootpassword@localhost:3306/graphql_db), schema.prisma model User & Post, SDL, resolver CRUD, seed, migration & menjalankan server.
+   - Pagination (limit/skip), filtering (input type), sorting (enum), dan cursor-based pagination bergaya Relay (edges, node, pageInfo).
+4. Frontend Integration (Fase 4)
+   - Integrasi Apollo Client di React (Vite): konfigurasi InMemoryCache + HttpLink, ApolloProvider, useQuery dan useMutation, refetchQueries.
+   - Normalized cache (__typename + id) dan GraphQL Code Generator untuk tipe TypeScript otomatis.
+5. Teknik Lanjutan (Fase 5)
+   - N+1 problem beserta ilustrasi query berulang dan solusi DataLoader (batching + caching per request).
+   - Keamanan: autentikasi JWT lewat context, otorisasi level resolver (401 vs 403), directive kustom @auth/@hasRole, depth limit, complexity limit, rate limiting, mematikan introspeksi di produksi.
+   - GraphQL Subscriptions real-time: tipe Subscription di SDL, PubSub publish/subscribe, konfigurasi graphql-ws di Apollo Server v4, useSubscription + split link di klien, catatan scaling dengan Redis PubSub.
+6. Arsitektur Skala Besar (Fase 6)
+   - Schema Stitching vs Apollo Federation: supergraph, subgraph, @key directive, entity reference (__resolveReference), gateway menggabungkan query plan; kapan memakai Federation vs tetap monolitik.

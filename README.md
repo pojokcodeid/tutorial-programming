@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, dan **Micro-Frontend React (20 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, dan **GraphQL (14 pelajaran)**
 - ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
@@ -76,6 +76,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── examples/micro-frontend-ssr/ # lab CSR vs SSR + hydration
 ├── content/lucee/        # materi tutorial Lucee CFML (Bahasa Indonesia)
 ├── content/luceemvc/     # materi tutorial Framework MVC Lucee CFML (Bahasa Indonesia)
+├── content/graphql/      # materi tutorial GraphQL: Apollo Server + Prisma + MariaDB + Apollo Client (14 pelajaran)
 ├── assets/               # gambar & audio contoh, termasuk logo resmi tiap bahasa di assets/logos/
 ├── lib/                  # sql.js (SQLite/WASM) & highlight.js — lokal
 ├── server.js             # server lokal opsional (tanpa dependensi)
@@ -171,6 +172,7 @@ Panduan lengkap endpoint, akun demo, HTTPS lokal, dan alur latihan ada di `examp
 - **Contoh Fullstack Microservices** — https://martinfowler.com/articles/microservices.html · https://12factor.net/ · https://podman.io/docs · https://mariadb.com/kb/en/documentation/ · https://go.dev/doc/ · https://redis.io/docs/latest/ · https://www.rabbitmq.com/docs · https://react.dev/ · https://ant.design/docs/react/introduce · https://vite.dev/guide/
 - **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 - **Framework MVC (Lucee CFML)** — https://github.com/pojokcodeid/cfml-mvc-framework · https://commandbox.ortusbooks.com/ · https://docs.lucee.org/index.html
+- **GraphQL** — https://graphql.org/ · https://www.apollographql.com/docs/ · https://www.prisma.io/docs/ · https://odyssey.apollographql.com/ · https://the-guild.dev/graphql/codegen
 
 (Rujukan lengkap juga tampil di halaman tiap tutorial, di bagian "📖 Rujukan".)
 
