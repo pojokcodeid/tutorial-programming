@@ -7,6 +7,25 @@
 const CONTENT = (() => {
 
   const t = {
+    uml: {
+      id: 'uml',
+      title: 'UML',
+      tagline: 'Merancang Sistem dengan Diagram',
+      icon: 'assets/logos/uml.svg',
+      color: '#7C3AED',
+      desc: 'Belajar Unified Modeling Language dari nol hingga lanjutan: analisis & desain OO, 14 diagram UML 2.0 (struktural & perilaku), lengkap dengan contoh dan studi kasus nyata.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.UML_LESSONS || []).slice(),
+      quizPool: (window.UML_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Introduction to UML — Starter Tutorials', url: 'https://www.startertutorials.com/uml/introduction-to-uml.html' },
+        { label: 'Wikipedia — Unified Modeling Language', url: 'https://en.wikipedia.org/wiki/Unified_Modeling_Language' },
+        { label: 'freeCodeCamp — UML Diagrams Full Course', url: 'https://www.freecodecamp.org/news/uml-diagrams-full-course/' },
+        { label: 'TutorialsPoint — UML', url: 'https://www.tutorialspoint.com/uml/index.htm' }
+      ]
+    },
+
     html: {
       id: 'html',
       title: 'HTML',
@@ -117,6 +136,27 @@ const CONTENT = (() => {
         { label: 'JSONPlaceholder — API latihan', url: 'https://jsonplaceholder.typicode.com/' },
         { label: 'PokéAPI — API latihan', url: 'https://pokeapi.co/' },
         { label: 'Postman Learning Center', url: 'https://learning.postman.com/' }
+      ]
+    },
+
+    graphql: {
+      id: 'graphql',
+      title: 'GraphQL',
+      tagline: 'API yang Menjawab Persis yang Kamu Minta',
+      icon: 'assets/logos/graphql.svg',
+      color: '#E10098',
+      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, hingga arsitektur microservices dengan Apollo Federation.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.GRAPHQL_LESSONS || []).slice(),
+      quizPool: (window.GRAPHQL_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi GraphQL', url: 'https://graphql.org/' },
+        { label: 'Apollo Server & Client Docs', url: 'https://www.apollographql.com/docs/' },
+        { label: 'Prisma Docs (ORM untuk MariaDB)', url: 'https://www.prisma.io/docs/' },
+        { label: 'GraphQL Yoga — alternatif Apollo', url: 'https://the-guild.dev/graphql/yoga-server' },
+        { label: 'Apollo Odyssey — tutorial interaktif', url: 'https://odyssey.apollographql.com/' },
+        { label: 'GraphQL Code Generator', url: 'https://the-guild.dev/graphql/codegen' }
       ]
     },
 
@@ -446,25 +486,6 @@ const CONTENT = (() => {
       ]
     },
 
-    uml: {
-      id: 'uml',
-      title: 'UML',
-      tagline: 'Merancang Sistem dengan Diagram',
-      icon: 'assets/logos/uml.svg',
-      color: '#7C3AED',
-      desc: 'Belajar Unified Modeling Language dari nol hingga lanjutan: analisis & desain OO, 14 diagram UML 2.0 (struktural & perilaku), lengkap dengan contoh dan studi kasus nyata.',
-      status: 'ready',
-      sequential: true,
-      lessons: (window.UML_LESSONS || []).slice(),
-      quizPool: (window.UML_QUIZ_POOL || []).slice(),
-      refs: [
-        { label: 'Introduction to UML — Starter Tutorials', url: 'https://www.startertutorials.com/uml/introduction-to-uml.html' },
-        { label: 'Wikipedia — Unified Modeling Language', url: 'https://en.wikipedia.org/wiki/Unified_Modeling_Language' },
-        { label: 'freeCodeCamp — UML Diagrams Full Course', url: 'https://www.freecodecamp.org/news/uml-diagrams-full-course/' },
-        { label: 'TutorialsPoint — UML', url: 'https://www.tutorialspoint.com/uml/index.htm' }
-      ]
-    },
-
     lucee: {
       id: 'lucee',
       title: 'Lucee CFML',
@@ -498,27 +519,6 @@ const CONTENT = (() => {
         { label: 'Dokumentasi Resmi Lucee', url: 'https://docs.lucee.org/index.html' },
         { label: 'CommandBox Book — Ortus Solutions', url: 'https://commandbox.ortusbooks.com/' },
         { label: 'cfml-mvc-framework — GitHub (pojokcodeid)', url: 'https://github.com/pojokcodeid/cfml-mvc-framework' }
-      ]
-    },
-
-    graphql: {
-      id: 'graphql',
-      title: 'GraphQL',
-      tagline: 'API yang Menjawab Persis yang Kamu Minta',
-      icon: 'assets/logos/graphql.svg',
-      color: '#E10098',
-      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, hingga arsitektur microservices dengan Apollo Federation.',
-      status: 'ready',
-      sequential: true,
-      lessons: (window.GRAPHQL_LESSONS || []).slice(),
-      quizPool: (window.GRAPHQL_QUIZ_POOL || []).slice(),
-      refs: [
-        { label: 'Dokumentasi Resmi GraphQL', url: 'https://graphql.org/' },
-        { label: 'Apollo Server & Client Docs', url: 'https://www.apollographql.com/docs/' },
-        { label: 'Prisma Docs (ORM untuk MariaDB)', url: 'https://www.prisma.io/docs/' },
-        { label: 'GraphQL Yoga — alternatif Apollo', url: 'https://the-guild.dev/graphql/yoga-server' },
-        { label: 'Apollo Odyssey — tutorial interaktif', url: 'https://odyssey.apollographql.com/' },
-        { label: 'GraphQL Code Generator', url: 'https://the-guild.dev/graphql/codegen' }
       ]
     }
   };
