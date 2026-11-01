@@ -910,7 +910,7 @@ Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru menge
 
 ## Topik Mengenai GraphQL
 
-Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan persis data yang dibutuhkan — disusun dalam 15 pelajaran berbahasa Indonesia lengkap dengan contoh kode, latihan simulasi interaktif, tip, peringatan, kosakata, dan kuis 46 soal. Materi mengikuti roadmap `roadmap_belajar_graphql.md` (Fase 1–6) dan plan `plan/belajar_graphql.md`, dari konsep dasar hingga arsitektur microservices. Praktik backend memakai **Node.js + Apollo Server + Prisma + MariaDB** dengan koneksi `localhost:3306` (user `root`, password `rootpassword`), frontend memakai React + Apollo Client dengan normalized cache dan GraphQL Code Generator.
+Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan persis data yang dibutuhkan — disusun dalam 14 pelajaran berbahasa Indonesia lengkap dengan contoh kode, latihan simulasi interaktif, tip, peringatan, kosakata, dan kuis 46 soal. Materi mengikuti roadmap `roadmap_belajar_graphql.md` (Fase 1–6) dan plan `plan/belajar_graphql.md`, dari konsep dasar hingga arsitektur microservices. Praktik backend memakai **Node.js + Apollo Server + Prisma + MariaDB** dengan koneksi `localhost:3306` (user `root`, password `rootpassword`), frontend memakai React + Apollo Client dengan normalized cache dan GraphQL Code Generator. Versi Go dari server GraphQL dibahas tuntas pada topik terpisah **Contoh Project GraphQL Go**.
 
 - Rujukan
   - https://graphql.org/
@@ -942,5 +942,20 @@ Materi **GraphQL** — bahasa query untuk API yang membebaskan klien menentukan 
    - GraphQL Subscriptions real-time: tipe Subscription di SDL, PubSub publish/subscribe, konfigurasi graphql-ws di Apollo Server v4, useSubscription + split link di klien, catatan scaling dengan Redis PubSub.
 6. Arsitektur Skala Besar (Fase 6)
    - Schema Stitching vs Apollo Federation: supergraph, subgraph, @key directive, entity reference (__resolveReference), gateway menggabungkan query plan; kapan memakai Federation vs tetap monolitik.
-7. GraphQL dengan Go (bab tambahan)
-   - Membangun server GraphQL dengan Go: perbandingan library (GQLGen, graphql-go, graph-gophers), inisialisasi proyek (go mod init, gqlgen init), penulisan schema.graphqls, code generation (gqlgen generate), koneksi GORM ke MariaDB (DSN root:rootpassword@tcp(localhost:3306)/blog_go?parseTime=True), implementasi resolver Query & Mutation (posts, post, users, createPost, publishPost), server main.go dengan Playground, pengujian lewat cURL, alur request lima tahap, serta peringatan file generated tidak boleh diedit manual.
+
+## Topik Contoh Project GraphQL Go
+
+Proyek nyata: server GraphQL lengkap dengan **Go + GQLGen + GORM + MariaDB** di `examples/graphql-go-blog/` — kelanjutan alami materi GraphQL untuk pembaca yang ingin backend berperforma tinggi. Koneksi database sama dengan materi GraphQL: `localhost:3306`, user `root`, password `rootpassword` (database `blog_go` dibuat otomatis).
+
+- Rujukan
+  - https://gqlgen.com/
+  - https://gorm.io/docs/
+  - https://graphql.org/
+  - https://mariadb.com/kb/en/documentation/
+- Topik yang harus dibahas (6 pelajaran)
+  - Mengenal proyek & arsitektur: perbandingan stack Go vs Node (GQLGen/GORM vs Apollo/Prisma), peta perjalanan request enam lapisan (net/http → authMiddleware → GQLGen validasi → resolver → GORM → MariaDB), struktur folder dengan penanda file generate (⚙️) vs file tulisan tangan (✏️), prasyarat Go 1.24+ & MariaDB, menjalankan server + seed + Playground.
+  - Skema, konfigurasi & model: schema.graphqls lengkap (scalar DateTime, type, input, argument opsional, deskripsi field), gqlgen.yml (lokasi skema, tujuan generate, blok models untuk tipe kustom), model kustom GORM Post/User dengan foreign key eksplisit AuthorID (jebakan "define a valid foreign key"), siklus ubah skema → gqlgen generate → go build.
+  - Resolver Query & GORM: struct Resolver sebagai wadah dependency (setara context Apollo), resolver posts/post/users/postCount, argument opsional sebagai pointer (*bool), Preload relasi (batch loading), N+1 problem beserta simulasi perbandingan jumlah query, kontrak nullable (null vs error) untuk post tidak ditemukan.
+  - Resolver Mutation & CRUD: input type CreatePostInput, urutan validasi → cek penulis → INSERT, createPost lengkap dengan pesan error manusiawi, publishPost dengan Update kolom tunggal, pengujian mutation dari Playground (variables) dan cURL, simulasi tiga tahap validasi.
+  - Context, middleware & otorisasi: context.Context sebagai pembawa identitas per-request (ctxKey bertipe), helper WithCurrentUser/CurrentUserFrom/AuthenticateFromHeader, authMiddleware HTTP (pola setara buildContext Apollo), otorisasi berlapis deletePost (hanya penulis atau ADMIN — 401 vs 403), papan kendali otorisasi interaktif, jalur migrasi ke JWT.
+  - Menjalankan, menguji & rilis: start → seed idempan (OnConflict DoNothing) → Playground, membaca log SQL GORM dengan DEBUG=1, seed.sql sebagai alternatif, lembar uji regresi seluruh operasi, detektif log SQL interaktif, checklist menuju produksi (JWT, matikan introspeksi/Playground, graceful shutdown, migrasi ber-versi, kredensial dari environment, user DB berhak minimal).

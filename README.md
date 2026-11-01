@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, dan **GraphQL (15 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, **GraphQL (14 pelajaran)**, dan **Contoh Project GraphQL Go (6 pelajaran)**
 - ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
@@ -58,9 +58,10 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── examples/go-restapi/  # contoh proyek Go REST API nyata (dari materi gorestapi)
 ├── content/gogui/        # materi tutorial Contoh Project Go GUI (Bahasa Indonesia)
 ├── examples/go-todo-app/ # contoh proyek desktop Go + Fyne + database bebas (dari materi gogui)
+├── content/gographql/    # materi tutorial Contoh Project GraphQL Go (Bahasa Indonesia)
 ├── examples/react-project/ # contoh proyek React nyata (dari materi reactproject)
 ├── examples/cfml-mvc-framework/  # contoh proyek framework MVC (dari materi luceemvc)
-├── examples/graphql-go-blog/ # contoh proyek nyata server GraphQL + Go: GQLGen + GORM + MariaDB (dari materi graphql)
+├── examples/graphql-go-blog/ # contoh proyek nyata server GraphQL + Go: GQLGen + GORM + MariaDB (dari materi gographql)
 ├── content/docker/       # materi tutorial Docker (Bahasa Indonesia)
 ├── content/kubernetes/   # materi tutorial Kubernetes dengan Podman (Bahasa Indonesia)
 ├── content/jenkins/      # materi tutorial Jenkins CI/CD (Bahasa Indonesia)
@@ -174,6 +175,7 @@ Panduan lengkap endpoint, akun demo, HTTPS lokal, dan alur latihan ada di `examp
 - **Lucee CFML** — https://docs.lucee.org/index.html · https://rorylaitila.gitbooks.io/lucee/content/ · https://commandbox.ortusbooks.com/
 - **Framework MVC (Lucee CFML)** — https://github.com/pojokcodeid/cfml-mvc-framework · https://commandbox.ortusbooks.com/ · https://docs.lucee.org/index.html
 - **GraphQL** — https://graphql.org/ · https://www.apollographql.com/docs/ · https://www.prisma.io/docs/ · https://odyssey.apollographql.com/ · https://the-guild.dev/graphql/codegen
+- **Contoh Project GraphQL Go** — https://gqlgen.com/ · https://gorm.io/docs/ · https://graphql.org/ · https://mariadb.com/kb/en/documentation/
 
 (Rujukan lengkap juga tampil di halaman tiap tutorial, di bagian "📖 Rujukan".)
 

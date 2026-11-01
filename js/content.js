@@ -145,7 +145,7 @@ const CONTENT = (() => {
       tagline: 'API yang Menjawab Persis yang Kamu Minta',
       icon: 'assets/logos/graphql.svg',
       color: '#E10098',
-      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, arsitektur microservices dengan Apollo Federation, hingga membangun server GraphQL dengan Go (GQLGen + GORM).',
+      desc: 'Belajar GraphQL dari nol hingga mahir dengan Node.js, Apollo Server, Prisma, dan MariaDB: konsep & perbandingan dengan REST, sintaksis query dan mutation, schema SDL & resolver, koneksi database MariaDB (localhost:3306), pagination & filtering, integrasi Apollo Client di React dengan normalized cache dan code generation, mengatasi N+1 dengan DataLoader, keamanan (JWT, depth & complexity limit, introspeksi), GraphQL Subscriptions real-time, hingga arsitektur microservices dengan Apollo Federation. Kelanjutannya di Go (GQLGen + GORM) dibahas pada topik "Contoh Project GraphQL Go".',
       status: 'ready',
       sequential: true,
       lessons: (window.GRAPHQL_LESSONS || []).slice(),
@@ -157,6 +157,25 @@ const CONTENT = (() => {
         { label: 'GraphQL Yoga — alternatif Apollo', url: 'https://the-guild.dev/graphql/yoga-server' },
         { label: 'Apollo Odyssey — tutorial interaktif', url: 'https://odyssey.apollographql.com/' },
         { label: 'GraphQL Code Generator', url: 'https://the-guild.dev/graphql/codegen' }
+      ]
+    },
+
+    gographql: {
+      id: 'gographql',
+      title: 'Contoh Project GraphQL Go',
+      tagline: 'Blog GraphQL dengan GQLGen + GORM',
+      icon: 'assets/logos/graphql.svg',
+      color: '#00ADD8',
+      desc: 'Bangun server GraphQL lengkap dengan Go pada satu proyek nyata: arsitektur lapisan (net/http → middleware → GQLGen → resolver → GORM → MariaDB), skema & model GORM dengan foreign key eksplisit, resolver Query & Mutation (filter, validasi, Preload anti N+1), context & otorisasi berlapis untuk deletePost, hingga menjalankan, menguji (Playground + cURL + DEBUG=1), dan checklist menuju produksi (JWT, graceful shutdown, migrasi ber-versi). Terhubung ke MariaDB localhost:3306 (root/rootpassword).',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.GOGRAPHQL_LESSONS || []).slice(),
+      quizPool: (window.GOGRAPHQL_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi GQLGen', url: 'https://gqlgen.com/' },
+        { label: 'Dokumentasi GORM', url: 'https://gorm.io/docs/' },
+        { label: 'Dokumentasi Resmi GraphQL', url: 'https://graphql.org/' },
+        { label: 'Dokumentasi MariaDB', url: 'https://mariadb.com/kb/en/documentation/' }
       ]
     },
 
@@ -529,5 +548,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();

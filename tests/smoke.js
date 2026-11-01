@@ -324,7 +324,13 @@ async function main() {
     'content/graphql/12-keamanan-otorisasi.js',
     'content/graphql/13-subscriptions-realtime.js',
     'content/graphql/14-apollo-federation.js',
-    'content/graphql/15-graphql-dengan-go.js',
+    'content/gographql/quiz-questions.js',
+    'content/gographql/01-pengenalan-proyek.js',
+    'content/gographql/02-skema-dan-model.js',
+    'content/gographql/03-query-resolver-gorm.js',
+    'content/gographql/04-mutation-crud.js',
+    'content/gographql/05-context-otorisasi.js',
+    'content/gographql/06-menjalankan-rilis.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -1008,7 +1014,7 @@ async function main() {
   // 4n) konten GraphQL: 14 pelajaran sesuai roadmap_belajar_graphql.md + 40 soal kuis
   const gqlC = CONTENT.get('graphql');
   check('GraphQL terdaftar & status ready', !!gqlC && gqlC.status === 'ready');
-  check('15 pelajaran GraphQL', gqlC.lessons.length === 15);
+  check('14 pelajaran GraphQL', gqlC.lessons.length === 14);
   const gqlIds = gqlC.lessons.map(l => l.id);
   check('id pelajaran GraphQL unik', new Set(gqlIds).size === gqlIds.length);
   check('judul, durasi, bab, intro, objectives & recap GraphQL terisi',
@@ -1016,10 +1022,9 @@ async function main() {
       l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
       Array.isArray(l.objectives) && l.objectives.length >= 4 &&
       Array.isArray(l.recap) && l.recap.length >= 5));
-  check('enam bab roadmap GraphQL + bab GraphQL dengan Go terwakili',
+  check('enam bab roadmap GraphQL terwakili',
     ['Konsep Dasar', 'Sintaksis Klien', 'Membangun GraphQL Server',
-     'Frontend Integration', 'Teknik Lanjutan', 'Arsitektur Skala Besar',
-     'GraphQL dengan Go']
+     'Frontend Integration', 'Teknik Lanjutan', 'Arsitektur Skala Besar']
       .every(c => gqlC.lessons.some(l => l.chapter === c)));
   let gqlBadSection = 0;
   for (const l of gqlC.lessons) {
@@ -1061,6 +1066,57 @@ async function main() {
       /localhost:3306/.test(s.code || '') && /rootpassword/.test(s.code || ''))));
   check('logo graphql.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/graphql.svg'), 'utf8').includes('<svg'));
+
+  // 4n2) konten Contoh Project GraphQL Go: 6 pelajaran + 24 soal kuis
+  const ggC = CONTENT.get('gographql');
+  check('Contoh Project GraphQL Go terdaftar & status ready', !!ggC && ggC.status === 'ready');
+  check('6 pelajaran Contoh Project GraphQL Go', ggC.lessons.length === 6);
+  const ggIds = ggC.lessons.map(l => l.id);
+  check('id pelajaran Contoh Project GraphQL Go unik', new Set(ggIds).size === ggIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Contoh Project GraphQL Go terisi',
+    ggC.lessons.every(l => l.title && /^\d+ menit$/.test(l.duration) &&
+      l.chapter === 'Proyek Blog GraphQL Go' &&
+      Array.isArray(l.intro) && l.intro.length >= 2 &&
+      Array.isArray(l.objectives) && l.objectives.length >= 4 &&
+      Array.isArray(l.recap) && l.recap.length >= 5));
+  let ggBadSection = 0;
+  for (const l of ggC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 4) ggBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) ggBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) ggBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) ggBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) ggBadSection++;
+      }
+      if (s.type === 'live') {
+        if (s.lang !== 'html' || !/<!DOCTYPE/i.test(s.initial || '') || !s.hint) ggBadSection++;
+      }
+    }
+  }
+  check('struktur section pelajaran Contoh Project GraphQL Go valid (contoh + vocab + tip/warn + live)',
+    ggBadSection === 0);
+  check('latihan simulasi (live) tersebar di semua pelajaran Contoh Project GraphQL Go',
+    ggC.lessons.every(l => l.sections.some(s => s.type === 'live')));
+  check('24 soal kuis Contoh Project GraphQL Go lengkap (4 opsi, jawaban & penjelasan) & id unik gqNN',
+    ggC.quizPool.length === 24 &&
+    new Set(ggC.quizPool.map(q => q.id)).size === ggC.quizPool.length &&
+    ggC.quizPool.every(q => /^gq\d{2}$/.test(q.id)) &&
+    !ggC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const ggRefs = (ggC.refs || []).map(r => r.url);
+  check('rujukan Contoh Project GraphQL Go (gqlgen.com, gorm.io, graphql.org, mariadb)',
+    ['https://gqlgen.com/', 'https://gorm.io/docs/', 'https://graphql.org/', 'https://mariadb.com/kb/en/documentation/']
+      .every(u => ggRefs.includes(u)));
+  check('contoh koneksi MariaDB topik Go memakai localhost:3306 root/rootpassword',
+    ggC.lessons.some(l => l.sections.some(s => s.type === 'example' &&
+      /localhost:3306/.test(s.code || '') && /rootpassword/.test(s.code || ''))));
+  check('contoh proyek examples/graphql-go-blog tersedia & lengkap',
+    ['main.go', 'gqlgen.yml', 'graph/schema.graphqls', 'graph/schema.resolvers.go',
+     'graph/model/post.go', 'graph/model/user.go', 'internal/database/database.go', 'cmd/seed/main.go']
+      .every(f => fs.existsSync(path.join(ROOT, 'examples/graphql-go-blog', f))));
 
   // utilitas sisip kode pratinjau
   check('Util.injectCode menyuntik kode ke penanda __CODE__',

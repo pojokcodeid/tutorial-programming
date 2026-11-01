@@ -1,6 +1,6 @@
 # Blog GraphQL dengan Go — GQLGen + GORM + MariaDB
 
-Proyek contoh nyata dari materi **Bab 15: GraphQL dengan Go** pada tutorial GraphQL.
+Proyek contoh nyata dari materi **topik "Contoh Project GraphQL Go"** pada tutorial ini — 6 pelajaran yang membangun server GraphQL ini dari nol.
 Server GraphQL lengkap dengan Query, Mutation, otorisasi sederhana, dan database MariaDB.
 
 ## Teknologi
