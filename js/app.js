@@ -689,6 +689,8 @@ const App = (() => {
           <button data-action="pg-mode" data-mode="html" class="${pgMode === 'html' ? 'active' : ''}">HTML</button>
           <button data-action="pg-mode" data-mode="css" class="${pgMode === 'css' ? 'active' : ''}">HTML + CSS</button>
           <button data-action="pg-mode" data-mode="js" class="${pgMode === 'js' ? 'active' : ''}">HTML + CSS + JS</button>
+          <!-- Button baru untuk membuka GoPlay di tab baru -->
+          <a href="https://goplay.tools" data-action="pg-mode" data-mode="go"  target="_blank" rel="noopener noreferrer" class="${pgMode === 'go' ? 'active' : ''}">GoPlay</a>
         </div>
         <span class="grow"></span>
         <button class="btn small" data-action="pg-full">⛶ Layar Penuh</button>
