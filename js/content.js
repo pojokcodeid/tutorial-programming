@@ -252,6 +252,31 @@ const CONTENT = (() => {
       ]
     },
 
+    reactnative: {
+      id: 'reactnative',
+      title: 'React Native',
+      tagline: 'Aplikasi Mobile Android & iOS',
+      icon: 'assets/logos/reactnative.svg',
+      color: '#61DAFB',
+      desc: 'Belajar React Native dari nol sampai rilis: cara kerja New Architecture, Expo + TypeScript, core components, layout, navigasi Expo Router, API dan TanStack Query, Zustand, autentikasi aman, SQLite offline-first, form + Zod, fitur perangkat, design system, animasi Reanimated, performa, WebSocket, native module, arsitektur, testing, serta build dan deployment dengan EAS. Semua dipraktikkan lewat satu proyek: aplikasi pencatat pengeluaran Kantong.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.REACTNATIVE_LESSONS || []).slice(),
+      quizPool: (window.REACTNATIVE_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'React Native Documentation', url: 'https://reactnative.dev/docs/getting-started' },
+        { label: 'Expo Documentation', url: 'https://docs.expo.dev/' },
+        { label: 'Expo Router', url: 'https://docs.expo.dev/router/introduction/' },
+        { label: 'TanStack Query', url: 'https://tanstack.com/query/latest' },
+        { label: 'Zustand', url: 'https://zustand.docs.pmnd.rs/' },
+        { label: 'React Native Reanimated', url: 'https://docs.swmansion.com/react-native-reanimated/' },
+        { label: 'React Native Gesture Handler', url: 'https://docs.swmansion.com/react-native-gesture-handler/' },
+        { label: 'React Native Testing Library', url: 'https://testing-library.com/docs/react-native-testing-library/intro/' },
+        { label: 'Maestro', url: 'https://maestro.mobile.dev/' },
+        { label: 'EAS Build', url: 'https://docs.expo.dev/build/introduction/' }
+      ]
+    },
+
     go: {
       id: 'go',
       title: 'Go (Golang)',
@@ -548,5 +573,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();

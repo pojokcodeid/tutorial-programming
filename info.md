@@ -959,3 +959,62 @@ Proyek nyata: server GraphQL lengkap dengan **Go + GQLGen + GORM + MariaDB** di 
   - Resolver Mutation & CRUD: input type CreatePostInput, urutan validasi → cek penulis → INSERT, createPost lengkap dengan pesan error manusiawi, publishPost dengan Update kolom tunggal, pengujian mutation dari Playground (variables) dan cURL, simulasi tiga tahap validasi.
   - Context, middleware & otorisasi: context.Context sebagai pembawa identitas per-request (ctxKey bertipe), helper WithCurrentUser/CurrentUserFrom/AuthenticateFromHeader, authMiddleware HTTP (pola setara buildContext Apollo), otorisasi berlapis deletePost (hanya penulis atau ADMIN — 401 vs 403), papan kendali otorisasi interaktif, jalur migrasi ke JWT.
   - Menjalankan, menguji & rilis: start → seed idempan (OnConflict DoNothing) → Playground, membaca log SQL GORM dengan DEBUG=1, seed.sql sebagai alternatif, lembar uji regresi seluruh operasi, detektif log SQL interaktif, checklist menuju produksi (JWT, matikan introspeksi/Playground, graceful shutdown, migrasi ber-versi, kredensial dari environment, user DB berhak minimal).
+
+## Topik Mengenai React Native
+
+Materi **React Native** — pengembangan aplikasi mobile Android dan iOS dengan React — disusun dalam **20 pelajaran** berbahasa Indonesia yang mengikuti `roadmap-react-native-0-sampai-mahir.md`, dari Level 0 (persiapan & TypeScript) sampai Level 9 (build, deployment, production), ditambah proyek akhir. Setiap pelajaran memuat konsep, contoh kode, praktik mandiri, tip, peringatan, kosakata, ringkasan, dan 3 soal kuis — total **60 soal**. Seluruh praktik memakai satu proyek rujukan bernama **Kantong**: aplikasi pencatat pengeluaran offline-first dengan **Expo + TypeScript + Expo Router + TanStack Query + Zustand + SQLite + React Hook Form + Zod + Reanimated + EAS**. Proyek dirancang dapat diikuti tanpa backend khusus: bab networking memakai API latihan seperti JSONPlaceholder atau mock API lokal, sedangkan autentikasi dan sinkronisasi dijelaskan dengan kontrak yang bisa dipraktikkan memakai mock server.
+
+- Rujukan
+  - https://reactnative.dev/docs/getting-started
+  - https://docs.expo.dev/
+  - https://docs.expo.dev/router/introduction/
+  - https://tanstack.com/query/latest
+  - https://zustand.docs.pmnd.rs/
+  - https://docs.swmansion.com/react-native-reanimated/
+  - https://docs.swmansion.com/react-native-gesture-handler/
+  - https://testing-library.com/docs/react-native-testing-library/intro/
+  - https://maestro.mobile.dev/
+  - https://docs.expo.dev/build/introduction/
+
+- Materi yang harus ada
+
+1. React Native, Expo, dan TypeScript untuk Mobile
+   - Cara React Native merender komponen native, JS thread vs UI thread, bridge lama vs New Architecture (JSI, Fabric, TurboModules), Hermes dan Metro, Expo vs bare workflow, TypeScript strict, pemisahan model domain dan DTO, serta tipe response API.
+2. Menyiapkan Lingkungan dan Menjalankan Aplikasi Pertama
+   - Node.js LTS dan package manager, `create-expo-app`, Expo Go vs development build, EAS Build awal, struktur `app/` dan `src/`, `app.json`, `tsconfig`, environment `EXPO_PUBLIC_*`, typecheck, dan troubleshooting Metro/port/koneksi perangkat.
+3. Core Components: Menyusun Layar yang Hidup
+   - `View`, `Text`, `Image`, `TextInput`, `Pressable`, `ScrollView`, `FlatList`, `SectionList`, `Modal`, `ActivityIndicator`, `Switch`, `StatusBar`, `KeyboardAvoidingView`, state loading/empty/error, input terkontrol, dan aksesibilitas dasar.
+4. Styling, Flexbox, dan Layout Responsif
+   - `StyleSheet.create`, flexbox React Native (default kolom), flex/gap/alignment, token warna-spacing-tipografi, layout responsif dengan `useWindowDimensions`, safe area, shadow iOS/Android, font scale, dan larangan magic number.
+5. Perbedaan Platform, Aksesibilitas, dan App Lifecycle
+   - `Platform.OS`, `Platform.select`, berkas `.ios.tsx`/`.android.tsx`, status bar dan inset, label/peran aksesibilitas, TalkBack/VoiceOver, `AppState`, penyimpanan draf, serta izin yang diminta saat dibutuhkan.
+6. Navigasi dan Routing dengan Expo Router
+   - File-based routing, `_layout.tsx`, route group `(auth)`/`(tabs)`, Stack, Tabs, dynamic route `[id]`, query parameter bertipe, modal presentation, protected route tanpa redirect loop, deep link, dan tombol back Android.
+7. Networking, API Client, dan Penanganan Error
+   - Method/status code, `fetch` vs Axios, timeout dengan `AbortController`, `ApiError` terstruktur, endpoint bertipe, DTO, pagination, infinite scroll, pull-to-refresh, pembatalan request, retry, dan keamanan environment variable.
+8. Server State, Cache, dan Mutation dengan TanStack Query
+   - Pemisahan server/client state, `QueryClient`, query key factory, `useQuery`, `useMutation`, invalidasi cache, optimistic update + rollback, `useInfiniteQuery`, retry policy, dan tuning `staleTime`.
+9. Client State: Context, Zustand, dan Batas yang Jelas
+   - Aturan memilih `useState`, Context, Zustand, Redux Toolkit, store bertipe, selector dan `useShallow`, persistensi AsyncStorage, pemecahan provider tema, reset state saat logout, dan larangan menyalin server state.
+10. Autentikasi, Token, dan Sesi yang Aman
+    - Access token di memori, refresh token di SecureStore, rotasi token, refresh single-flight, retry 401 satu kali, perbedaan 401/403, bootstrap sesi, logout offline, biometrik, dan OAuth PKCE.
+11. SQLite, Offline-First, dan Sinkronisasi Data
+    - Perbandingan AsyncStorage/SecureStore/SQLite/FileSystem, skema dan migrasi `user_version`, transaksi CRUD, indeks, tabel outbox, worker sinkronisasi, idempotency key, tombstone, konflik last-write-wins, dan pengujian offline.
+12. Form, Validasi Zod, dan Upload Berkas
+    - React Hook Form, skema Zod dan `z.input`/`z.output`, error per field, keyboard handling, draf, form dinamis `useFieldArray`, submit anti-duplikat, `FormData`, pemilih foto, upload struk, dan validasi server.
+13. Kamera, Lokasi, Notifikasi, dan Fitur Perangkat
+    - `expo-image-picker`/`expo-camera`, lokasi foreground dengan timeout dan fallback, penyimpanan foto di direktori aplikasi, notifikasi lokal dan channel Android, push notification, clipboard, haptic, share, barcode, kontak, serta izin yang ditolak dengan sopan.
+14. UI/UX Mobile dan Design System yang Dipakai Ulang
+    - Touch target, hierarki, kontras, umpan balik, komponen Button/TextField/Card/EmptyState dengan varian, token dan ThemeProvider, mode gelap, skeleton, bottom sheet, state loading/empty/error/offline, dan dokumentasi komponen.
+15. Animasi dan Gesture dengan Reanimated
+    - Animated API vs Reanimated, shared value, worklet, `useAnimatedStyle`, `withSpring`/`withTiming`, Gesture Handler, swipe-to-delete, layout animation, `runOnJS`, reduce motion, dan optimasi frame.
+16. Optimasi Performa dan Komunikasi Realtime
+    - Profiling dan release build, re-render, `React.memo`, `useMemo`/`useCallback`, FlatList/FlashList, `getItemLayout`, gambar dan lazy loading, JS/UI thread, FPS, WebSocket reconnect dengan backoff, NetInfo, offline queue, dan idempotensi pesan.
+17. Arsitektur Maintainable dan Native Module
+    - Feature-based architecture, domain/data/presentasi, repository, dependency inversion, composition root, SOLID/DRY/KISS, New Architecture (JSI, Fabric, TurboModules, Codegen), Expo Modules API, contoh modul Kotlin/Swift lokal, dan troubleshooting native.
+18. Testing, Mocking, dan Debugging di Android/iOS
+    - Piramida unit/component/integration/E2E, Jest + jest-expo, Testing Library, test hook dengan QueryClient, mock API/native module, Maestro, React Native DevTools, Logcat, Xcode console, crash analysis, dan test regresi.
+19. Build, CI/CD, dan Kesiapan Produksi
+    - Development/preview/production build, EAS Build/Submit/Update, `eas.json`, `app.config.ts`, signing, keystore, provisioning, versi dan runtime, GitHub Actions, OTA dan batasannya, crash reporting, analytics, privacy policy, serta checklist toko aplikasi.
+20. Proyek Akhir: Kantong dari Nol sampai Rilis
+    - Lingkup MVP, milestone yang bisa didemokan, struktur akhir proyek, urutan verifikasi, kriteria penerimaan, README portofolio, jadwal 8 minggu, rubrik penilaian, dan checklist rilis.

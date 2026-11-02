@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, **GraphQL (14 pelajaran)**, dan **Contoh Project GraphQL Go (6 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **React Native (20 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, **GraphQL (14 pelajaran)**, dan **Contoh Project GraphQL Go (6 pelajaran)**
 - ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
@@ -52,6 +52,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/sql/          # materi tutorial SQL (Bahasa Indonesia)
 ├── content/react/        # materi tutorial React JS (Bahasa Indonesia)
 ├── content/reactproject/ # materi tutorial Contoh Project React JS (Bahasa Indonesia)
+├── content/react-native/ # materi tutorial React Native + proyek Kantong (20 pelajaran)
 ├── content/go/           # materi tutorial Go / Golang (Bahasa Indonesia)
 ├── content/goweb/        # materi tutorial Go Web Examples (Bahasa Indonesia)
 ├── content/gorestapi/    # materi tutorial Go REST API (Bahasa Indonesia)
@@ -161,6 +162,7 @@ Panduan lengkap endpoint, akun demo, HTTPS lokal, dan alur latihan ada di `examp
 - **SQL** — https://www.w3schools.com/sql/default.asp · https://www.sqltutorial.org/
 - **React JS** — https://react.dev/learn · https://www.w3schools.com/react/default.asp · https://www.javascripttutorial.net/react-tutorial/
 - **Contoh Project React JS** — https://react.dev/learn · https://ant.design/ · https://reactrouter.com/ · https://axios-http.com/docs/intro · https://github.com/typicode/json-server
+- **React Native** — https://reactnative.dev/docs/getting-started · https://docs.expo.dev/ · https://docs.expo.dev/router/introduction/ · https://tanstack.com/query/latest · https://docs.swmansion.com/react-native-reanimated/ · https://maestro.mobile.dev/ · https://docs.expo.dev/build/introduction/
 - **Go / Golang** — https://www.gotutorial.org/ · https://go.dev/doc/tutorial/ · https://www.w3schools.com/go/index.php
 - **Go Web Examples** — https://gowebexamples.com/
 - **Go REST API** — https://pkg.go.dev/net/http · https://github.com/golang-jwt/jwt · https://github.com/go-sql-driver/mysql · https://mariadb.com/kb/en/documentation/
