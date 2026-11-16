@@ -9,7 +9,7 @@ window.REACTNATIVE_LESSONS.push({
   id: 'rn-ui-design-system',
   title: 'UI/UX Mobile dan Design System yang Dipakai Ulang',
   chapter: 'Kualitas & Performa',
-  duration: '30 menit',
+  duration: '32 menit',
   intro: [
     'Aplikasi yang cepat tetapi membingungkan tetap gagal. Pengguna mobile punya perhatian singkat, jari yang tidak selalu tepat, dan sinyal yang tidak stabil. Desain yang baik mengurangi beban kognitif, bukan sekadar mempercantik layar.',
     'Bab ini mengubah token dan komponen dari bab sebelumnya menjadi <b>design system kecil</b> untuk Kantong: tombol dengan varian, input, kartu, state kosong, skeleton, dan tema terang/gelap. Tujuannya bukan membuat library besar, tetapi memastikan setiap layar memakai bahasa visual yang sama.',
@@ -20,7 +20,8 @@ window.REACTNATIVE_LESSONS.push({
     'Membangun komponen reusable dengan varian yang konsisten',
     'Menyediakan tema terang/gelap berbasis token',
     'Merancang loading, empty, error, dan skeleton state',
-    'Mendokumentasikan komponen agar tim memakainya dengan benar'
+    'Mendokumentasikan komponen agar tim memakainya dengan benar',
+    'Menilai library UI siap pakai tanpa mengorbankan konsistensi design system'
   ],
   sections: [
     {
@@ -243,6 +244,10 @@ export function Skeleton({ width = '100%', height = 16 }: {
     },
     {
       type: 'text',
+      html: '<h3>Library UI Siap Pakai: Kapan Dipakai?</h3><p>Roadmap menyebut beberapa library opsional. Semuanya bisa mempercepat pekerjaan, tetapi juga menambah dependensi, gaya, dan cara berpikir baru. Pilih satu yang paling cocok dengan tim, lalu konsisten memakainya.</p><table class="vocab"><tr><th>Pilihan</th><th>Kekuatan</th><th>Pertimbangkan bila…</th></tr><tr><td>React Native Paper</td><td>Komponen Material Design yang lengkap, theming, dan dukungan aksesibilitas</td><td>Tim nyaman dengan Material dan butuh komponen siap pakai</td></tr><tr><td>NativeWind</td><td>Utility class ala Tailwind yang diterjemahkan menjadi style React Native</td><td>Tim sudah produktif dengan Tailwind dan ingin iterasi cepat</td></tr><tr><td>Tamagui</td><td>Compiler, token, dan tema yang konsisten untuk native maupun web</td><td>Produk berbagi UI dengan web dan siap menanggung setup lebih besar</td></tr><tr><td>UI Kitten</td><td>Design system Eva dengan tema dan komponen yang dapat disesuaikan</td><td>Butuh tema menyeluruh dengan sedikit kustomisasi manual</td></tr></table><p>Sebelum memilih, periksa empat hal: <b>aksesibilitas</b> bawaan, dukungan <b>mode gelap</b>, ukuran bundel, dan kecepatan rilis library. Jangan mencampur dua library UI besar dalam satu aplikasi karena gaya, tema, dan konflik versi akan sulit dirawat. Yang paling penting: design system milikmu tetap menjadi sumber kebenaran; library hanya mempercepat implementasi.</p>'
+    },
+    {
+      type: 'text',
       html: '<h3>Praktik Mandiri</h3><ol><li>Buat komponen <code>Button</code>, <code>TextField</code>, <code>Card</code>, dan <code>EmptyState</code> dengan token yang sama.</li><li>Terapkan mode gelap dan uji kontras semua teks.</li><li>Ganti layar pengeluaran agar memakai komponen tersebut; hapus style duplikat.</li><li>Tambahkan skeleton saat memuat pertama kali dan pertahankan data lama saat refresh.</li><li>Buat halaman <code>/dev/components</code> yang menampilkan semua varian untuk pemeriksaan cepat.</li></ol><p><b>Checkpoint:</b> tidak ada tombol dengan gaya berbeda tanpa alasan, mode gelap terbaca, dan setiap state data punya tampilan yang disengaja.</p>'
     },
     {
@@ -259,7 +264,11 @@ export function Skeleton({ width = '100%', height = 16 }: {
         ['Variant', 'Versi tampilan komponen untuk konteks berbeda.'],
         ['Reduce motion', 'Preferensi pengguna untuk membatasi animasi.'],
         ['Affordance', 'Petunjuk visual bahwa sesuatu bisa dilakukan.'],
-        ['Component documentation', 'Contoh dan aturan pemakaian komponen.']
+        ['Component documentation', 'Contoh dan aturan pemakaian komponen.'],
+        ['React Native Paper', 'Library komponen Material Design untuk React Native.'],
+        ['NativeWind', 'Library yang memakai utility class ala Tailwind untuk styling React Native.'],
+        ['Tamagui', 'Library UI dengan compiler dan tema untuk native serta web.'],
+        ['UI Kitten', 'Library komponen berbasis design system Eva.']
       ]
     }
   ],
@@ -268,6 +277,7 @@ export function Skeleton({ width = '100%', height = 16 }: {
     'Design system kecil yang konsisten lebih berguna daripada library besar yang tidak dipakai.',
     'Setiap layar data membutuhkan loading, empty, error, offline, dan success state.',
     'Mode gelap harus diuji, bukan hanya dibalik warnanya.',
-    'Dokumentasikan komponen dan jangan mengabstraksi terlalu dini.'
+    'Dokumentasikan komponen dan jangan mengabstraksi terlalu dini.',
+    'Library UI boleh mempercepat implementasi, tetapi design system sendiri tetap menjadi sumber kebenaran.'
   ]
 });

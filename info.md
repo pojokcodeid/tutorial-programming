@@ -989,7 +989,7 @@ Materi **React Native** — pengembangan aplikasi mobile Android dan iOS dengan 
 5. Perbedaan Platform, Aksesibilitas, dan App Lifecycle
    - `Platform.OS`, `Platform.select`, berkas `.ios.tsx`/`.android.tsx`, status bar dan inset, label/peran aksesibilitas, TalkBack/VoiceOver, `AppState`, penyimpanan draf, serta izin yang diminta saat dibutuhkan.
 6. Navigasi dan Routing dengan Expo Router
-   - File-based routing, `_layout.tsx`, route group `(auth)`/`(tabs)`, Stack, Tabs, dynamic route `[id]`, query parameter bertipe, modal presentation, protected route tanpa redirect loop, deep link, dan tombol back Android.
+   - File-based routing, `_layout.tsx`, route group `(auth)`/`(tabs)`, Stack, Tabs, Drawer, dynamic route `[id]`, query parameter bertipe, modal presentation, protected route tanpa redirect loop, deep link, dan tombol back Android.
 7. Networking, API Client, dan Penanganan Error
    - Method/status code, `fetch` vs Axios, timeout dengan `AbortController`, `ApiError` terstruktur, endpoint bertipe, DTO, pagination, infinite scroll, pull-to-refresh, pembatalan request, retry, dan keamanan environment variable.
 8. Server State, Cache, dan Mutation dengan TanStack Query
@@ -1005,7 +1005,7 @@ Materi **React Native** — pengembangan aplikasi mobile Android dan iOS dengan 
 13. Kamera, Lokasi, Notifikasi, dan Fitur Perangkat
     - `expo-image-picker`/`expo-camera`, lokasi foreground dengan timeout dan fallback, penyimpanan foto di direktori aplikasi, notifikasi lokal dan channel Android, push notification, clipboard, haptic, share, barcode, kontak, serta izin yang ditolak dengan sopan.
 14. UI/UX Mobile dan Design System yang Dipakai Ulang
-    - Touch target, hierarki, kontras, umpan balik, komponen Button/TextField/Card/EmptyState dengan varian, token dan ThemeProvider, mode gelap, skeleton, bottom sheet, state loading/empty/error/offline, dan dokumentasi komponen.
+    - Touch target, hierarki, kontras, umpan balik, komponen Button/TextField/Card/EmptyState dengan varian, token dan ThemeProvider, mode gelap, skeleton, bottom sheet, state loading/empty/error/offline, dokumentasi komponen, serta pertimbangan memilih library UI (React Native Paper, NativeWind, Tamagui, UI Kitten).
 15. Animasi dan Gesture dengan Reanimated
     - Animated API vs Reanimated, shared value, worklet, `useAnimatedStyle`, `withSpring`/`withTiming`, Gesture Handler, swipe-to-delete, layout animation, `runOnJS`, reduce motion, dan optimasi frame.
 16. Optimasi Performa dan Komunikasi Realtime

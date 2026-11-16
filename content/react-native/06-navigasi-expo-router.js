@@ -9,7 +9,7 @@ window.REACTNATIVE_LESSONS.push({
   id: 'rn-navigation',
   title: 'Navigasi dan Routing dengan Expo Router',
   chapter: 'Navigasi & Data',
-  duration: '28 menit',
+  duration: '30 menit',
   intro: [
     'Di aplikasi mobile, navigasi bukan sekadar berpindah halaman. Ia menyimpan riwayat, mendukung tombol kembali, deep link, notifikasi, dan alur autentikasi. Expo Router memakai <b>file-based routing</b>: struktur folder di dalam <code>app/</code> menjadi URL aplikasi.',
     'Bab ini membangun kerangka navigasi Kantong: grup autentikasi, tab utama, detail pengeluaran dinamis, modal, dan rute yang dilindungi. Kita juga membahas kesalahan yang paling sering membuat aplikasi terjebak di layar kosong atau redirect tanpa henti.',
@@ -17,6 +17,7 @@ window.REACTNATIVE_LESSONS.push({
   ],
   objectives: [
     'Membuat Stack, Tabs, dan nested layout dengan Expo Router',
+    'Memilih antara Tabs, Drawer, dan Stack sesuai hierarki informasi',
     'Menggunakan dynamic route dan query parameter bertipe',
     'Menerapkan protected route tanpa redirect loop',
     'Membuka modal dan menangani tombol kembali',
@@ -119,6 +120,48 @@ export default function TabsLayout() {
         'Ikon di sini memakai teks agar contoh tidak bergantung pada library ikon. Di proyek nyata gunakan ikon vektor yang konsisten.',
         '<code>tabBarActiveTintColor</code> harus memenuhi kontras dengan latar tab, termasuk di mode gelap.',
         'Setiap rute di dalam folder <code>(tabs)</code> otomatis menjadi tab. Untuk layar yang tidak boleh menjadi tab, letakkan di luar grup.'
+      ]
+    },
+    {
+      type: 'text',
+      html: '<h3>Kapan Memakai Drawer?</h3><p><b>Drawer</b> adalah menu samping yang dibuka lewat ikon hamburger atau gestur geser. Di ponsel, drawer paling cocok untuk <b>tujuan sekunder</b> seperti pengaturan, bantuan, dan riwayat; jangan menyembunyikan navigasi utama di baliknya karena pengguna harus membuka menu hanya untuk berpindah layar. Di tablet atau layar lebar, drawer permanen bisa menjadi pengganti tab yang efisien karena ruang horizontal lebih lega.</p><p>Urutan pengambilan keputusan yang praktis: gunakan <b>Stack</b> untuk alur linear (detail, form, checkout), <b>Tabs</b> untuk 2–5 tujuan utama yang sering dipakai, dan <b>Drawer</b> untuk daftar tujuan yang lebih banyak atau bersifat sekunder.</p>'
+    },
+    {
+      type: 'example',
+      title: 'Drawer dengan Expo Router',
+      lang: 'tsx',
+      output: false,
+      code: `// npx expo install @react-navigation/drawer react-native-gesture-handler react-native-reanimated
+// app/(drawer)/_layout.tsx
+import { Drawer } from 'expo-router/drawer';
+
+export default function DrawerLayout() {
+  return (
+    <Drawer
+      screenOptions={{
+        drawerActiveTintColor: '#0F766E',
+        headerShown: true,
+      }}
+    >
+      <Drawer.Screen
+        name="index"
+        options={{ title: 'Beranda', drawerLabel: 'Beranda' }}
+      />
+      <Drawer.Screen
+        name="settings"
+        options={{ title: 'Pengaturan', drawerLabel: 'Pengaturan' }}
+      />
+      <Drawer.Screen
+        name="about"
+        options={{ title: 'Tentang', drawerLabel: 'Tentang' }}
+      />
+    </Drawer>
+  );
+}`,
+      explain: [
+        'Folder <code>(drawer)</code> adalah route group, jadi namanya tidak muncul di URL.',
+        'Drawer membutuhkan gesture handler dan Reanimated. Ikuti petunjuk Expo Router saat memasangnya, termasuk membungkus root dengan <code>GestureHandlerRootView</code> bila diminta.',
+        'Jangan menjadikan Drawer dan Tabs sebagai akar untuk rute yang sama. Pilih satu pola, lalu letakkan pola lain sebagai nested navigator hanya bila alurnya memang berbeda.'
       ]
     },
     {
@@ -231,6 +274,8 @@ function AuthGate({ children }: { children: React.ReactNode }) {
         ['Deep link', 'URL yang membuka layar tertentu di dalam aplikasi.'],
         ['Typed routes', 'Tipe otomatis untuk nama dan parameter rute.'],
         ['Modal presentation', 'Gaya tampilan layar yang muncul seperti dialog/sheet.'],
+        ['Drawer', 'Menu samping yang dibuka lewat ikon hamburger atau gestur geser.'],
+        ['Nested navigator', 'Navigator yang berada di dalam navigator lain, misalnya Stack di dalam Tabs.'],
         ['Auth guard', 'Logika yang mencegah akses ke rute terlindungi.'],
         ['SplashScreen', 'Layar pembuka yang ditahan sampai aplikasi siap.']
       ]
@@ -241,6 +286,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     'Route group menyembunyikan folder dari URL dan memisahkan alur.',
     'Parameter dinamis selalu string dan harus divalidasi sebelum dipakai.',
     'Protected route harus menunggu status sesi selesai dimuat.',
-    'push, replace, dan back memiliki efek berbeda pada riwayat dan pengalaman pengguna.'
+    'push, replace, dan back memiliki efek berbeda pada riwayat dan pengalaman pengguna.',
+    'Stack untuk alur linear, Tabs untuk 2–5 tujuan utama, dan Drawer untuk tujuan sekunder yang lebih banyak.'
   ]
 });
