@@ -331,6 +331,25 @@ async function main() {
     'content/gographql/04-mutation-crud.js',
     'content/gographql/05-context-otorisasi.js',
     'content/gographql/06-menjalankan-rilis.js',
+    'content/nginx/quiz-questions.js',
+    'content/nginx/01-apa-itu-nginx.js',
+    'content/nginx/02-arsitektur-lifecycle.js',
+    'content/nginx/03-struktur-konfigurasi.js',
+    'content/nginx/04-mengelola-konfigurasi.js',
+    'content/nginx/05-static-web-server.js',
+    'content/nginx/06-file-403-404-spa.js',
+    'content/nginx/07-location-matching.js',
+    'content/nginx/08-rewrite-redirect-error.js',
+    'content/nginx/09-virtual-host.js',
+    'content/nginx/10-reverse-proxy-dasar.js',
+    'content/nginx/11-reverse-proxy-lanjutan.js',
+    'content/nginx/12-load-balancing.js',
+    'content/nginx/13-https-tls.js',
+    'content/nginx/14-caching-performance.js',
+    'content/nginx/15-security-hardening.js',
+    'content/nginx/16-logging-troubleshooting.js',
+    'content/nginx/17-best-practices-deployment.js',
+    'content/nginx/18-capstone-gateway.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -466,6 +485,60 @@ async function main() {
       .every(u => rstRefs.includes(u)));
   check('logo restful.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/restful.svg'), 'utf8').includes('<svg'));
+
+  // 4a3) konten Nginx: 18 pelajaran + 40 soal kuis + lab Podman
+  const ngxC = CONTENT.get('nginx');
+  check('Nginx terdaftar & status ready', !!ngxC && ngxC.status === 'ready');
+  check('18 pelajaran Nginx', ngxC.lessons.length === 18);
+  const ngxIds = ngxC.lessons.map(l => l.id);
+  check('id pelajaran Nginx unik', new Set(ngxIds).size === ngxIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Nginx terisi',
+    ngxC.lessons.every(l => l.title && /^\d+([–-]\d+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
+      Array.isArray(l.objectives) && l.objectives.length >= 4 &&
+      Array.isArray(l.recap) && l.recap.length >= 4));
+  let ngxBadSection = 0;
+  for (const l of ngxC.lessons) {
+    const typesL = new Set(l.sections.map(s => s.type));
+    if (typesL.size < 3) ngxBadSection++;
+    if (!l.sections.some(s => s.type === 'text')) ngxBadSection++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) ngxBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) ngxBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code && s.output === false)) ngxBadSection++;
+    for (const s of l.sections) {
+      if (!['text', 'example', 'tip', 'warn', 'vocab'].includes(s.type)) ngxBadSection++;
+      if (s.type === 'example') {
+        if (!s.explain || s.explain.length < 2) ngxBadSection++;
+        if ((s.code || '').includes('`') || (s.code || '').includes('${')) ngxBadSection++;
+      }
+    }
+  }
+  check('struktur section pelajaran Nginx valid (contoh + vocab + tip/warn + teks)',
+    ngxBadSection === 0);
+  check('40 soal kuis Nginx lengkap (4 opsi, jawaban & penjelasan) & id unik nginxNN',
+    ngxC.quizPool.length === 40 &&
+    new Set(ngxC.quizPool.map(q => q.id)).size === ngxC.quizPool.length &&
+    ngxC.quizPool.every(q => /^nginx\d{2}$/.test(q.id)) &&
+    !ngxC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const ngxRefs = (ngxC.refs || []).map(r => r.url);
+  check('rujukan Nginx (nginx.org docs, beginners guide, proxy, upstream, ssl)',
+    ['https://nginx.org/en/docs/',
+     'https://nginx.org/en/docs/beginners_guide.html',
+     'https://nginx.org/en/docs/http/ngx_http_proxy_module.html',
+     'https://nginx.org/en/docs/http/ngx_http_upstream_module.html',
+     'https://nginx.org/en/docs/http/ngx_http_ssl_module.html']
+      .every(u => ngxRefs.includes(u)));
+  check('lab Nginx tersedia (compose, konfigurasi, script uji, README, logo)',
+    fs.existsSync(path.join(ROOT, 'examples/nginx-lab/compose.yaml')) &&
+    fs.existsSync(path.join(ROOT, 'examples/nginx-lab/nginx/nginx.conf')) &&
+    fs.existsSync(path.join(ROOT, 'examples/nginx-lab/scripts/test-routing.sh')) &&
+    fs.existsSync(path.join(ROOT, 'examples/nginx-lab/scripts/test-proxy.sh')) &&
+    fs.existsSync(path.join(ROOT, 'examples/nginx-lab/README.md')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/nginx.svg')));
+  check('logo nginx.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/nginx.svg'), 'utf8').includes('<svg'));
 
   // 4b) konten CSS: 18 pelajaran = 18 topik di info.md, terdaftar & siap
   check('CSS status ready', CONTENT.css.status === 'ready');

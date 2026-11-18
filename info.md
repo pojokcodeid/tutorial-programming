@@ -864,6 +864,64 @@ Materi **HTTP** — protokol komunikasi client-server yang menjadi dasar web dan
   - `node --test examples/http-lab/lab.test.js` untuk menjalankan 13 pengujian otomatis.
   - Akun demo: `nina/rahasia123` (user) dan `admin/admin123` (admin).
 
+## Topik Mengenai Nginx
+
+Materi **Nginx** — web server & gateway paling populer di dunia — disusun dalam 18 pelajaran berbahasa Indonesia, lengkap dengan diagram, contoh konfigurasi, lab Podman, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti `roadmap-nginx-fokus-nginx-podman.md` dari Tahap 1 sampai Tahap 12 plus capstone, dengan Podman hanya sebagai lingkungan lab (tanpa Docker). Setiap konsep diverifikasi lewat lab capstone `examples/nginx-lab/`: satu container Nginx sebagai gateway (static site + reverse proxy + load balancer + TLS) di depan tiga backend, lengkap dengan script uji otomatis.
+
+- Rujukan
+  - https://nginx.org/en/docs/
+  - https://nginx.org/en/docs/beginners_guide.html
+  - https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+  - https://nginx.org/en/docs/http/ngx_http_upstream_module.html
+  - https://nginx.org/en/docs/http/ngx_http_ssl_module.html
+  - https://hub.docker.com/_/nginx
+
+- Materi yang harus ada
+
+1. Apa Itu Nginx? Kenapa Web Butuh Nginx
+   - Empat peran utama (web server, reverse proxy, load balancer, HTTP cache), posisi Nginx di depan aplikasi, OSS vs Plus, container Nginx pertama.
+2. Arsitektur Nginx & Request Lifecycle
+   - Master/worker process, model event-driven non-blocking, alur request dari socket sampai response, konsekuensi arsitektur untuk skala.
+3. Struktur Konfigurasi Nginx: Directive & Context
+   - Directive bernilai vs boolean, context main/events/http/server/location, include, scope & inheritance, urutan pembacaan konfigurasi.
+4. Mengelola & Memvalidasi Konfigurasi
+   - nginx -t / -T, reload vs restart, graceful reload, bind mount konfigurasi ke container, pola conf.d.
+5. Static Web Server: root, alias, index, try_files
+   - root vs alias, index, try_files, autoindex, MIME types, pola SPA fallback dasar.
+6. Permission, 403/404 & SPA Fallback
+   - Permission file & direktori, blocking path (dotfiles/.git), penyebab 403/404, error_page, SPA fallback yang benar.
+7. Location Matching & Urutan Evaluasi
+   - Prefix, exact (=), (^~), regex (~ / ~*), tabel urutan evaluasi, mengapa urutan deklarasi menentukan.
+8. Rewrite, Redirect & error_page
+   - rewrite, return, 301/302, internal redirect, flag last/break/permanent, perbedaan redirect vs rewrite.
+9. Virtual Host: Banyak Domain dalam Satu Nginx
+   - server block, server_name, default_server, wildcard & regex name, pemetaan Host header.
+10. Reverse Proxy Dasar: proxy_pass
+    - proxy_pass dengan/sans slash, header bawaan, buffering, uji URI yang diteruskan ke backend.
+11. Reverse Proxy Lanjutan: Header, Timeout & WebSocket
+    - X-Real-IP/X-Forwarded-For/X-Forwarded-Proto, proxy_connect/read/send timeout, header Upgrade WebSocket, client_max_body_size.
+12. Load Balancing dengan upstream
+    - Round-robin (default), least_conn, ip_hash, max_fails/fail_timeout, perilaku saat backend mati.
+13. HTTPS & TLS
+    - Sertifikat self-signed, ssl_certificate & key, listen 443 ssl, redirect HTTP→HTTPS, chain sertifikat, TLS modern.
+14. Caching & Performance
+    - proxy_cache_path & proxy_cache, X-Cache-Status (MISS/HIT/BYPASS), browser cache (expires/Cache-Control), gzip + catatan gzip_types, sendfile/tcp_nopush/keepalive.
+15. Security Hardening
+    - server_tokens, allow/deny, proteksi file sensitif, limit_req & limit_conn, client_max_body_size, security headers, HSTS, limit_except, batas Nginx vs authorization aplikasi.
+16. Logging, Monitoring & Troubleshooting
+    - log_format custom, access_log/error_log, $request_time & $upstream_response_time, log rotation, diagnosa 502/504/499, exporter/metrics.
+17. Best Practices, Modular Config & Deployment
+    - Konvensi penamaan, snippets include, pemisahan per environment, graceful reload & blue-green konsep, edge proxy, static+API satu domain, OSS vs Plus, review & dokumentasi.
+18. Capstone: Nginx sebagai Gateway Aplikasi
+    - Proyek akhir memakai `examples/nginx-lab/`: checklist persyaratan, langkah pengerjaan dari nol, uji 404/502/504, graceful reload, kriteria kelulusan, demo alur request.
+
+- Cara menjalankan laboratorium
+  - `bash examples/nginx-lab/scripts/gen-certs.sh` untuk membuat sertifikat self-signed.
+  - `cd examples/nginx-lab && podman compose up -d` (port 8080 HTTP, 8081 redirect, 8443 HTTPS).
+  - `bash examples/nginx-lab/scripts/test-routing.sh` → 31 pemeriksaan routing/vhost/TLS.
+  - `bash examples/nginx-lab/scripts/test-proxy.sh` → 22 pemeriksaan proxy/LB/error/rate limit.
+  - Catatan: bila repo berada di drive yang tidak dibagikan ke VM Podman (mis. exFAT), lihat bagian Troubleshooting di `examples/nginx-lab/README.md`.
+
 ## Topik Dasar RESTful API
 
 Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru mengenal dunia backend dan API — disusun dalam 15 pelajaran berbahasa Indonesia dengan kuis 40 soal. Cakupannya mengikuti roadmap `roadmap-belajar-restful-api.md` Fase 1 sampai Fase 3 (dengan pengantar Fase 4 berupa proyek mini), tanpa mengulang materi HTTP mendalam (cookie, cache, CORS, HTTPS) yang sudah dibahas di materi HTTP. Penjelasan memakai analogi sehari-hari (restoran, surat, antrean, struk) agar mudah dipahami orang awam, dilengkapi latihan interaktif "Coba sendiri" yang berjalan offline.

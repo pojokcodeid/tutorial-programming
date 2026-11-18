@@ -1,0 +1,4 @@
+# Sertifikat TLS lab — private key tidak boleh masuk Git
+certs/*.key
+certs/*.crt
+*.pem

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>nginx-lab — Gateway Aplikasi</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="site-header">
+    <img src="/assets/logo.svg" alt="Logo nginx-lab" width="48" height="48">
+    <div>
+      <h1>nginx-lab — Gateway Aplikasi</h1>
+      <p class="tagline">Halaman statis dari <code>/usr/share/nginx/html</code> (server app.local)</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Rute yang tersedia</h2>
+      <ul>
+        <li><a href="/docs/">/docs/</a> — dokumentasi (dilayani dengan <code>alias</code>)</li>
+        <li><code>/private/</code> — diblokir (403)</li>
+        <li><a href="/api/">/api/</a> — reverse proxy ke upstream backend-1/2/3</li>
+        <li><a href="/app/">/app/</a> — reverse proxy (aplikasi) ke upstream yang sama</li>
+        <li><a href="/halaman/tentang">/halaman/tentang</a> — contoh rute SPA (fallback ke index.html)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Virtual host</h2>
+      <p>Coba kirim header <code>Host</code> berbeda ke port 8080:</p>
+      <ul>
+        <li><code>Host: app.local</code> — halaman ini (default server)</li>
+        <li><code>Host: api.local</code> — vhost API</li>
+        <li><code>Host: docs.local</code> — vhost dokumentasi</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Latihan</h2>
+      <p>Jalankan skrip pengujian dari folder lab:</p>
+      <pre>scripts/test-routing.sh
+scripts/test-proxy.sh</pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>Lab belajar Nginx — hanya untuk latihan, bukan untuk produksi.</p>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+</body>
+</html>

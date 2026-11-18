@@ -119,6 +119,27 @@ const CONTENT = (() => {
       ]
     },
 
+    nginx: {
+      id: 'nginx',
+      title: 'Nginx',
+      tagline: 'Web Server & Gateway dari Nol sampai Mahir',
+      icon: 'assets/logos/nginx.svg',
+      color: '#009639',
+      desc: 'Belajar Nginx dari nol hingga mahir: arsitektur master/worker dan request lifecycle, struktur konfigurasi directive/context, web server statis (root, alias, try_files, 403/404 & SPA fallback), location matching, rewrite & redirect, virtual host, reverse proxy (header, timeout, WebSocket), load balancing upstream, HTTPS/TLS, caching & performa, security hardening, logging & troubleshooting, best practices modular config, hingga capstone gateway Nginx lengkap dengan lab Podman.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.NGINX_LESSONS || []).slice(),
+      quizPool: (window.NGINX_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Nginx', url: 'https://nginx.org/en/docs/' },
+        { label: 'Nginx Beginner’s Guide', url: 'https://nginx.org/en/docs/beginners_guide.html' },
+        { label: 'Nginx Admin Guide — Reverse Proxy', url: 'https://nginx.org/en/docs/http/ngx_http_proxy_module.html' },
+        { label: 'Nginx Admin Guide — Upstream', url: 'https://nginx.org/en/docs/http/ngx_http_upstream_module.html' },
+        { label: 'Nginx Docs — SSL Module', url: 'https://nginx.org/en/docs/http/ngx_http_ssl_module.html' },
+        { label: 'Docker Hub — nginx', url: 'https://hub.docker.com/_/nginx' }
+      ]
+    },
+
     restfulapi: {
       id: 'restfulapi',
       title: 'Dasar RESTful API',
@@ -573,5 +594,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();
