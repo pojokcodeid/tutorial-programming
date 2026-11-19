@@ -5,7 +5,7 @@ Berbasis **web statis** — semua library tersimpan lokal, tanpa server backend.
 
 ## Fitur (sesuai info.md)
 
-- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **React Native (20 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, **GraphQL (14 pelajaran)**, dan **Contoh Project GraphQL Go (6 pelajaran)**
+- ✅ Materi multiple tutorial: **HTML (13 pelajaran)**, **CSS (18 pelajaran)**, **JavaScript (21 pelajaran)**, **TypeScript (26 pelajaran)**, **HTTP (19 pelajaran)**, **Dasar RESTful API (15 pelajaran)**, **Git & GitHub (15 pelajaran)**, **SQL (16 pelajaran)**, **React JS (19 pelajaran)**, **Contoh Project React JS (8 pelajaran)**, **React Native (20 pelajaran)**, **Go / Golang (43 pelajaran)**, **Go Web Examples (13 pelajaran)**, **Go REST API (10 pelajaran)**, **Contoh Project Go GUI (10 pelajaran)**, **Docker (12 pelajaran)**, **Lucee CFML (20 pelajaran)**, **Framework MVC Lucee CFML (6 pelajaran)**, **Kubernetes dengan Podman (14 pelajaran)**, **Jenkins (16 pelajaran)**, **RabbitMQ (20 pelajaran)**, **Apache Kafka (25 pelajaran)**, **Grafana k6 (17 pelajaran)**, **Microservices dengan Go (16 pelajaran)**, **Redis (16 pelajaran)**, **Contoh Fullstack Microservices (12 pelajaran)**, **Micro-Frontend React (20 pelajaran)**, **GraphQL (14 pelajaran)**, dan **Contoh Project GraphQL Go (6 pelajaran)**
 - ✅ **Laboratorium HTTP lokal** tanpa dependensi (`examples/http-lab/`) untuk mencoba method, status code, header, cookie, cache, CORS, rate limit, HTTPS, dan reverse proxy
 - ✅ Subjudul/pelajaran di sidebar per materi
 - ✅ Penjelasan Bahasa Indonesia yang sederhana
@@ -67,6 +67,7 @@ Di macOS, double-click `start-server.command`. Butuh Node.js versi apa pun (16+)
 ├── content/kubernetes/   # materi tutorial Kubernetes dengan Podman (Bahasa Indonesia)
 ├── content/jenkins/      # materi tutorial Jenkins CI/CD (Bahasa Indonesia)
 ├── content/rabbitmq/     # materi tutorial RabbitMQ Message Broker (Bahasa Indonesia)
+├── content/apache-kafka/ # materi tutorial Apache Kafka Event Streaming (Bahasa Indonesia)
 ├── content/k6/           # materi tutorial Grafana k6 Performance Testing (Bahasa Indonesia)
 ├── content/microservice/ # materi tutorial Microservices dengan Go (Bahasa Indonesia)
 ├── content/fullstack/    # materi tutorial Contoh Fullstack Microservices (Bahasa Indonesia)
@@ -171,6 +172,7 @@ Panduan lengkap endpoint, akun demo, HTTPS lokal, dan alur latihan ada di `examp
 - **Kubernetes** — https://kubernetes.io/docs/home/ · https://kubernetes.io/docs/tutorials/ · https://helm.sh/docs/
 - **Jenkins** — https://www.jenkins.io/doc/ · https://www.jenkins.io/learn/tutorials/ · https://www.jenkins.io/doc/pipeline/reference/ · https://www.jenkins.io/projects/jcasc/
 - **RabbitMQ** — https://www.rabbitmq.com/docs · https://www.rabbitmq.com/tutorials · https://www.rabbitmq.com/docs/management · https://www.rabbitmq.com/docs/clustering
+- **Apache Kafka** — https://kafka.apache.org/documentation/ · https://kafka.apache.org/quickstart/ · https://kafka.apache.org/documentation/streams/ · https://hub.docker.com/r/apache/kafka
 - **Grafana k6** — https://grafana.com/docs/k6/latest/ · https://grafana.com/docs/k6/latest/get-started/ · https://grafana.com/docs/k6/latest/javascript-api/ · https://grafana.com/docs/k6/latest/using-k6/scenarios/ · https://grafana.com/docs/grafana-cloud/testing/k6/
 - **Microservices dengan Go** — https://martinfowler.com/articles/microservices.html · https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices · https://12factor.net/ · https://go.dev/doc/ · https://opentelemetry.io/docs/
 - **Contoh Fullstack Microservices** — https://martinfowler.com/articles/microservices.html · https://12factor.net/ · https://podman.io/docs · https://mariadb.com/kb/en/documentation/ · https://go.dev/doc/ · https://redis.io/docs/latest/ · https://www.rabbitmq.com/docs · https://react.dev/ · https://ant.design/docs/react/introduce · https://vite.dev/guide/

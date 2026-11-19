@@ -621,6 +621,61 @@ contoh kode, dan kuis, seluruhnya bisa dipraktikkan mandiri dan **gratis**
    - Proyek 2: publisher-subscriber (fanout) dengan retry & dead letter queue.
    - Proyek 3: graceful shutdown — cancel consumer, selesaikan yang berjalan, tutup channel & koneksi.
 
+## Topik Mengenai Apache Kafka (Event Streaming)
+
+Materi Apache Kafka (distributed event streaming platform). Kebutuhan lengkap ada di
+`roadmap-belajar-apache-kafka.md` (Roadmap Belajar Apache Kafka: 0 sampai Mahir); materi
+disusun 25 pelajaran berbahasa Indonesia dengan diagram, contoh kode, dan kuis 40 soal,
+seluruhnya bisa dipraktikkan mandiri dan **gratis** (container image resmi `apache/kafka`
+dengan mode KRaft, CLI di `/opt/kafka/bin/`, tanpa layanan berbayar).
+
+- Rujukan
+  - https://kafka.apache.org/documentation/
+  - https://kafka.apache.org/quickstart/
+  - https://kafka.apache.org/documentation/#design
+  - https://kafka.apache.org/documentation/streams/
+  - https://developer.confluent.io/
+  - https://debezium.io/documentation/
+
+- Materi yang harus ada
+
+1. Fondasi Event Streaming (Level 1)
+   - Apa itu Kafka: komunikasi sinkron vs asinkron, request-response vs message queue vs event streaming, event-driven architecture (EDA), producer/consumer/message, use case (sinkronisasi data, audit log, notifikasi, aktivitas pengguna, integrasi microservices), perbandingan Kafka vs RabbitMQ vs Redis Pub/Sub vs database.
+   - Konsep inti: event/record, topic, partition, offset, broker, cluster, replication, consumer group; alur 6 langkah producer → topic → broker → consumer; urutan hanya dijamin di dalam satu partition.
+2. Menjalankan Kafka (Level 2)
+   - Environment dengan image resmi `apache/kafka` dan env KRaft (`KAFKA_NODE_ID`, `KAFKA_PROCESS_ROLES`, `KAFKA_LISTENERS`, `KAFKA_ADVERTISED_LISTENERS`, `KAFKA_CONTROLLER_QUORUM_VOTERS`, `KAFKA_LOG_DIRS`, `CLUSTER_ID`), port 9092/9093, volume, network.
+   - KRaft vs ZooKeeper: controller, metadata quorum Raft, ZooKeeper hanya konteks historis (Kafka 4.0 KRaft-only).
+   - CLI sehari-hari: kafka-topics.sh, kafka-console-producer.sh, kafka-console-consumer.sh, kafka-configs.sh, kafka-consumer-groups.sh, kafka-get-offsets.sh.
+3. Topic, Partition, Offset & Replication (Level 3)
+   - Key & partitioner (hash murmur2), record tanpa key, urutan per key, strategi jumlah partition.
+   - Current position vs committed offset, auto/manual commit, auto.offset.reset, replay, consumer lag.
+   - Leader/follower, replication factor, ISR, leader election, acks 0/1/all, min.insync.replicas, unclean leader election, trade-off durability-availability-latency.
+4. Producer & Consumer (Level 4)
+   - Producer: bootstrap.servers, serializer, batching (batch.size, linger.ms), compression, retries + delivery.timeout.ms, idempotent producer, producer transaction.
+   - Consumer: subscribe vs assign, poll loop, deserializer, auto commit vs manual commit, max.poll.records, max.poll.interval.ms, session.timeout.ms.
+   - Consumer group & rebalancing: aturan assignment, eager vs cooperative, static membership, dampak pada throughput.
+5. Event-Driven Architecture (Level 5)
+   - Integrasi service (user/order/notification/audit), contoh event JSON (event_id, event_type, event_version, occurred_at, data).
+   - Desain event: naming convention, envelope, correlation/trace ID, version, kompatibilitas backward/forward, PII.
+   - Delivery semantics (at-most-once, at-least-once, exactly-once), idempotent consumer, dedup, inbox pattern.
+   - Transactional outbox: masalah dual-write, tabel outbox, poller/CDC sebagai publisher.
+6. Error Handling (Level 6)
+   - Jenis kegagalan (transient vs non-retryable), backoff eksponensial + jitter, retry topic, Dead Letter Topic (DLT), error metadata, replay terkendali, urutan vs retry.
+7. Kafka Ecosystem (Level 7)
+   - Schema Registry: JSON Schema/Avro/Protobuf, subject strategy, schema evolution, compatibility backward/forward/full/none.
+   - Kafka Connect: source/sink connector, standalone vs distributed, converter, offset & status, error handling + DLQ; CDC dengan Debezium (snapshot, binlog/WAL, insert/update/delete).
+   - Kafka Streams & ksqlDB: KStream vs KTable, stateless/stateful, windowing, state store, exactly-once streams, kapan Streams vs Flink.
+8. Security & Governance (Level 8)
+   - TLS (keystore/truststore), SASL (PLAIN/SCRAM/OAUTHBEARER) vs mTLS, Kafka ACL (principal, resource, operation), least privilege; governance: penamaan topic, ownership, retention policy, audit.
+9. Monitoring & Operasional (Level 9)
+   - Metrik penting (under-replicated, offline partition, controller, request latency, consumer lag, ISR shrink), JMX + JMX Exporter, Prometheus + Grafana, distributed tracing + correlation ID, dashboard, alert, runbook.
+   - Storage & retention (log segment, retention.ms/bytes, cleanup.policy delete vs compact, tombstone), backup ≠ replikasi, MirrorMaker 2, RPO/RTO, rolling restart, upgrade, partition reassignment.
+10. Performance & Arsitektur Mahir (Level 10)
+    - Tuning throughput vs latency (partition, batching, compression, acks, fetch size), benchmark kafka-producer/consumer-perf-test.sh, capacity planning dengan rumus estimasi storage.
+    - Idempotent + transactional producer, read_committed, exactly-once Streams, cooperative rebalancing, static membership, custom partitioner, backpressure; multi-cluster/multi-region, cluster linking, event sourcing, CQRS, saga, multi-tenancy.
+11. Proyek Akhir
+    - Sistem event-driven terintegrasi: Order Service + outbox → CDC/Producer → Kafka (order-created, payment-completed, notification-events, order-dlt) → consumer payment/notification/audit idempoten, retry + DLT, schema validation, monitoring consumer lag, TLS + ACL, dokumentasi deployment & recovery.
+
 ## Topik Mengenai Grafana k6 (Performance Testing)
 
 Materi Grafana k6 (performance/load testing). Kebutuhan lengkap ada di `grafana-k6.md` (Roadmap

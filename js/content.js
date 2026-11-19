@@ -499,6 +499,24 @@ const CONTENT = (() => {
       ]
     },
 
+    kafka: {
+      id: 'kafka', title: 'Apache Kafka',
+      tagline: 'Distributed Event Streaming Platform',
+      icon: 'assets/logos/kafka.svg',
+      color: '#231F20',
+      desc: 'Belajar Apache Kafka dari nol hingga mahir dengan KRaft dan container: fondasi event streaming & EDA, konsep topic/partition/offset/replication, environment KRaft + CLI, producer & consumer + consumer group & rebalancing, desain event, delivery semantics & idempotency, transactional outbox, error handling + Dead Letter Topic, Schema Registry, Kafka Connect & CDC, Kafka Streams & ksqlDB, keamanan TLS/SASL/ACL, monitoring & observability, storage/retention/disaster recovery, performance tuning & capacity planning, arsitektur lanjutan, hingga proyek akhir sistem event-driven terintegrasi.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.KAFKA_LESSONS || []).slice(),
+      quizPool: (window.KAFKA_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Apache Kafka', url: 'https://kafka.apache.org/documentation/' },
+        { label: 'Apache Kafka Quickstart', url: 'https://kafka.apache.org/quickstart/' },
+        { label: 'Kafka Streams Documentation', url: 'https://kafka.apache.org/documentation/streams/' },
+        { label: 'Kafka on Docker Hub (apache/kafka)', url: 'https://hub.docker.com/r/apache/kafka' }
+      ]
+    },
+
     fullstack: {
       id: 'fullstack',
       title: 'Contoh Fullstack Microservices',
@@ -594,5 +612,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, kafka: t.kafka, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();

@@ -350,6 +350,32 @@ async function main() {
     'content/nginx/16-logging-troubleshooting.js',
     'content/nginx/17-best-practices-deployment.js',
     'content/nginx/18-capstone-gateway.js',
+    'content/apache-kafka/quiz-questions.js',
+    'content/apache-kafka/01-pengantar-event-streaming.js',
+    'content/apache-kafka/02-konsep-inti-kafka.js',
+    'content/apache-kafka/03-setup-environment.js',
+    'content/apache-kafka/04-kraft-vs-zookeeper.js',
+    'content/apache-kafka/05-kafka-cli.js',
+    'content/apache-kafka/06-topic-partition.js',
+    'content/apache-kafka/07-offset-dan-lag.js',
+    'content/apache-kafka/08-replication-durability.js',
+    'content/apache-kafka/09-producer.js',
+    'content/apache-kafka/10-consumer.js',
+    'content/apache-kafka/11-consumer-group-rebalance.js',
+    'content/apache-kafka/12-integrasi-event-driven.js',
+    'content/apache-kafka/13-desain-event.js',
+    'content/apache-kafka/14-delivery-semantics.js',
+    'content/apache-kafka/15-transactional-outbox.js',
+    'content/apache-kafka/16-error-handling-dlt.js',
+    'content/apache-kafka/17-schema-registry.js',
+    'content/apache-kafka/18-kafka-connect-cdc.js',
+    'content/apache-kafka/19-kafka-streams-ksqldb.js',
+    'content/apache-kafka/20-security-acl.js',
+    'content/apache-kafka/21-monitoring-observability.js',
+    'content/apache-kafka/22-storage-retention-recovery.js',
+    'content/apache-kafka/23-performance-tuning.js',
+    'content/apache-kafka/24-arsitektur-lanjutan.js',
+    'content/apache-kafka/25-proyek-akhir.js',
     'js/content.js'
   ];
   for (const f of order) {
@@ -900,6 +926,58 @@ async function main() {
     ['https://www.rabbitmq.com/docs', 'https://www.rabbitmq.com/tutorials',
      'https://www.rabbitmq.com/docs/management', 'https://www.rabbitmq.com/docs/clustering']
       .every(u => rqRefs.includes(u)));
+
+  // 4j2) konten Apache Kafka: 25 pelajaran sesuai roadmap-belajar-apache-kafka.md + 40 soal kuis
+  const kf = CONTENT.get('kafka');
+  check('Apache Kafka terdaftar & status ready', !!kf && kf.status === 'ready');
+  check('25 pelajaran Apache Kafka', kf.lessons.length === 25);
+  const kfIds = kf.lessons.map(l => l.id);
+  check('id pelajaran Apache Kafka unik', new Set(kfIds).size === kfIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Apache Kafka terisi',
+    kf.lessons.every(l => l.title && /^[\d]+([–-][\d]+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length >= 2 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  let kfBadSection = 0, kfFig = 0;
+  for (const l of kf.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 3) kfBadSection++;
+    if (l.sections.some(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''))) kfFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 5)) kfBadSection++;
+    if (!l.sections.some(s => s.type === 'tip' || s.type === 'warn')) kfBadSection++;
+    if (!l.sections.some(s => s.type === 'example' && s.code)) kfBadSection++;
+    for (const s of l.sections) {
+      if (s.type === 'example') {
+        if (s.output !== false || !s.explain || s.explain.length < 2) kfBadSection++;
+        if ((s.code || '').includes('`') || (s.code || '').includes('${')) kfBadSection++;
+      }
+      if (s.type === 'live') kfBadSection++; // bab Kafka tanpa latihan live
+    }
+  }
+  check('struktur section pelajaran Apache Kafka valid', kfBadSection === 0);
+  check('tiap pelajaran Apache Kafka memuat figur ilustrasi (25/25)', kfFig === 25);
+  check('40 soal kuis Apache Kafka lengkap (4 opsi, jawaban & penjelasan) & id unik kafkaNN',
+    kf.quizPool.length === 40 &&
+    new Set(kf.quizPool.map(q => q.id)).size === kf.quizPool.length &&
+    kf.quizPool.every(q => /^kafka\d{2}$/.test(q.id)) &&
+    !kf.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  const kfRefs = (kf.refs || []).map(r => r.url);
+  check('rujukan Apache Kafka (documentation, quickstart, streams, Docker Hub)',
+    ['https://kafka.apache.org/documentation/',
+     'https://kafka.apache.org/quickstart/',
+     'https://kafka.apache.org/documentation/streams/',
+     'https://hub.docker.com/r/apache/kafka']
+      .every(u => kfRefs.includes(u)));
+  check('materi Markdown Apache Kafka tersedia (README, 25 pelajaran, kuis, logo)',
+    fs.existsSync(path.join(ROOT, 'materi/apache-kafka/README.md')) &&
+    fs.existsSync(path.join(ROOT, 'materi/apache-kafka/kuis-40-soal.md')) &&
+    fs.readdirSync(path.join(ROOT, 'materi/apache-kafka'))
+      .filter(f => /^\d{2}-.*\.md$/.test(f)).length === 25 &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/kafka.svg')));
+  check('logo kafka.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/kafka.svg'), 'utf8').includes('<svg'));
 
   // 4k) konten Redis: 16 pelajaran sesuai kurikulum redis.md + 40 soal kuis
   const rd = CONTENT.get('redis');
