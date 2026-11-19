@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo HAProxy">
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#106E5B"/>
+  <!-- tiga jalur masuk yang menyatu menjadi satu pintu keluar -->
+  <g stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" fill="none">
+    <path d="M56 70 H118 C142 70 150 96 150 116 V128"/>
+    <path d="M56 128 H150"/>
+    <path d="M56 186 H118 C142 186 150 160 150 140 V128"/>
+    <path d="M150 128 H188"/>
+  </g>
+  <circle cx="56" cy="70" r="12" fill="#FFFFFF"/>
+  <circle cx="56" cy="128" r="12" fill="#FFFFFF"/>
+  <circle cx="56" cy="186" r="12" fill="#FFFFFF"/>
+  <rect x="196" y="104" width="40" height="48" rx="10" fill="#FFFFFF"/>
+  <text x="216" y="135" font-family="Verdana, Geneva, sans-serif" font-size="20" font-weight="bold" fill="#106E5B" text-anchor="middle">HA</text>
+</svg>

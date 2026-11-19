@@ -977,6 +977,54 @@ Materi **Nginx** — web server & gateway paling populer di dunia — disusun da
   - `bash examples/nginx-lab/scripts/test-proxy.sh` → 22 pemeriksaan proxy/LB/error/rate limit.
   - Catatan: bila repo berada di drive yang tidak dibagikan ke VM Podman (mis. exFAT), lihat bagian Troubleshooting di `examples/nginx-lab/README.md`.
 
+## Topik Mengenai HAProxy
+
+Materi **HAProxy** — load balancer dan reverse proxy kelas produksi — disusun dalam 13 pelajaran berbahasa Indonesia, lengkap dengan diagram alur traffic, blok konfigurasi `haproxy.cfg`, lab Podman, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti `roadmap-belajar-haproxy-podman.md` dari Level 0 (persiapan environment) sampai Level 11 (troubleshooting & production readiness) plus capstone arsitektur multi-service. Lab dibangun sekali di awal (workspace `haproxy-lab/` + network Podman `haproxy-lab`) lalu dipakai berulang di setiap level: reverse proxy pertama, tiga backend dengan beragam algoritma, simulasi backend down, routing ACL, HTTPS self-signed, stats page, sampai simulasi high availability dua node HAProxy.
+
+- Rujukan
+  - https://www.haproxy.org/
+  - https://docs.haproxy.org/
+  - https://github.com/haproxy/haproxy
+  - https://hub.docker.com/_/haproxy
+  - https://www.keepalived.org/
+  - https://docs.podman.io/
+
+- Materi yang harus ada
+
+1. Persiapan Lab: Podman, Network, dan Workspace
+   - Verifikasi Podman & Podman Machine, struktur `haproxy-lab/`, `podman network create`, siklus hidup container (run/inspect/logs/exec/stop/rm).
+2. Fundamental Proxy, Load Balancer, dan Peran HAProxy
+   - Forward vs reverse proxy, L4 vs L7, SPOF, availability, health check, failover/failback, session persistence, peran HAProxy, komponen `global/defaults/frontend/backend/listen`.
+3. Instalasi HAProxy dan Reverse Proxy Pertama
+   - `haproxy.cfg` minimal, mount `-v ...:ro`, `podman run -p 8080:80`, uji `curl -i` & `podman logs`, directive penting, validasi `haproxy -c -f`, respons 503 saat backend dimatikan.
+4. Load Balancing: Algoritma, Weight, dan Distribusi
+   - `roundrobin`, `leastconn`, `static-rr`, `source`, `weight`, pengamatan distribusi lewat loop curl, kapan tiap algoritma tepat.
+5. Health Check dan Ketahanan Backend
+   - TCP vs HTTP check, `option httpchk`, `http-check expect status`, `inter/fall/rise`, simulasi stop/start backend, endpoint health yang mewakili kesiapan service.
+6. ACL, Routing, dan Manajemen Traffic
+   - `acl` + `use_backend ... if`, routing hostname/path/header, `http-request redirect`, `set/add/del-header`, pola multi-application.
+7. TLS/HTTPS, Termination, dan Keamanan Frontend
+   - Konsep handshake/SNI/CA, sertifikat self-signed `openssl` + `lab.pem`, `bind :443 ssl crt`, redirect HTTP→HTTPS, termination vs passthrough, checklist keamanan.
+8. Logging, Stats Page, dan Observabilitas
+   - `log stdout format raw local0` + `option httplog`, membaca field log, `listen stats :8404` + `stats auth`, metrik wajib, Prometheus exporter/Grafana/alerting/log rotation.
+9. High Availability: Dua HAProxy + Keepalived
+   - Active-passive vs active-active, VIP, VRRP, `keepalived.conf` MASTER/BACKUP + `vrrp_script`, skenario failover & failback, keterbatasan Podman/macOS dan alternatifnya.
+10. Performance, Benchmark, dan Tuning
+    - `maxconn`, timeout, keep-alive, queue/backlog, file descriptor, benchmark `wrk`/`ab`/`hey`, eksperimen tuning berbasis data sebelum/sesudah.
+11. Konfigurasi Lanjutan dan Operasional Harian
+    - Regex & map file, multiple frontend/backend, SNI routing, HTTP/2/WebSocket/gRPC, cookie & stick-table persistence, rate limit per IP, Runtime API/socket admin, graceful reload, rolling update & rollback.
+12. Troubleshooting dan Kesiapan Produksi
+    - Diagnosis HAProxy tak start, backend DOWN, 503, timeout, distribusi tak merata, workflow troubleshooting langkah demi langkah, production readiness checklist.
+13. Capstone: Arsitektur HAProxy Multi-Service
+    - Dua node HAProxy di depan pool web/api/admin, routing per hostname, HTTPS + redirect, stats terbatas, test plan (traffic normal, backend down/recovery, node failure, reload, rollback), deliverables, rubrik indikator "mahir".
+
+- Cara menjalankan laboratorium
+  - `mkdir -p haproxy-lab/{haproxy,backend,certs,logs}` lalu `podman network create haproxy-lab` (sekali di awal, dipakai seluruh pelajaran).
+  - Jalankan backend: `podman run -d --name web1 --network haproxy-lab docker.io/library/nginx:alpine` (diulang untuk web2/web3).
+  - Jalankan HAProxy: `podman run -d --name haproxy --network haproxy-lab -p 8080:80 -v ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro docker.io/library/haproxy:alpine`.
+  - Uji: `curl -i http://localhost:8080` · `podman logs haproxy` · `podman exec haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg`.
+  - Sertifikat lab: `openssl req -x509 -newkey rsa:2048 -keyout certs/lab.key -out certs/lab.crt -days 365 -nodes -subj "/CN=localhost"` lalu `cat certs/lab.crt certs/lab.key > certs/lab.pem` (hanya untuk lab; produksi memakai CA tepercaya).
+
 ## Topik Dasar RESTful API
 
 Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru mengenal dunia backend dan API — disusun dalam 15 pelajaran berbahasa Indonesia dengan kuis 40 soal. Cakupannya mengikuti roadmap `roadmap-belajar-restful-api.md` Fase 1 sampai Fase 3 (dengan pengantar Fase 4 berupa proyek mini), tanpa mengulang materi HTTP mendalam (cookie, cache, CORS, HTTPS) yang sudah dibahas di materi HTTP. Penjelasan memakai analogi sehari-hari (restoran, surat, antrean, struk) agar mudah dipahami orang awam, dilengkapi latihan interaktif "Coba sendiri" yang berjalan offline.

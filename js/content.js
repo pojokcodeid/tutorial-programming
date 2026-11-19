@@ -140,6 +140,27 @@ const CONTENT = (() => {
       ]
     },
 
+    haproxy: {
+      id: 'haproxy',
+      title: 'HAProxy',
+      tagline: 'Load Balancer & High Availability dari Nol sampai Mahir',
+      icon: 'assets/logos/haproxy.svg',
+      color: '#106E5B',
+      desc: 'Belajar HAProxy dari nol hingga mahir dengan simulasi Podman: konsep reverse proxy, load balancer, L4 vs L7, struktur konfigurasi global/defaults/frontend/backend, reverse proxy pertama, algoritma load balancing (roundrobin, leastconn, source, weight), health check dan simulasi backend down, ACL routing berdasarkan host/path/header, TLS termination & HTTPS, logging/stats/observability, high availability dua HAProxy dengan Keepalived/VRRP, benchmark dan tuning, persistence/stick table/rate limit/Runtime API, graceful reload & rollback, troubleshooting produksi, hingga capstone arsitektur HAProxy multi-service.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.HAPROXY_LESSONS || []).slice(),
+      quizPool: (window.HAPROXY_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'HAProxy — Situs Resmi', url: 'https://www.haproxy.org/' },
+        { label: 'HAProxy Configuration Manual', url: 'https://docs.haproxy.org/' },
+        { label: 'HAProxy — Repositori Resmi (GitHub)', url: 'https://github.com/haproxy/haproxy' },
+        { label: 'Docker Hub — haproxy', url: 'https://hub.docker.com/_/haproxy' },
+        { label: 'Keepalived Documentation', url: 'https://www.keepalived.org/' },
+        { label: 'Podman Documentation', url: 'https://docs.podman.io/' }
+      ]
+    },
+
     restfulapi: {
       id: 'restfulapi',
       title: 'Dasar RESTful API',
@@ -612,5 +633,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, kafka: t.kafka, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, haproxy: t.haproxy, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, kafka: t.kafka, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();

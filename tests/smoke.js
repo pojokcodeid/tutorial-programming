@@ -350,6 +350,20 @@ async function main() {
     'content/nginx/16-logging-troubleshooting.js',
     'content/nginx/17-best-practices-deployment.js',
     'content/nginx/18-capstone-gateway.js',
+    'content/haproxy/quiz-questions.js',
+    'content/haproxy/01-persiapan-lab-podman.js',
+    'content/haproxy/02-fondasi-proxy.js',
+    'content/haproxy/03-instalasi-reverse-proxy.js',
+    'content/haproxy/04-load-balancing.js',
+    'content/haproxy/05-health-check-resilience.js',
+    'content/haproxy/06-acl-routing.js',
+    'content/haproxy/07-tls-https.js',
+    'content/haproxy/08-monitoring-observability.js',
+    'content/haproxy/09-high-availability.js',
+    'content/haproxy/10-performance-tuning.js',
+    'content/haproxy/11-advanced-operations.js',
+    'content/haproxy/12-troubleshooting-production.js',
+    'content/haproxy/13-capstone-multi-service.js',
     'content/apache-kafka/quiz-questions.js',
     'content/apache-kafka/01-pengantar-event-streaming.js',
     'content/apache-kafka/02-konsep-inti-kafka.js',
@@ -565,6 +579,71 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'assets/logos/nginx.svg')));
   check('logo nginx.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/nginx.svg'), 'utf8').includes('<svg'));
+
+  // 4a4) konten HAProxy: 13 pelajaran sesuai roadmap-belajar-haproxy-podman.md + 40 soal kuis
+  const hpC = CONTENT.get('haproxy');
+  check('HAProxy terdaftar & status ready', !!hpC && hpC.status === 'ready');
+  check('13 pelajaran HAProxy', hpC.lessons.length === 13);
+  const hpIds = hpC.lessons.map(l => l.id);
+  check('id pelajaran HAProxy unik', new Set(hpIds).size === hpIds.length);
+  check('judul, durasi, bab, intro, objectives & recap HAProxy terisi',
+    hpC.lessons.every(l => l.title && /^\d+([–-]\d+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length >= 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  check('12 level roadmap + capstone terwakili',
+    ['Fondasi', 'Konfigurasi Dasar', 'Ketahanan', 'Routing', 'Keamanan',
+     'Observabilitas', 'High Availability', 'Performa', 'Operasional', 'Capstone']
+      .every(c => hpC.lessons.some(l => l.chapter === c)));
+  let hpBadSection = 0, hpFig = 0;
+  for (const l of hpC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 4) hpBadSection++;
+    if (!l.sections.some(s => s.type === 'text')) hpBadSection++;
+    const figs = l.sections.filter(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''));
+    if (figs.length !== 1) hpBadSection++; else hpFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 6)) hpBadSection++;
+    if (!l.sections.some(s => s.type === 'tip')) hpBadSection++;
+    if (!l.sections.some(s => s.type === 'warn')) hpBadSection++;
+    const examples = l.sections.filter(s => s.type === 'example');
+    if (examples.length < 3) hpBadSection++;
+    if (!l.sections.some(s => s.type === 'text' && /<h3>Latihan<\/h3>/.test(s.html || ''))) hpBadSection++;
+    const all = l.sections.map(s => `${s.title || ''} ${s.html || ''} ${s.text || ''}`).join(' ');
+    if (!/Checkpoint/i.test(all)) hpBadSection++;
+    for (const s of l.sections) {
+      if (!['text', 'example', 'tip', 'warn', 'vocab'].includes(s.type)) hpBadSection++;
+      if (s.type === 'example') {
+        if (s.output !== false) hpBadSection++;
+        if (!s.explain || s.explain.length < 3) hpBadSection++;
+        if ((s.code || '').includes('`') || (s.code || '').includes('${')) hpBadSection++;
+      }
+    }
+  }
+  check('struktur section pelajaran HAProxy valid (figur + vocab + tip + warn + 3 contoh + latihan)',
+    hpBadSection === 0);
+  check('tiap pelajaran HAProxy memuat figur ilustrasi (13/13)', hpFig === 13);
+  check('40 soal kuis HAProxy lengkap (4 opsi, jawaban & penjelasan) & id unik haproxyNN',
+    hpC.quizPool.length === 40 &&
+    new Set(hpC.quizPool.map(q => q.id)).size === hpC.quizPool.length &&
+    hpC.quizPool.every(q => /^haproxy\d{2}$/.test(q.id)) &&
+    !hpC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  check('sebaran jawaban kuis HAProxy seimbang',
+    [0, 1, 2, 3].every(i => hpC.quizPool.filter(q => q.answer === i).length >= 6));
+  const hpRefs = (hpC.refs || []).map(r => r.url);
+  check('rujukan HAProxy (docs, situs resmi, GitHub, Docker Hub, Keepalived, Podman)',
+    ['https://docs.haproxy.org/', 'https://www.haproxy.org/',
+     'https://github.com/haproxy/haproxy', 'https://hub.docker.com/_/haproxy',
+     'https://www.keepalived.org/', 'https://docs.podman.io/']
+      .every(u => hpRefs.includes(u)));
+  check('materi & logo HAProxy tersedia (13 file pelajaran + kuis + logo)',
+    fs.readdirSync(path.join(ROOT, 'content', 'haproxy'))
+      .filter(f => /^\d{2}-.*\.js$/.test(f)).length === 13 &&
+    fs.existsSync(path.join(ROOT, 'content/haproxy/quiz-questions.js')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/haproxy.svg')));
+  check('logo haproxy.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/haproxy.svg'), 'utf8').includes('<svg'));
 
   // 4b) konten CSS: 18 pelajaran = 18 topik di info.md, terdaftar & siap
   check('CSS status ready', CONTENT.css.status === 'ready');
