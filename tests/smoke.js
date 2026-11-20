@@ -364,6 +364,21 @@ async function main() {
     'content/haproxy/11-advanced-operations.js',
     'content/haproxy/12-troubleshooting-production.js',
     'content/haproxy/13-capstone-multi-service.js',
+    'content/elasticsearch/quiz-questions.js',
+    'content/elasticsearch/01-fundamental-search-engine.js',
+    'content/elasticsearch/02-setup-elasticsearch-podman.js',
+    'content/elasticsearch/03-rest-api-crud.js',
+    'content/elasticsearch/04-index-mapping.js',
+    'content/elasticsearch/05-query-dsl-dasar.js',
+    'content/elasticsearch/06-advanced-search-aggregation.js',
+    'content/elasticsearch/07-analyzer-text-processing.js',
+    'content/elasticsearch/08-cluster-sharding.js',
+    'content/elasticsearch/09-performance-optimasi.js',
+    'content/elasticsearch/10-pagination-skala.js',
+    'content/elasticsearch/11-security-elasticsearch.js',
+    'content/elasticsearch/12-backup-restore.js',
+    'content/elasticsearch/13-integrasi-backend.js',
+    'content/elasticsearch/14-capstone-product-search.js',
     'content/apache-kafka/quiz-questions.js',
     'content/apache-kafka/01-pengantar-event-streaming.js',
     'content/apache-kafka/02-konsep-inti-kafka.js',
@@ -644,6 +659,74 @@ async function main() {
     fs.existsSync(path.join(ROOT, 'assets/logos/haproxy.svg')));
   check('logo haproxy.svg berformat SVG',
     fs.readFileSync(path.join(ROOT, 'assets/logos/haproxy.svg'), 'utf8').includes('<svg'));
+
+  // 4a5) konten Elasticsearch: 14 pelajaran sesuai roadmap-elasticsearch-podman.md + 40 soal kuis
+  const esC = CONTENT.get('elasticsearch');
+  check('Elasticsearch terdaftar & status ready', !!esC && esC.status === 'ready');
+  check('14 pelajaran Elasticsearch', esC.lessons.length === 14);
+  const esIds = esC.lessons.map(l => l.id);
+  check('id pelajaran Elasticsearch unik', new Set(esIds).size === esIds.length);
+  check('judul, durasi, bab, intro, objectives & recap Elasticsearch terisi',
+    esC.lessons.every(l => l.title && /^\d+([–-]\d+)? menit$/.test(l.duration) &&
+      l.chapter && Array.isArray(l.intro) && l.intro.length === 3 &&
+      Array.isArray(l.objectives) && l.objectives.length === 4 &&
+      Array.isArray(l.recap) && l.recap.length === 4));
+  check('level roadmap 0–10 + capstone terwakili',
+    ['Fondasi', 'Data & Indexing', 'Pencarian', 'Arsitektur', 'Operasional', 'Integrasi', 'Capstone']
+      .every(c => esC.lessons.some(l => l.chapter === c)));
+  let esBadSection = 0, esFig = 0;
+  for (const l of esC.lessons) {
+    const types = new Set(l.sections.map(s => s.type));
+    if (types.size < 4) esBadSection++;
+    if (!l.sections.some(s => s.type === 'text')) esBadSection++;
+    const figs = l.sections.filter(s => s.type === 'text' && /<figure class="fig">/.test(s.html || ''));
+    if (figs.length !== 1) esBadSection++; else esFig++;
+    if (!l.sections.some(s => s.type === 'vocab' && Array.isArray(s.items) && s.items.length >= 6)) esBadSection++;
+    if (!l.sections.some(s => s.type === 'tip')) esBadSection++;
+    if (!l.sections.some(s => s.type === 'warn')) esBadSection++;
+    const examples = l.sections.filter(s => s.type === 'example');
+    if (examples.length < 3) esBadSection++;
+    if (!l.sections.some(s => s.type === 'text' && /<h3>Latihan<\/h3>/.test(s.html || ''))) esBadSection++;
+    const all = l.sections.map(s => `${s.title || ''} ${s.html || ''} ${s.text || ''}`).join(' ');
+    if (!/Checkpoint/i.test(all)) esBadSection++;
+    for (const s of l.sections) {
+      if (!['text', 'example', 'tip', 'warn', 'vocab'].includes(s.type)) esBadSection++;
+      if (s.type === 'example') {
+        if (s.output !== false) esBadSection++;
+        if (!s.explain || s.explain.length < 3) esBadSection++;
+        if ((s.code || '').includes('`') || (s.code || '').includes('${')) esBadSection++;
+      }
+    }
+  }
+  check('struktur section pelajaran Elasticsearch valid (figur + vocab + tip + warn + 3 contoh + latihan)',
+    esBadSection === 0);
+  check('tiap pelajaran Elasticsearch memuat figur ilustrasi (14/14)', esFig === 14);
+  check('40 soal kuis Elasticsearch lengkap (4 opsi, jawaban & penjelasan) & id unik esNN',
+    esC.quizPool.length === 40 &&
+    new Set(esC.quizPool.map(q => q.id)).size === esC.quizPool.length &&
+    esC.quizPool.every(q => /^es\d{2}$/.test(q.id)) &&
+    !esC.quizPool.some(q =>
+      !q.id || !q.q || !Array.isArray(q.options) || q.options.length !== 4 ||
+      typeof q.answer !== 'number' || q.answer < 0 || q.answer > 3 || !q.explain));
+  check('sebaran jawaban kuis Elasticsearch seimbang',
+    [0, 1, 2, 3].every(i => esC.quizPool.filter(q => q.answer === i).length >= 8));
+  const esRefs = (esC.refs || []).map(r => r.url);
+  check('rujukan Elasticsearch (reference, REST API, query DSL, mapping, analysis, docker, Podman)',
+    ['https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html',
+     'https://www.elastic.co/docs/api/doc/elasticsearch',
+     'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html',
+     'https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html',
+     'https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html',
+     'https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html',
+     'https://docs.podman.io/']
+      .every(u => esRefs.includes(u)));
+  check('materi & logo Elasticsearch tersedia (14 file pelajaran + kuis + logo)',
+    fs.readdirSync(path.join(ROOT, 'content', 'elasticsearch'))
+      .filter(f => /^\d{2}-.*\.js$/.test(f)).length === 14 &&
+    fs.existsSync(path.join(ROOT, 'content/elasticsearch/quiz-questions.js')) &&
+    fs.existsSync(path.join(ROOT, 'assets/logos/elasticsearch.svg')));
+  check('logo elasticsearch.svg berformat SVG',
+    fs.readFileSync(path.join(ROOT, 'assets/logos/elasticsearch.svg'), 'utf8').includes('<svg'));
 
   // 4b) konten CSS: 18 pelajaran = 18 topik di info.md, terdaftar & siap
   check('CSS status ready', CONTENT.css.status === 'ready');

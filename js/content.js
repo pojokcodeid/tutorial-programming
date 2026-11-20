@@ -161,6 +161,29 @@ const CONTENT = (() => {
       ]
     },
 
+    elasticsearch: {
+      id: 'elasticsearch',
+      title: 'Elasticsearch',
+      tagline: 'Search Engine dari Nol sampai Mahir',
+      icon: 'assets/logos/elasticsearch.svg',
+      color: '#005571',
+      desc: 'Belajar Elasticsearch dari nol hingga mahir dengan lab Podman: konsep search engine & inverted index, menjalankan Elasticsearch + Kibana (tag 8.17.0) lewat Podman Compose, REST API & CRUD hingga Bulk API NDJSON, mapping eksplisit dan data modeling (text vs keyword, multi-field, reindex & alias), Query DSL (match, term, range, bool, sorting, pagination), advanced search (multi-match boost, fuzzy, highlight) dan aggregation/faceted search, analyzer & text processing termasuk teks Bahasa Indonesia, arsitektur terdistribusi (cluster, node roles, primary/replica shard, cluster health), performance & benchmark, pagination skalabel (search_after, PIT), security (user, role, API key, TLS), snapshot backup & restore, integrasi backend dengan timeout/retry & sinkronisasi data, hingga capstone Product Search & Discovery Platform.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.ELASTICSEARCH_LESSONS || []).slice(),
+      quizPool: (window.ELASTICSEARCH_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Elasticsearch Reference', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html' },
+        { label: 'Elasticsearch REST APIs', url: 'https://www.elastic.co/docs/api/doc/elasticsearch' },
+        { label: 'Query DSL', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html' },
+        { label: 'Mapping', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html' },
+        { label: 'Aggregations', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/aggregations.html' },
+        { label: 'Analysis', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html' },
+        { label: 'Elasticsearch on Docker', url: 'https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html' },
+        { label: 'Podman Documentation', url: 'https://docs.podman.io/' }
+      ]
+    },
+
     restfulapi: {
       id: 'restfulapi',
       title: 'Dasar RESTful API',
@@ -633,5 +656,5 @@ const CONTENT = (() => {
 
   function readyList() { return all.filter(x => x.status === 'ready'); }
 
-  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, haproxy: t.haproxy, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, kafka: t.kafka, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
+  return { html: t.html, css: t.css, javascript: t.javascript, typescript: t.typescript, http: t.http, nginx: t.nginx, haproxy: t.haproxy, elasticsearch: t.elasticsearch, restfulapi: t.restfulapi, git: t.git, sql: t.sql, react: t.react, reactproject: t.reactproject, reactnative: t.reactnative, go: t.go, goweb: t.goweb, gorestapi: t.gorestapi, gogui: t.gogui, docker: t.docker, kubernetes: t.kubernetes, jenkins: t.jenkins, rabbitmq: t.rabbitmq, k6: t.k6, microservice: t.microservice, redis: t.redis, kafka: t.kafka, fullstack: t.fullstack, microfrontend: t.microfrontend, uml: t.uml, lucee: t.lucee, luceemvc: t.luceemvc, graphql: t.graphql, gographql: t.gographql, all, get, readyList };
 })();

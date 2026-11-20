@@ -1025,6 +1025,57 @@ Materi **HAProxy** — load balancer dan reverse proxy kelas produksi — disusu
   - Uji: `curl -i http://localhost:8080` · `podman logs haproxy` · `podman exec haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg`.
   - Sertifikat lab: `openssl req -x509 -newkey rsa:2048 -keyout certs/lab.key -out certs/lab.crt -days 365 -nodes -subj "/CN=localhost"` lalu `cat certs/lab.crt certs/lab.key > certs/lab.pem` (hanya untuk lab; produksi memakai CA tepercaya).
 
+## Topik Mengenai Elasticsearch
+
+Materi **Elasticsearch** — search engine terdistribusi untuk pencarian dan analisis — disusun dalam 14 pelajaran berbahasa Indonesia, lengkap dengan diagram arsitektur, contoh Query DSL, lab Podman, tip, peringatan, kosakata, dan kuis 40 soal. Materi mengikuti `roadmap-elasticsearch-podman.md` dari Level 0 (konsep search engine) sampai Level 10 (capstone Product Search & Discovery), dengan Level 8 dipecah menjadi empat pelajaran operasional: performance, pagination, security, dan backup. Contoh memakai tag gambar `8.17.0` dan endpoint `http://localhost:9200`; security nonaktif khusus lab (pelajaran keamanan mengaktifkannya kembali pada lab terpisah).
+
+- Rujukan
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
+  - https://www.elastic.co/docs/api/doc/elasticsearch
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/aggregations.html
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html
+  - https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
+  - https://docs.podman.io/
+
+- Materi yang harus ada
+
+1. Fundamental Search Engine & Inverted Index
+   - Analogi perpustakaan, cara mesin pencari bekerja, inverted index vs database relasional, stemming/stop words/synonym, Elasticsearch sebagai search engine & analytics, kapan memilih Elasticsearch.
+2. Menjalankan Elasticsearch dengan Podman
+   - `compose.yaml` single-node (Elasticsearch + Kibana 8.17.0), `xpack.security.enabled=false` khusus lab, `ES_JAVA_OPTS`, healthcheck, `podman compose up -d`, verifikasi `curl` & `_cluster/health`, siklus hidup container & persistent volume.
+3. REST API & CRUD Document
+   - Method HTTP (`PUT`/`POST`/`GET`/`DELETE`), response `_index`/`_id`/`_version`/`result`, `POST /_update`, Bulk API NDJSON (aksi–data, wajib newline), endpoint `_cat` & `_cluster`, membaca error.
+4. Index, Mapping & Data Modeling
+   - Dynamic vs explicit mapping, tabel data types, `text` vs `keyword`, multi-field, object vs nested, alias, reindex saat struktur berubah.
+5. Query DSL & Search Fundamental
+   - `match_all`, `match`, `term`, `range`, `bool` (must/should/must_not/filter), query vs filter context, sorting, `from`/`size`, `_source`.
+6. Advanced Search & Aggregation
+   - `multi_match` + boost, `match_phrase`, fuzzy, highlight, aggregation metric (`avg`/`min`/`max`/`sum`) & bucket (`terms`/`range`/`date_histogram`), `size: 0`, faceted search, field `nested`.
+7. Analyzer & Text Processing
+   - Tiga tahap analyzer (character filter → tokenizer → token filter), endpoint `_analyze`, custom analyzer pada `settings.analysis`, stop words/stemming/sinonim, teks Bahasa Indonesia, `normalizer` pada keyword.
+8. Cluster, Sharding & Arsitektur Terdistribusi
+   - Cluster/node roles, primary vs replica shard, cluster health (green/yellow/red), lab dua node dengan `discovery.seed_hosts` & `cluster.initial_master_nodes`, alokasi & `_cluster/allocation/explain`, failover & recovery, index template & alias.
+9. Performance, Indexing & Query Optimization
+   - Profiling (`_profile/query`), hot threads, bulk tuning, filter cache, `size` & `_source`, indexing refresh/flush, bottleneck umum, benchmark sebelum–sesudah.
+10. Pagination Skalabel: search_after & PIT
+    - Batas `max_result_window`, `search_after` dengan sort stabil, Point in Time (`keep_alive`, `DELETE /_pit`), perbandingan scroll, cursor pagination.
+11. Security: User, Role, API Key & TLS
+    - Mengaktifkan `xpack.security.enabled=true` pada lab terpisah, 401 vs 403, role & index privileges (least privilege), API key (`role_descriptors`, `expiration`), TLS self-signed, network isolation & audit log.
+12. Snapshot, Backup & Restore
+    - Repository (`_verify`), snapshot & status `SUCCESS`, skenario hapus-restore, RPO/RTO, kebijakan retensi & runbook recovery.
+13. Integrasi Backend & Sinkronisasi Data
+    - Klien & REST dari backend, timeout/retry berbatas, bulk ingestion idempoten, database sebagai source of truth, reconciliation, health check & degradation saat Elasticsearch mati.
+14. Capstone: Product Search & Discovery Platform
+    - Model produk dengan mapping eksplisit + analyzer khusus, endpoint search (query/filter/sort/pagination/highlight/aggs), completion suggester, lapisan operasional (compose, health, logging, security, backup, load testing), Definition of Done & rubrik indikator "mahir".
+
+- Cara menjalankan laboratorium
+  - Buat folder lab lalu tulis `compose.yaml` (Elasticsearch + Kibana 8.17.0, `discovery.type=single-node`, security nonaktif, healthcheck) — pola lengkap ada di pelajaran 02.
+  - `cd elasticsearch-lab && podman compose up -d` lalu tunggu kolom `healthy` pada `podman compose ps`.
+  - Verifikasi: `curl http://localhost:9200` · `curl "http://localhost:9200/_cluster/health?pretty"` · `curl "http://localhost:9200/_cat/indices?v"`.
+  - Kibana: http://localhost:5601 · matikan lab dengan `podman compose down` (volume data tetap ada).
+
 ## Topik Dasar RESTful API
 
 Materi **Dasar RESTful API** — bab terpisah untuk pemula total yang baru mengenal dunia backend dan API — disusun dalam 15 pelajaran berbahasa Indonesia dengan kuis 40 soal. Cakupannya mengikuti roadmap `roadmap-belajar-restful-api.md` Fase 1 sampai Fase 3 (dengan pengantar Fase 4 berupa proyek mini), tanpa mengulang materi HTTP mendalam (cookie, cache, CORS, HTTPS) yang sudah dibahas di materi HTTP. Penjelasan memakai analogi sehari-hari (restoran, surat, antrean, struk) agar mudah dipahami orang awam, dilengkapi latihan interaktif "Coba sendiri" yang berjalan offline.
