@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dokumentasi nginx-lab</title>
+  <!-- Path relatif: bekerja untuk /docs/ (alias) maupun Host: docs.local -->
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+  <header>
+    <h1>Dokumentasi nginx-lab</h1>
+    <p>Dilayani dari <code>/usr/share/nginx/html/docs</code> memakai <code>alias</code>.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Cara membaca konfigurasi</h2>
+      <ul>
+        <li><code>nginx/nginx.conf</code> — konteks http, log format, zone rate limit.</li>
+        <li><code>nginx/conf.d/app.conf</code> — vhost app.local (8080 &amp; 8443) dan redirect 8081.</li>
+        <li><code>nginx/conf.d/api.conf</code> — upstream, vhost api.local &amp; docs.local.</li>
+        <li><code>nginx/snippets/</code> — potongan konfigurasi yang dipakai berulang.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Perintah penting</h2>
+      <pre>podman exec nginx-lab nginx -t
+podman exec nginx-lab nginx -T
+podman exec nginx-lab nginx -s reload
+podman logs nginx-lab</pre>
+    </section>
+
+    <section>
+      <h2>Tautan</h2>
+      <ul>
+        <li><a href="/">Kembali ke halaman utama</a></li>
+        <li><a href="/api/">Contoh route API</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Lab belajar Nginx — hanya untuk latihan, bukan untuk produksi.</p>
+  </footer>
+</body>
+</html>

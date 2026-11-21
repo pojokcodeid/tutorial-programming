@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>api.local — Virtual Host API</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <h1>api.local</h1>
+      <p class="tagline">Virtual host API pada port 8080 — dipilih lewat header <code>Host</code></p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Endpoint</h2>
+      <ul>
+        <li><a href="/api/">/api/</a> — reverse proxy ke balancer backend-1/2/3</li>
+        <li><a href="/api/headers/">/api/headers/</a> — memantulkan header yang diteruskan Apache</li>
+        <li><a href="/app/">/app/</a> — route aplikasi ke balancer yang sama</li>
+      </ul>
+      <pre>curl -H "Host: api.local" http://localhost:8080/
+curl http://localhost:8080/api/headers/</pre>
+      <p>Path di luar daftar di atas menghasilkan 404 (vhost API tidak memakai fallback SPA).</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>apache-lab · Apache HTTP Server 2.4 · Podman</p>
+  </footer>
+</body>
+</html>

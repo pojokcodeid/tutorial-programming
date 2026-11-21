@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>apache-lab — Gateway Aplikasi</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="site-header">
+    <img src="/assets/logo.svg" alt="Logo apache-lab" width="48" height="48">
+    <div>
+      <h1>apache-lab — Gateway Aplikasi</h1>
+      <p class="tagline">Halaman statis dari <code>/usr/local/apache2/htdocs</code> (vhost app.local)</p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Rute yang tersedia</h2>
+      <ul>
+        <li><a href="/docs/">/docs/</a> — dokumentasi (dilayani dengan <code>Alias</code>, di luar DocumentRoot)</li>
+        <li><code>/private/</code> — diblokir (403, <code>&lt;Location&gt;</code> + <code>Require all denied</code>)</li>
+        <li><a href="/api/">/api/</a> — reverse proxy ke load balancer backend-1/2/3</li>
+        <li><a href="/app/">/app/</a> — reverse proxy (aplikasi) ke balancer yang sama</li>
+        <li><a href="/halaman/tentang">/halaman/tentang</a> — contoh rute SPA (fallback ke index.html)</li>
+        <li><a href="/server-status">/server-status</a> — mod_status (monitoring)</li>
+        <li><a href="/server-info">/server-info</a> — mod_info (daftar modul &amp; konfigurasi)</li>
+      </ul>
+      <p>Request berekstensi yang tidak ada tetap 404, mis. <a href="/assets/hilang.css">/assets/hilang.css</a>.</p>
+    </section>
+
+    <section>
+      <h2>Virtual host</h2>
+      <p>Coba kirim header <code>Host</code> berbeda ke port 8080:</p>
+      <ul>
+        <li><code>Host: app.local</code> (atau tanpa override) — halaman ini</li>
+        <li><code>Host: api.local</code> — vhost API</li>
+        <li><code>Host: docs.local</code> — vhost dokumentasi</li>
+      </ul>
+      <pre>curl -H "Host: api.local" http://localhost:8080/</pre>
+    </section>
+
+    <section>
+      <h2>HTTPS</h2>
+      <p>Sertifikat self-signed tersedia di port 8443 (HTTP/2 aktif):</p>
+      <pre>curl -k --http2 https://localhost:8443/</pre>
+      <p>Port 8081 hanya melakukan redirect 301 ke <code>https://localhost:8443/</code>.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>apache-lab · Apache HTTP Server 2.4 · Podman</p>
+  </footer>
+</body>
+</html>

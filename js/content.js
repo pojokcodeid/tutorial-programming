@@ -140,6 +140,28 @@ const CONTENT = (() => {
       ]
     },
 
+    apache: {
+      id: 'apache',
+      title: 'Apache HTTP Server',
+      tagline: 'Web Server & Reverse Proxy dari Nol sampai Mahir',
+      icon: 'assets/logos/apache.svg',
+      color: '#D22128',
+      desc: 'Belajar Apache HTTP Server dari nol hingga mahir dengan lab Podman: fondasi web & HTTP, arsitektur dan request lifecycle beserta MPM, instalasi serta konfigurasi dasar httpd.conf, directive/context dan konfigurasi modular, virtual host multi website, modul Apache (LoadModule & modul inti), web server statis (DocumentRoot, Alias, 403/404 & SPA fallback), URL rewrite/redirect & .htaccess, reverse proxy (ProxyPass, header, timeout, WebSocket), SSL/TLS & HTTPS termasuk HSTS dan HTTP/2, security hardening (header, akses, Basic Auth, batas request), performance (MPM, kompresi, cache, server-status), logging & troubleshooting kode AH####, load balancing balancer:// beserta failover, advanced (graceful lifecycle, unix socket, ekspresi, WAF), best practices deployment container/CDN/DNS/otomasi, hingga capstone arsitektur Apache production-like.',
+      status: 'ready',
+      sequential: true,
+      lessons: (window.APACHE_LESSONS || []).slice(),
+      quizPool: (window.APACHE_QUIZ_POOL || []).slice(),
+      refs: [
+        { label: 'Dokumentasi Resmi Apache HTTP Server', url: 'https://httpd.apache.org/docs/2.4/' },
+        { label: 'Apache — Virtual Hosts HowTo', url: 'https://httpd.apache.org/docs/2.4/vhosts/' },
+        { label: 'Apache — Module Index', url: 'https://httpd.apache.org/docs/2.4/mod/' },
+        { label: 'Apache — Reverse Proxy HowTo', url: 'https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html' },
+        { label: 'Apache — mod_ssl', url: 'https://httpd.apache.org/docs/2.4/mod/mod_ssl.html' },
+        { label: 'Docker Hub — httpd', url: 'https://hub.docker.com/_/httpd' },
+        { label: 'Podman Documentation', url: 'https://docs.podman.io/' }
+      ]
+    },
+
     haproxy: {
       id: 'haproxy',
       title: 'HAProxy',

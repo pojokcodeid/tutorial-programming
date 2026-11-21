@@ -1,0 +1,41 @@
+/* nginx-lab — gaya khusus halaman dokumentasi */
+body {
+  margin: 0;
+  padding: 0 1.5rem 3rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #1f2430;
+  background: #f6f7f9;
+  line-height: 1.6;
+}
+
+header {
+  border-bottom: 2px solid #009639;
+  padding: 1.5rem 0 0.75rem;
+}
+
+main {
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+section {
+  background: #fff;
+  border: 1px solid #e3e6ea;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+code {
+  background: #eef1f4;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+pre {
+  background: #11151c;
+  color: #d7ffe0;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
